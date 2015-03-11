@@ -12,8 +12,6 @@ public class AnyTask {
 	
 	private static Scanner sc= new Scanner(System.in);	
 	
-	
-	
 	public static void executeUserCommand(String userCommand){
 		if (userCommand.equals(OPERATION_ADD)){
 			String userText=sc.nextLine();

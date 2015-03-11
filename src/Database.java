@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Database {
 	private static String FILE_NAME="anytasklist.txt";
 	private static ArrayList<Task> taskList=new ArrayList<Task>();
-
+	
 	public static ArrayList<Task> getTaskList(){
 		return taskList;
 	}
@@ -61,6 +61,10 @@ public class Database {
 	    }
 	}
 	
+	public static void deleteAllTask(){
+		taskList.clear();
+	}
+
 	public static void saveTasksToFile(){
 		try{
 		    BufferedWriter bWrite = new BufferedWriter(new FileWriter(FILE_NAME,true));

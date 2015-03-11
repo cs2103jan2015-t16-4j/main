@@ -2,12 +2,12 @@ import java.util.ArrayList;
 
 public class Display {
 	
-	public static final String MESSAGE_WELCOME="Welcome to AnyTask.";
+	public static final String MESSAGE_WELCOME="Welcome to AnyTask.\n";
 	public static final String MESSAGE_ADD="Added %s \n";
 	public static final String MESSAGE_DELETELINE="Deleted %s \n";
 	public static final String MESSAGE_DISPLAY_SUCCESS="%d. %s \n";
-	public static final String MESSAGE_DISPLAY_EMPTY="%s is empty \n";
-	public static final String MESSAGE_PROMPT="Command: ";
+	public static final String MESSAGE_DISPLAY_EMPTY="There are no tasks to display \n";
+	public static final String MESSAGE_PROMPT="Command: \n";
 	public static final String MESSAGE_ERROR="ERROR: \n";
 
 	private static String output ="";
@@ -23,7 +23,7 @@ public class Display {
 
 	public static void displayMsgAdd(String userText){
     	output = String.format(MESSAGE_ADD,userText);
-    	print();    	
+    	print();
     }
     
 	public static void displayMsgDeleteLine(String line){

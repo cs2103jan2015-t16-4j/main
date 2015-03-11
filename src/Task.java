@@ -6,6 +6,7 @@ public class Task {
 	}
 	
 	private String name="";
+	private boolean isDone=false;
 	
 	public String getName(){
 		return name;
@@ -14,5 +15,11 @@ public class Task {
 		name=newName;
 	}
 	
+	public boolean getIsDone(){
+		return isDone;
+	}
+	public void setIsDone(Boolean doneState){
+		isDone=doneState;
+	}
 	
 }

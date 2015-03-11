@@ -8,17 +8,21 @@ import java.util.ArrayList;
 
 public class Database {
 	private static String FILE_NAME="anytasklist.txt";
-	private ArrayList<Task> taskList=new ArrayList<Task>();
+	private static ArrayList<Task> taskList=new ArrayList<Task>();
 
-	public ArrayList<Task> getTaskList(){
+	public static ArrayList<Task> getTaskList(){
 		return taskList;
 	}
 	
-	public void addTask(Task newTask){
+	public static void addTask(Task newTask){
 		taskList.add(newTask);
 	}
-
-	public void fetchTasksFromFile(){
+	
+	public static void addTask(String newTask){
+		taskList.add(new Task(newTask));
+	}
+	
+	public static void fetchTasksFromFile(){
 		String line="";
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(FILE_NAME));
@@ -40,7 +44,7 @@ public class Database {
 		}
 	}
 	
-	public void editTask(String oldName,String newName){
+	public static void editTask(String oldName,String newName){
 		for(int i=0; i<taskList.size();i++) {
 	    	if(taskList.get(i).getName().equals(oldName)){
 	    		taskList.remove(i);
@@ -49,7 +53,7 @@ public class Database {
 	    }
 	}
 	
-	public void deleteTask(String name){
+	public static void deleteTask(String name){
 		for(int i=0; i<taskList.size();i++) {
 	    	if(taskList.get(i).getName().equals(name)){
 	    		taskList.remove(i);
@@ -57,7 +61,7 @@ public class Database {
 	    }
 	}
 	
-	public void saveTasksToFile(){
+	public static void saveTasksToFile(){
 		try{
 		    BufferedWriter bWrite = new BufferedWriter(new FileWriter(FILE_NAME,true));
 		    for(Task task: taskList) {

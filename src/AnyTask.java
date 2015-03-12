@@ -25,11 +25,9 @@ public class AnyTask {
 			String newName = removeFirstWord(userCommand);
 			Database.editTask(taskID, newName);
 		} else if (userCommandType.equalsIgnoreCase(OPERATION_DELETE)) {
-			String userText = sc.nextLine();
-			Database.deleteTask(userText);
+			Database.deleteTask(userCommand);
 		} else if (userCommandType.equalsIgnoreCase(OPERATION_FILEPATH)) {
-			String userText = sc.nextLine();
-			Database.alterFilePath(userText);
+			Database.alterFilePath(userCommand);
 		} else if (userCommandType.equalsIgnoreCase(OPERATION_SAVE)) {
 			Database.saveTasksToFile();
 		} else if (userCommandType.equalsIgnoreCase(OPERATION_EXIT)) {

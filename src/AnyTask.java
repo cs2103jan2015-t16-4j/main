@@ -18,7 +18,7 @@ public class AnyTask {
 
 		if (userCommand.equals(OPERATION_ADD)) {
 			String userText = sc.nextLine();
-			Database.addTask(userText);
+			Database.addTask(userText.substring(1, userText.length()));
 		} else if (userCommand.equals(OPERATION_DISPLAY)) {
 			Display.displayAll();
 		} else if (userCommand.equals(OPERATION_EDIT)) {

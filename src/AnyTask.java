@@ -64,6 +64,11 @@ public class AnyTask {
 	}
 	
 	private static String removeFirstWord(String userCommand) {
-		return userCommand.replace(getFirstWord(userCommand), "").trim();
+		String[] userCommandString = userCommand.trim().split(" ",2);
+		if (userCommandString.length == 1){
+			return "";
+		} else {
+			return userCommandString[1];
+		}
 	}
 }

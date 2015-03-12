@@ -13,7 +13,6 @@ public class AnyTaskTest {
 		Database.addTask("b");
 		Database.addTask("c");
 
-		Database.editTask("a","d");
 		Database.deleteTask("b");
 		
 		ArrayList<Task> taskList=Database.getTaskList();

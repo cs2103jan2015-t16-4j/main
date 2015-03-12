@@ -14,31 +14,29 @@ public class AnyTask {
 
 	private static Scanner sc = new Scanner(System.in);
 
-	public static void executeUserCommand(String userCommand) {
+	public static void executeUserCommand(String userCommandType, String userCommand) {
 
-		if (userCommand.equals(OPERATION_ADD)) {
-			String userText = sc.nextLine();
-			Database.addTask(userText.substring(1, userText.length()));
-		} else if (userCommand.equals(OPERATION_DISPLAY)) {
+		if (userCommandType.equalsIgnoreCase(OPERATION_ADD)) {
+			Database.addTask(userCommand);
+		} else if (userCommandType.equalsIgnoreCase(OPERATION_DISPLAY)) {
 			Display.displayAll();
-		} else if (userCommand.equals(OPERATION_EDIT)) {
-			String oldName = sc.nextLine();
-			String newName = sc.nextLine();
-			Database.editTask(oldName, newName);
-		} else if (userCommand.equals(OPERATION_DELETE)) {
+		} else if (userCommandType.equalsIgnoreCase(OPERATION_EDIT)) {
+			int taskID = Integer.parseInt(getFirstWord(userCommand));
+			String newName = removeFirstWord(userCommand);
+			Database.editTask(taskID, newName);
+		} else if (userCommandType.equalsIgnoreCase(OPERATION_DELETE)) {
 			String userText = sc.nextLine();
 			Database.deleteTask(userText);
-		} else if (userCommand.equals(OPERATION_FILEPATH)) {
+		} else if (userCommandType.equalsIgnoreCase(OPERATION_FILEPATH)) {
 			String userText = sc.nextLine();
 			Database.alterFilePath(userText);
-		} else if (userCommand.equals(OPERATION_SAVE)) {
+		} else if (userCommandType.equalsIgnoreCase(OPERATION_SAVE)) {
 			Database.saveTasksToFile();
-		} else if (userCommand.equals(OPERATION_EXIT)) {
+		} else if (userCommandType.equalsIgnoreCase(OPERATION_EXIT)) {
 			System.exit(0);
 		} else {
 			Display.displayMsgInvalid();
 		}
-
 	}
 
 	public static void main(String[] args) {
@@ -57,9 +55,17 @@ public class AnyTask {
 
 		while (isCorrectFormat) {
 			Display.displayMsgPrompt();
-			String command = sc.next();
-			command = command.toLowerCase();
-			executeUserCommand(command.trim());
+			String command = sc.nextLine();
+			executeUserCommand(getFirstWord(command), removeFirstWord(command));
 		}
+	}
+	
+	private static String getFirstWord(String userCommand) {
+		String commandTypeString = userCommand.trim().split("\\s+")[0];
+		return commandTypeString;
+	}
+	
+	private static String removeFirstWord(String userCommand) {
+		return userCommand.replace(getFirstWord(userCommand), "").trim();
 	}
 }

@@ -66,9 +66,10 @@ public class Database {
 
 	public static void saveTasksToFile(){
 		try{
-		    BufferedWriter bWrite = new BufferedWriter(new FileWriter(FILE_NAME,true));
+		    BufferedWriter bWrite = new BufferedWriter(new FileWriter(FILE_NAME,false));
 		    for(Task task: taskList) {
 		    	bWrite.write(task.getName());
+		    	bWrite.newLine();
 		    }
 		    bWrite.close();
 		    

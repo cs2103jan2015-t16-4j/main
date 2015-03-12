@@ -1,9 +1,7 @@
 import java.util.Scanner;
 
 public class AnyTask {
-	static enum COMMAND_TYPE {
-		ADD, DISPLAY, EDIT, DELETE, SEARCH, SAVE, INVALID, EXIT
-	};
+
 	private static final String OPERATION_ADD = "add";
 	private static final String OPERATION_DISPLAY = "display";
 	private static final String OPERATION_EDIT = "edit";
@@ -15,9 +13,9 @@ public class AnyTask {
 	private static boolean isCorrectFormat = false;
 
 	private static Scanner sc = new Scanner(System.in);
-	
+
 	public static void executeUserCommand(String userCommand) {
-		
+
 		if (userCommand.equals(OPERATION_ADD)) {
 			String userText = sc.nextLine();
 			Database.addTask(userText);
@@ -38,7 +36,7 @@ public class AnyTask {
 		} else if (userCommand.equals(OPERATION_EXIT)) {
 			System.exit(0);
 		} else {
-			throw new Error("Unrecognized command type");
+			Display.displayMsgInvalid();
 		}
 
 	}
@@ -47,10 +45,14 @@ public class AnyTask {
 		if (args.length == 0) {
 			isCorrectFormat = true;
 			Display.displayMsgWelcome();
+		} else if (args.length == 1) {
+			Database.alterFilePath(args[0]);
+			isCorrectFormat = true;
+			Display.displayMsgWelcome();
 		} else {
 			System.exit(0);
 		}
-		
+
 		Database.fetchTasksFromFile();
 
 		while (isCorrectFormat) {

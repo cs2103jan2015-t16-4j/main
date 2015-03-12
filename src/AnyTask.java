@@ -16,21 +16,21 @@ public class AnyTask {
 
 	public static void executeUserCommand(String userCommandType, String userCommand) {
 
-		if (userCommandType.equalsIgnoreCase(OPERATION_ADD)) {
+		if (userCommandType.equals(OPERATION_ADD)) {
 			Database.addTask(userCommand);
-		} else if (userCommandType.equalsIgnoreCase(OPERATION_DISPLAY)) {
+		} else if (userCommandType.equals(OPERATION_DISPLAY)) {
 			Display.displayAll();
-		} else if (userCommandType.equalsIgnoreCase(OPERATION_EDIT)) {
+		} else if (userCommandType.equals(OPERATION_EDIT)) {
 			int taskID = Integer.parseInt(getFirstWord(userCommand));
 			String newName = removeFirstWord(userCommand);
 			Database.editTask(taskID, newName);
-		} else if (userCommandType.equalsIgnoreCase(OPERATION_DELETE)) {
+		} else if (userCommandType.equals(OPERATION_DELETE)) {
 			Database.deleteTask(userCommand);
-		} else if (userCommandType.equalsIgnoreCase(OPERATION_FILEPATH)) {
+		} else if (userCommandType.equals(OPERATION_FILEPATH)) {
 			Database.alterFilePath(userCommand);
-		} else if (userCommandType.equalsIgnoreCase(OPERATION_SAVE)) {
+		} else if (userCommandType.equals(OPERATION_SAVE)) {
 			Database.saveTasksToFile();
-		} else if (userCommandType.equalsIgnoreCase(OPERATION_EXIT)) {
+		} else if (userCommandType.equals(OPERATION_EXIT)) {
 			System.exit(0);
 		} else {
 			Display.displayMsgInvalid();
@@ -54,7 +54,7 @@ public class AnyTask {
 		while (isCorrectFormat) {
 			Display.displayMsgPrompt();
 			String command = sc.nextLine();
-			executeUserCommand(getFirstWord(command), removeFirstWord(command));
+			executeUserCommand(getFirstWord(command).toLowerCase(), removeFirstWord(command));
 		}
 	}
 	

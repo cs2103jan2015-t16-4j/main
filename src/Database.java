@@ -19,6 +19,7 @@ public class Database {
 	
 	public static void addTask(String newTask){
 		taskList.add(new Task(newTask));
+		Display.displayMsgAdd(newTask);
 	}
 	
 	public static void fetchTasksFromFile(){
@@ -58,6 +59,7 @@ public class Database {
 	    		taskList.remove(i);
 	    	}
 	    }
+		Display.displayMsgDeleteLine(name);
 	}
 	
 	public static void deleteAllTask(){

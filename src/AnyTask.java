@@ -1,12 +1,12 @@
 import java.util.Scanner;
 
 public class AnyTask {
-	public static final String OPERATION_ADD="add";
-	public static final String OPERATION_DISPLAY="display";
-	public static final String OPERATION_EDIT="edit";
-	public static final String OPERATION_DELETE="delete";
-	public static final String OPERATION_EXIT="exit";
-	public static final String OPERATION_SAVE="save";
+	private static final String OPERATION_ADD="add";
+	private static final String OPERATION_DISPLAY="display";
+	private static final String OPERATION_EDIT="edit";
+	private static final String OPERATION_DELETE="delete";
+	private static final String OPERATION_EXIT="exit";
+	private static final String OPERATION_SAVE="save";
 	
 	private static boolean isCorrectFormat= false;
 	

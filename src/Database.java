@@ -3,7 +3,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
-
 import java.util.ArrayList;
 
 public class Database {
@@ -77,6 +76,13 @@ public class Database {
 		catch(IOException e){
 			//error
 		}
+	}
+
+	public static void alterFilePath(String userText) {
+		saveTasksToFile();
+		FILE_NAME = userText;
+		taskList.clear();
+		fetchTasksFromFile();
 	}
 	
 

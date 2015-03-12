@@ -7,6 +7,7 @@ public class AnyTask {
 	private static final String OPERATION_ADD = "add";
 	private static final String OPERATION_DISPLAY = "display";
 	private static final String OPERATION_EDIT = "edit";
+	private static final String OPERATION_FILEPATH = "filepath";
 	private static final String OPERATION_DELETE = "delete";
 	private static final String OPERATION_EXIT = "exit";
 	private static final String OPERATION_SAVE = "save";
@@ -29,6 +30,9 @@ public class AnyTask {
 		} else if (userCommand.equals(OPERATION_DELETE)) {
 			String userText = sc.nextLine();
 			Database.deleteTask(userText);
+		} else if (userCommand.equals(OPERATION_FILEPATH)) {
+			String userText = sc.nextLine();
+			Database.alterFilePath(userText);
 		} else if (userCommand.equals(OPERATION_SAVE)) {
 			Database.saveTasksToFile();
 		} else if (userCommand.equals(OPERATION_EXIT)) {

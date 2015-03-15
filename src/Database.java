@@ -5,6 +5,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 public class Database {
 	private static String FILE_NAME = "anytasklist.txt";
 	private static ArrayList<Task> taskList = new ArrayList<Task>();
@@ -23,18 +26,14 @@ public class Database {
 	}
 
 	public static void fetchTasksFromFile() {
-		String line = "";
+
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(FILE_NAME));
-			line = br.readLine();
-			if (line == null) {
-				// no tasks
+			if (br.ready()) {
+				Gson gson= new Gson();
+				taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>(){}.getType());
 			} else {
-				do {
-					// for floating tasks only
-					Task newTask = new Task(line);
-					addTask(newTask);
-				} while ((line = br.readLine()) != null);
+				// no tasks
 			}
 			br.close();
 		} catch (IOException e) {
@@ -64,10 +63,9 @@ public class Database {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(
 					FILE_NAME, false));
-			for (Task task : taskList) {
-				bWrite.write(task.getName());
-				bWrite.newLine();
-			}
+			Gson gson= new Gson();
+			String jsonTask = gson.toJson(taskList);
+			bWrite.write(jsonTask);
 			bWrite.close();
 
 		} catch (IOException e) {

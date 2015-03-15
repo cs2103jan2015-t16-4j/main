@@ -73,7 +73,7 @@ public class Database {
 		}
 	}
 
-	public static void alterFilePath(String userText) {
+	public static void setFilePath(String userText) {
 		saveTasksToFile();
 		filepath = userText;
 		taskList.clear();

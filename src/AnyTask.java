@@ -27,7 +27,7 @@ public class AnyTask {
 		} else if (userCommandType.equals(OPERATION_DELETE)) {
 			Database.deleteTask(userCommand);
 		} else if (userCommandType.equals(OPERATION_FILEPATH)) {
-			Database.alterFilePath(userCommand);
+			Database.setFilePath(userCommand);
 		} else if (userCommandType.equals(OPERATION_SAVE)) {
 			Database.saveTasksToFile();
 		} else if (userCommandType.equals(OPERATION_EXIT)) {
@@ -43,7 +43,7 @@ public class AnyTask {
 			isCorrectFormat = true;
 			Display.displayMsgWelcome();
 		} else if (args.length == 1) {
-			Database.alterFilePath(args[0]);
+			Database.setFilePath(args[0]);
 			isCorrectFormat = true;
 			Display.displayMsgWelcome();
 		} else {

@@ -32,6 +32,7 @@ public class AnyTask {
 			Database.saveTasksToFile();
 		} else if (userCommandType.equals(OPERATION_EXIT)) {
 			System.exit(0);
+			Database.saveTasksToFile();
 		} else {
 			Display.displayMsgInvalid();
 		}

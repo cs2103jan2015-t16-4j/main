@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class Database {
-	private static String FILE_NAME = "anytasklist.txt";
+	private static String filepath = "anytasklist.txt";
 	private static ArrayList<Task> taskList = new ArrayList<Task>();
 
 	public static ArrayList<Task> getTaskList() {
@@ -28,7 +28,7 @@ public class Database {
 	public static void fetchTasksFromFile() {
 
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(FILE_NAME));
+			BufferedReader br = new BufferedReader(new FileReader(filepath));
 			if (br.ready()) {
 				Gson gson= new Gson();
 				taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>(){}.getType());
@@ -62,7 +62,7 @@ public class Database {
 	public static void saveTasksToFile() {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(
-					FILE_NAME, false));
+					filepath, false));
 			Gson gson= new Gson();
 			String jsonTask = gson.toJson(taskList);
 			bWrite.write(jsonTask);
@@ -75,7 +75,7 @@ public class Database {
 
 	public static void alterFilePath(String userText) {
 		saveTasksToFile();
-		FILE_NAME = userText;
+		filepath = userText;
 		taskList.clear();
 		fetchTasksFromFile();
 	}

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 public class Database {
@@ -25,20 +26,28 @@ public class Database {
 		Display.displayMsgAdd(newTask);
 	}
 
-	public static void fetchTasksFromFile() {
+	public static boolean fetchTasksFromFile() {
 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filepath));
 			if (br.ready()) {
-				Gson gson= new Gson();
-				taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>(){}.getType());
-			} else {
-				// no tasks
+				try {
+					Gson gson= new Gson();
+					taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>(){}.getType());	
+				}
+				catch (JsonParseException e) {
+					//file exists but file is not in json format
+					Display.displayMsgError("The file content is in the wrong format."
+							+ " Please check the file and try running AnyTask again");
+					return false;
+				}
 			}
 			br.close();
 		} catch (IOException e) {
 			// error
+			return false;
 		}
+		return true;
 	}
 
 	public static void editTask(int taskID, String newName) {
@@ -59,7 +68,7 @@ public class Database {
 		taskList.clear();
 	}
 
-	public static void saveTasksToFile() {
+	public static boolean saveTasksToFile() {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(
 					filepath, false));
@@ -70,7 +79,9 @@ public class Database {
 
 		} catch (IOException e) {
 			// error
+			return false;
 		}
+		return true;
 	}
 
 	public static void setFilePath(String userText) {

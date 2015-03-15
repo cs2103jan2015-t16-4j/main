@@ -50,7 +50,9 @@ public class AnyTask {
 			System.exit(0);
 		}
 
-		Database.fetchTasksFromFile();
+		if(!Database.fetchTasksFromFile()){
+			System.exit(0);
+		}
 
 		while (isCorrectFormat) {
 			Display.displayMsgPrompt();

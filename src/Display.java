@@ -9,7 +9,7 @@ public class Display {
 	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display \n";
 	private static final String MESSAGE_DISPLAY_INVALID = "Command invalid \n";
 	private static final String MESSAGE_PROMPT = "Command:";
-	private static final String MESSAGE_ERROR = "ERROR: \n";
+	private static final String MESSAGE_ERROR = "ERROR: %s \n";
 
 	private static String output = "";
 
@@ -46,7 +46,12 @@ public class Display {
 		output = String.format(MESSAGE_PROMPT);
 		print();
 	}
-
+	
+	public static void displayMsgError(String line) {
+		output = String.format(MESSAGE_ERROR, line);
+		print();
+	}
+	
 	public static void displayAll() {
 		ArrayList<Task> taskList = Database.getTaskList();
 		int i = 1;

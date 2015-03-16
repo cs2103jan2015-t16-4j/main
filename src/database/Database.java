@@ -1,9 +1,12 @@
+package database;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import logic.Display;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;

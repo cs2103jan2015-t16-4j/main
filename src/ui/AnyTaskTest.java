@@ -1,6 +1,9 @@
+package ui;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import database.Database;
 
 import java.util.ArrayList; 
 

@@ -1,4 +1,7 @@
+package logic;
 import java.util.ArrayList;
+
+import database.Database;
 
 public class Display {
 

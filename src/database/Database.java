@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import logic.Display;
+import common.Task;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;

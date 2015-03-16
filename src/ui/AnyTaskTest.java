@@ -1,4 +1,6 @@
 package ui;
+
+import common.Task;
 import static org.junit.Assert.*;
 
 import org.junit.Test;

@@ -1,6 +1,7 @@
 package logic;
 import java.util.ArrayList;
 
+import common.Task;
 import database.Database;
 
 public class Display {

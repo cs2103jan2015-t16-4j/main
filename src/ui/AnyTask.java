@@ -55,7 +55,8 @@ public class AnyTask {
 		}
 
 		if(!Database.fetchTasksFromFile()){
-			System.exit(0);
+			Display.displayMsgError();
+			System.exit(0);			
 		}
 
 		while (isCorrectFormat) {

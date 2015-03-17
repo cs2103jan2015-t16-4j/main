@@ -13,8 +13,9 @@ public class Display {
 	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display \n";
 	private static final String MESSAGE_DISPLAY_INVALID = "Command invalid \n";
 	private static final String MESSAGE_PROMPT = "Command:";
-	private static final String MESSAGE_ERROR = "ERROR: %s \n";
+	private static final String MESSAGE_ERROR = "An Error has occured. Check the log file for more details \n";
 
+	
 	private static String output = "";
 
 	private static void print() {
@@ -51,8 +52,8 @@ public class Display {
 		print();
 	}
 	
-	public static void displayMsgError(String line) {
-		output = String.format(MESSAGE_ERROR, line);
+	public static void displayMsgError() {
+		output = String.format(MESSAGE_ERROR);
 		print();
 	}
 	

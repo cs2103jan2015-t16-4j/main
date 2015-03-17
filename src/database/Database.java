@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import logic.Display;
 import common.Task;
 
@@ -13,10 +16,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
-public class Database {
+public class Database  {
 	private static String filepath = "anytasklist.txt";
 	private static ArrayList<Task> taskList = new ArrayList<Task>();
 
+	final static Logger logger = LoggerFactory.getLogger(Database.class);
+	
 	public static ArrayList<Task> getTaskList() {
 		return taskList;
 	}
@@ -31,29 +36,38 @@ public class Database {
 	}
 
 	public static boolean fetchTasksFromFile() {
-
+		boolean isFileRead=false;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filepath));
 			if (br.ready()) {
-				try {
-					Gson gson= new Gson();
-					taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>(){}.getType());	
-				}
-				catch (JsonParseException e) {
-					//file exists but file is not in json format
-					Display.displayMsgError("The file content is in the wrong format."
-							+ " Please check the file and try running AnyTask again");
-					return false;
-				}
+				isFileRead= readJsonFile(br);
+				br.close();		
+				return isFileRead;
+			} else {
+				br.close();
+				return true;
 			}
-			br.close();
-		} catch (IOException e) {
-			// error
+		} catch (IOException e) {	
+			logger.error("Error opening {}",filepath, e);
 			return false;
 		}
-		return true;
 	}
 
+	private static boolean readJsonFile(BufferedReader br){
+		try {
+			Gson gson= new Gson();
+			taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>(){}.getType());	
+			if(taskList==null){
+				taskList=new ArrayList<Task>();
+			}
+			return true;
+		} catch (JsonParseException e) {
+			logger.error("Error reading {}: file exists but is not in json format",filepath, e);
+			return false;		
+		}
+	}
+	
+	
 	public static void editTask(int taskID, String newName) {
 		taskList.remove(taskID-1);
 		taskList.add(taskID-1, new Task(newName));

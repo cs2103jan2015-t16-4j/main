@@ -12,12 +12,7 @@ import database.Database;
 public class Data {
 	
 	private static ArrayList<Task> taskList= new ArrayList<Task>();
-
 	final static Logger logger = LoggerFactory.getLogger(Database.class);
-	
-	public static ArrayList<Task> getTaskList(){
-		return taskList;
-	}
 	
 	public static boolean initTaskList(){
 		if(Database.fetchTasksFromFile()){
@@ -26,7 +21,15 @@ public class Data {
 		}
 		return false;
 	}
-
+	
+	public static ArrayList<Task> getTaskList(){
+		return taskList;
+	}
+	
+	public static void setTaskList(ArrayList<Task> newTaskList){
+		taskList=newTaskList;
+	}
+	
 	public static void addTask(Task newTask) {
 		taskList.add(newTask);
 	}
@@ -46,8 +49,8 @@ public class Data {
 		//sort();
 	}
 	
-	public static void deleteTask(Task newTask) {
-		taskList.remove(newTask);
+	public static void deleteTask(Task task) {
+		taskList.remove(task);
 	}
 	
 	public static void deleteTask(int id) {
@@ -58,6 +61,9 @@ public class Data {
 //		}
 	}
 	
+	public static void deleteAllTask() {
+		taskList.clear();
+	}
 	
 	//for v0.1
 	public static void addTask(String newTask) {
@@ -80,11 +86,4 @@ public class Data {
 			}
 		}
 	}
-	
-
-	
-	public static void deleteAllTask() {
-		taskList.clear();
-	}
-
 }

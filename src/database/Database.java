@@ -23,6 +23,7 @@ public class Database  {
 	final static Logger logger = LoggerFactory.getLogger(Database.class);
 	
 	public static ArrayList<Task> getTaskList() {
+		assert (taskList!=null);
 		return taskList;
 	}
 	public static void setTaskList(ArrayList<Task> newTaskList){

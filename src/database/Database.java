@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import logic.Display;
 import common.Task;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+//@author A0112734N
 public class Database  {
 	private static String filepath = "anytasklist.txt";
 	private static ArrayList<Task> taskList = new ArrayList<Task>();
@@ -25,16 +25,10 @@ public class Database  {
 	public static ArrayList<Task> getTaskList() {
 		return taskList;
 	}
-
-	public static void addTask(Task newTask) {
-		taskList.add(newTask);
+	public static void setTaskList(ArrayList<Task> newTaskList){
+		saveTasksToFile();
+		taskList=newTaskList;
 	}
-
-	public static void addTask(String newTask) {
-		taskList.add(new Task(newTask));
-		Display.displayMsgAdd(newTask);
-	}
-
 	public static boolean fetchTasksFromFile() {
 		boolean isFileRead=false;
 		try {
@@ -48,7 +42,7 @@ public class Database  {
 				return true;
 			}
 		} catch (IOException e) {	
-			logger.error("Error opening {}",filepath, e);
+			logger.error("Error reading {}",filepath, e);
 			return false;
 		}
 	}
@@ -67,25 +61,6 @@ public class Database  {
 		}
 	}
 	
-	
-	public static void editTask(int taskID, String newName) {
-		taskList.remove(taskID-1);
-		taskList.add(taskID-1, new Task(newName));
-	}
-
-	public static void deleteTask(String name) {
-		for (int i = 0; i < taskList.size(); i++) {
-			if (taskList.get(i).getName().equals(name)) {
-				taskList.remove(i);
-			}
-		}
-		Display.displayMsgDeleteLine(name);
-	}
-
-	public static void deleteAllTask() {
-		taskList.clear();
-	}
-
 	public static boolean saveTasksToFile() {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(
@@ -94,14 +69,14 @@ public class Database  {
 			String jsonTask = gson.toJson(taskList);
 			bWrite.write(jsonTask);
 			bWrite.close();
-
+			return true;
 		} catch (IOException e) {
-			// error
+			logger.error("Error writing {}",filepath, e);
 			return false;
 		}
-		return true;
 	}
-
+	
+	//@author insert Zirui's admin here
 	public static void setFilePath(String userText) {
 		saveTasksToFile();
 		filepath = userText;

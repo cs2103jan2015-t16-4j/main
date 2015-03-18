@@ -58,7 +58,7 @@ public class Display {
 	}
 	
 	public static void displayAll() {
-		ArrayList<Task> taskList = Database.getTaskList();
+		ArrayList<Task> taskList = Data.getTaskList();
 		int i = 1;
 
 		if (taskList.isEmpty()) {

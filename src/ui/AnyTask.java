@@ -1,6 +1,7 @@
 package ui;
 import java.util.Scanner;
 
+import logic.Data;
 import database.Database;
 import logic.Display;
 
@@ -21,15 +22,15 @@ public class AnyTask {
 	public static void executeUserCommand(String userCommandType, String userCommand) {
 
 		if (userCommandType.equals(OPERATION_ADD)) {
-			Database.addTask(userCommand);
+			Data.addTask(userCommand);
 		} else if (userCommandType.equals(OPERATION_DISPLAY)) {
 			Display.displayAll();
 		} else if (userCommandType.equals(OPERATION_EDIT)) {
 			int taskID = Integer.parseInt(getFirstWord(userCommand));
 			String newName = removeFirstWord(userCommand);
-			Database.editTask(taskID, newName);
+			Data.editTask(taskID, newName);
 		} else if (userCommandType.equals(OPERATION_DELETE)) {
-			Database.deleteTask(userCommand);
+			Data.deleteTask(userCommand);
 		} else if (userCommandType.equals(OPERATION_FILEPATH)) {
 			Database.setFilePath(userCommand);
 		} else if (userCommandType.equals(OPERATION_SAVE)) {
@@ -54,7 +55,7 @@ public class AnyTask {
 			System.exit(0);
 		}
 
-		if(!Database.fetchTasksFromFile()){
+		if(!Data.initTaskList()){
 			Display.displayMsgError();
 			System.exit(0);			
 		}

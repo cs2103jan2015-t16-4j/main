@@ -30,6 +30,27 @@ public class Database  {
 		saveTasksToFile();
 		taskList=newTaskList;
 	}
+	//@author insert Zirui's admin here
+	public static void setFilePath(String userText) {
+		saveTasksToFile();
+		filepath = userText;
+		taskList.clear();
+		fetchTasksFromFile();
+	}
+	
+	public static boolean clearFile() {
+		try {
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(
+					filepath, false));
+			bWrite.write("");
+			bWrite.close();
+			return true;
+		} catch (IOException e) {
+			logger.error("Error writing to {}",filepath, e);
+			return false;
+		}
+	}
+	
 	public static boolean fetchTasksFromFile() {
 		boolean isFileRead=false;
 		try {
@@ -76,13 +97,4 @@ public class Database  {
 			return false;
 		}
 	}
-	
-	//@author insert Zirui's admin here
-	public static void setFilePath(String userText) {
-		saveTasksToFile();
-		filepath = userText;
-		taskList.clear();
-		fetchTasksFromFile();
-	}
-
 }

@@ -2,7 +2,6 @@ package common;
 
 import java.util.ArrayList;
 import java.util.Date;
-import logic.Data;
 
 public class Task {
 	private int id;
@@ -49,6 +48,10 @@ public class Task {
 	
 	public void setEndTime(Date endTime){
 		this.endTime = endTime;
+	}
+	
+	public void setName(String name){
+		this.name = name;
 	}
 	
 	public boolean isDone(){

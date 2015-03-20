@@ -23,7 +23,7 @@ public class DisplayCommand extends Command {
 
 	public void execute() {
 		for (int index = 0; index < taskList.size(); index++) {
-			if (taskList.get(index).getName().contains(keyword)) {
+			if (taskList.get(index).getName().toLowerCase().contains(keyword.toLowerCase())) {
 				resultTaskIndexes.add(index);
 			}
 		}

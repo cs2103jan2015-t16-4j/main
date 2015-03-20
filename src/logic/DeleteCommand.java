@@ -52,7 +52,7 @@ public class DeleteCommand extends Command {
 
 	private void executeWithName() {
 		for (int index = 0; index < taskList.size(); index++) {
-			if (taskList.get(index).getName().contains(name)) {
+			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
 			}
 		}

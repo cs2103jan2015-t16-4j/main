@@ -1,11 +1,9 @@
 package logic;
 
 public abstract class Command {
-	static enum CommandType{
+	public static enum CommandType{
 		ADD, DELETE, EDIT, DISPLAY, TAG, DONE, UNDO, SETPATH, INVALID, EXIT
 	}
 	
-	public void execute(){
-		
-	}
+	public abstract void execute();
 }

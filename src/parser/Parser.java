@@ -33,6 +33,8 @@ public class Parser {
 			return CommandType.UNDO;
 		} else if (commandTypeString.equalsIgnoreCase("setpath")) {
 			return CommandType.SETPATH;
+		} else if (commandTypeString.equalsIgnoreCase("help")) {
+			return CommandType.HELP;
 		} else if (commandTypeString.equalsIgnoreCase("exit")) {
 			return CommandType.EXIT;
 		} else {
@@ -58,6 +60,8 @@ public class Parser {
 			return undoParser(paras);
 		case SETPATH:
 			return setpathParser(paras);
+		case HELP:
+			return helpParser(paras);
 		case INVALID:
 			return invalidParser(paras);
 		case EXIT:
@@ -112,6 +116,15 @@ public class Parser {
 	private Command setpathParser(String paras) {
 		//TODO: check correct path
 		return new SetpathCommand(paras);
+	}
+
+	private Command helpParser(String paras) {
+//		if (paras.length() == 0){
+//			return new HelpCommand();
+//		} else {
+//			return new HelpCommand(paras);
+//		}
+		return null;
 	}
 
 	private Command invalidParser(String paras) {

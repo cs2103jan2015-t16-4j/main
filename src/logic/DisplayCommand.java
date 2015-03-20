@@ -22,6 +22,18 @@ public class DisplayCommand extends Command {
 	}
 
 	public void execute() {
+		if (keyword == null){
+			displayWithNothing();
+		} else {
+			displayWithKeyword(keyword);
+		}
+	}
+
+	private void displayWithNothing() {
+		displayWithKeyword("");
+	}
+
+	private void displayWithKeyword(String keyword) {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().toLowerCase().contains(keyword.toLowerCase())) {
 				resultTaskIndexes.add(index);

@@ -24,9 +24,9 @@ public class DeleteCommand extends Command {
 
 		
 		if (isWithId()) {
-			executeWithId();
+			executeWithId(taskId);
 		} else {
-			executeWithName();
+			executeWithName(name);
 		}
 	}
 
@@ -34,7 +34,7 @@ public class DeleteCommand extends Command {
 		return name == null;
 	}
 
-	private void executeWithId() {
+	private void executeWithId(int taskId) {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getId() == taskId) {
 				resultTaskIndexes.add(index);
@@ -50,7 +50,7 @@ public class DeleteCommand extends Command {
 		}
 	}
 
-	private void executeWithName() {
+	private void executeWithName(String name) {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);

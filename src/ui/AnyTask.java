@@ -4,6 +4,7 @@ import java.util.Scanner;
 import logic.Data;
 import database.Database;
 import logic.Display;
+import ui.Gui;
 
 public class AnyTask {
 
@@ -17,8 +18,9 @@ public class AnyTask {
 
 	private static boolean isCorrectFormat = false;
 
-	private static Scanner sc = new Scanner(System.in);
 
+
+	
 	public static void executeUserCommand(String userCommandType, String userCommand) {
 
 		if (userCommandType.equals(OPERATION_ADD)) {
@@ -59,12 +61,15 @@ public class AnyTask {
 			Display.displayMsgError();
 			System.exit(0);			
 		}
-
+		
 		while (isCorrectFormat) {
 			Display.displayMsgPrompt();
-			String command = sc.nextLine();
-			executeUserCommand(getFirstWord(command).toLowerCase(), removeFirstWord(command));
 		}
+	}
+	
+	public static void processCommand(String command){
+		executeUserCommand(getFirstWord(command).toLowerCase(), removeFirstWord(command));
+		
 	}
 	
 	private static String getFirstWord(String userCommand) {

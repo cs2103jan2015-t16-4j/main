@@ -2,6 +2,7 @@ package common;
 
 import java.util.ArrayList;
 import java.util.Date;
+import logic.Data;
 
 public class Task {
 	private int id;

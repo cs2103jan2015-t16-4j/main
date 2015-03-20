@@ -64,8 +64,8 @@ public class Database  {
 				return true;
 			}
 		} catch (IOException e) {	
-			logger.error("Error reading {}",filepath, e);
-			return false;
+			logger.info("Error reading {}",filepath, e);
+			return true;
 		}
 	}
 

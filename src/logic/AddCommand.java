@@ -8,7 +8,7 @@ import database.Database;
 public class AddCommand extends Command{
 	private Task task;
 	AddCommand(String name, Date startTime, Date endTime){
-		//need to check name is not null.
+		//TODO: check name is not null.
 		this.task = new Task(name);
 		if(startTime!=null){
 			task.setStartTime(startTime);

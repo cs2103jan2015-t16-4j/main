@@ -12,7 +12,7 @@ public class DeleteCommand extends Command {
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	
 	DeleteCommand(String name) {
-		// need to check name is not null.
+		//TODO: check name is not null.
 		this.name = name;
 	}
 
@@ -44,9 +44,9 @@ public class DeleteCommand extends Command {
 		assert (resultTaskIndexes.size() == 0 || resultTaskIndexes.size() == 1);
 		if (resultTaskIndexes.size() == 1) {
 			taskList.remove(resultTaskIndexes.get(0));
-			// return successful removal message
+			//TODO: return successful removal message
 		} else {
-			// return unsuccessful removal message
+			//TODO: return unsuccessful removal message
 		}
 	}
 
@@ -58,9 +58,9 @@ public class DeleteCommand extends Command {
 		}
 		if (resultTaskIndexes.size() == 1) {
 			taskList.remove(resultTaskIndexes.get(0));
-			// return successful removal message
+			//TODO: return successful removal message
 		} else {
-			// return unsuccessful removal message
+			//TODO: return unsuccessful removal message
 		}
 	}
 }

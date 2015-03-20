@@ -19,7 +19,7 @@ public class EditCommand extends Command {
 	public void execute() {
 
 		for (int index = 0; index < taskList.size(); index++) {
-			if (taskList.get(index).getName() == oldName) {
+			if (taskList.get(index).getName().contains(oldName)) {
 				resultTaskIndexes.add(index);
 			}
 		}

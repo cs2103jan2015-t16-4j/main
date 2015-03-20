@@ -1,6 +1,7 @@
 package ui;
 import java.util.Scanner;
 
+import parser.Parser;
 import logic.Data;
 import database.Database;
 import logic.Display;
@@ -15,6 +16,7 @@ public class AnyTask {
 	private static final String OPERATION_DELETE = "delete";
 	private static final String OPERATION_EXIT = "exit";
 	private static final String OPERATION_SAVE = "save";
+	private static Scanner sc = new Scanner(System.in);
 
 	private static boolean isCorrectFormat = false;
 
@@ -64,12 +66,15 @@ public class AnyTask {
 		
 		while (isCorrectFormat) {
 			Display.displayMsgPrompt();
+			String command = sc.nextLine();
+			processCommand(command);
 		}
 	}
 	
 	public static void processCommand(String command){
-		executeUserCommand(getFirstWord(command).toLowerCase(), removeFirstWord(command));
-		
+//		executeUserCommand(getFirstWord(command).toLowerCase(), removeFirstWord(command));
+		Parser p = new Parser(command);
+		p.parseInput();
 	}
 	
 	private static String getFirstWord(String userCommand) {

@@ -8,7 +8,7 @@ public class Task {
 	private String name;
 	private Date startTime;
 	private Date endTime;
-	private ArrayList<String> tags;
+	private ArrayList<String> tags = new ArrayList<String>();
 	
 	public Task(String name){
 		this.name = name;

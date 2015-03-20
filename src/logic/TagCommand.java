@@ -8,7 +8,7 @@ import database.Database;
 
 public class TagCommand extends Command{
 	private String name;
-	private ArrayList<String> tags;
+	private ArrayList<String> tags = new ArrayList<String>();
 	private ArrayList<Task> taskList = Database.getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	

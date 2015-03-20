@@ -6,7 +6,7 @@ import logic.Command.CommandType;
 public class Parser {
 	private String commandString;
 	
-	Parser(String cmd){
+	public Parser(String cmd){
 		this.commandString = cmd;
 	}
 	

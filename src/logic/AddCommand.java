@@ -7,7 +7,7 @@ import database.Database;
 
 public class AddCommand extends Command{
 	private Task task;
-	AddCommand(String name, Date startTime, Date endTime){
+	public AddCommand(String name, Date startTime, Date endTime){
 		//TODO: check name is not null.
 		this.task = new Task(name);
 		if(startTime!=null){

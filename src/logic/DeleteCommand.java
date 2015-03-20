@@ -11,12 +11,12 @@ public class DeleteCommand extends Command {
 	private ArrayList<Task> taskList = Database.getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	
-	DeleteCommand(String name) {
+	public DeleteCommand(String name) {
 		//TODO: check name is not null.
 		this.name = name;
 	}
 
-	DeleteCommand(int taskId) {
+	public DeleteCommand(int taskId) {
 		this.taskId = taskId;
 	}
 

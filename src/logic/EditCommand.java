@@ -11,7 +11,7 @@ public class EditCommand extends Command {
 	private ArrayList<Task> taskList = Database.getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	
-	EditCommand(String oldName, String newName) {
+	public EditCommand(String oldName, String newName) {
 		this.oldName = oldName;
 		this.newName = newName;
 	}

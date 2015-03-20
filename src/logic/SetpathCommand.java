@@ -4,7 +4,7 @@ import database.Database;
 
 public class SetpathCommand extends Command{
 	private String path;
-	SetpathCommand(String path){
+	public SetpathCommand(String path){
 		this.path = path;
 	}
 	

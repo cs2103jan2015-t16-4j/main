@@ -3,7 +3,7 @@ package logic;
 import database.Database;
 
 public class ExitCommand extends Command{
-	ExitCommand(){
+	public ExitCommand(){
 		
 	}
 	

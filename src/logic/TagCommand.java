@@ -12,7 +12,7 @@ public class TagCommand extends Command{
 	private ArrayList<Task> taskList = Database.getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	
-	TagCommand(String name, String[] tags){
+	public TagCommand(String name, String[] tags){
 		this.name = name;
 		// TODO: check correct tag format
 		for (String tag: tags){

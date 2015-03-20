@@ -13,11 +13,11 @@ public class DisplayCommand extends Command {
 	private ArrayList<Task> taskList = Database.getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 
-	DisplayCommand() {
+	public DisplayCommand() {
 
 	}
 
-	DisplayCommand(String keyword) {
+	public DisplayCommand(String keyword) {
 		this.keyword = keyword;
 	}
 

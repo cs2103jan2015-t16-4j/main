@@ -1,7 +1,7 @@
 package logic;
 
 public class InvalidCommand extends Command{
-	InvalidCommand(){
+	public InvalidCommand(){
 		
 	}
 	

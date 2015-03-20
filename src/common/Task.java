@@ -55,7 +55,7 @@ public class Task {
 	}
 	
 	public boolean isDone(){
-		return tags.contains("done");
+		return tags.contains("#done");
 	}
 	
 	public boolean isDue(){

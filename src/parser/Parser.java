@@ -11,36 +11,36 @@ public class Parser {
 	}
 	
 	public void parseInput(){
-		CommandType commandType = this.determineCommandType(getFirstWord(commandString));
+		CommandType commandType = CommandType.fromString(getFirstWord(commandString));
 		Command cmd = this.parseInput(commandType, removeFirstWord(commandString));
 		cmd.execute();
 	}
 	
-	private CommandType determineCommandType(String commandTypeString) {
-		if (commandTypeString.equalsIgnoreCase("add")) {
-			return CommandType.ADD;
-		} else if (commandTypeString.equalsIgnoreCase("delete")) {
-			return CommandType.DELETE;
-		} else if (commandTypeString.equalsIgnoreCase("edit")) {
-			return CommandType.EDIT;
-		} else if (commandTypeString.equalsIgnoreCase("display")) {
-			return CommandType.DISPLAY;
-		} else if (commandTypeString.equalsIgnoreCase("tag")) {
-			return CommandType.TAG;
-		} else if (commandTypeString.equalsIgnoreCase("done")) {
-			return CommandType.DONE;
-		} else if (commandTypeString.equalsIgnoreCase("undo")) {
-			return CommandType.UNDO;
-		} else if (commandTypeString.equalsIgnoreCase("setpath")) {
-			return CommandType.SETPATH;
-		} else if (commandTypeString.equalsIgnoreCase("help")) {
-			return CommandType.HELP;
-		} else if (commandTypeString.equalsIgnoreCase("exit")) {
-			return CommandType.EXIT;
-		} else {
-			return CommandType.INVALID;
-		}
-	}
+//	private CommandType determineCommandType(String commandTypeString) {
+//		if (commandTypeString.equalsIgnoreCase("add")) {
+//			return CommandType.ADD;
+//		} else if (commandTypeString.equalsIgnoreCase("delete")) {
+//			return CommandType.DELETE;
+//		} else if (commandTypeString.equalsIgnoreCase("edit")) {
+//			return CommandType.EDIT;
+//		} else if (commandTypeString.equalsIgnoreCase("display")) {
+//			return CommandType.DISPLAY;
+//		} else if (commandTypeString.equalsIgnoreCase("tag")) {
+//			return CommandType.TAG;
+//		} else if (commandTypeString.equalsIgnoreCase("done")) {
+//			return CommandType.DONE;
+//		} else if (commandTypeString.equalsIgnoreCase("undo")) {
+//			return CommandType.UNDO;
+//		} else if (commandTypeString.equalsIgnoreCase("setpath")) {
+//			return CommandType.SETPATH;
+//		} else if (commandTypeString.equalsIgnoreCase("help")) {
+//			return CommandType.HELP;
+//		} else if (commandTypeString.equalsIgnoreCase("exit")) {
+//			return CommandType.EXIT;
+//		} else {
+//			return CommandType.INVALID;
+//		}
+//	}
 	
 	private Command parseInput(CommandType commandType, String paras){
 		switch (commandType) {

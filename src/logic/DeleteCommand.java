@@ -6,13 +6,13 @@ import common.Task;
 import database.Database;
 
 public class DeleteCommand extends Command {
-	private String name;
+	private String name, tag;
 	private int taskId;
 	private ArrayList<Task> taskList = Database.getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
-	
+
 	public DeleteCommand(String name) {
-		//TODO: check name is not null.
+		// TODO: check name is not null.
 		this.name = name;
 	}
 
@@ -20,18 +20,20 @@ public class DeleteCommand extends Command {
 		this.taskId = taskId;
 	}
 
-	public void execute() {
-
-		
-		if (isWithId()) {
-			executeWithId(taskId);
-		} else {
-			executeWithName(name);
-		}
+	public DeleteCommand(String name, String tag) {
+		this.name = name;
+		this.tag = tag;
 	}
 
-	private boolean isWithId() {
-		return name == null;
+	public void execute() {
+
+		if (name == null) {
+			executeWithId(taskId);
+		} else if (tag == null) {
+			executeWithName(name);
+		} else {
+			executeWithTag(name, tag);
+		}
 	}
 
 	private void executeWithId(int taskId) {
@@ -44,9 +46,9 @@ public class DeleteCommand extends Command {
 		assert (resultTaskIndexes.size() == 0 || resultTaskIndexes.size() == 1);
 		if (resultTaskIndexes.size() == 1) {
 			taskList.remove(resultTaskIndexes.get(0));
-			//TODO: return successful removal message
+			// TODO: return successful removal message
 		} else {
-			//TODO: return unsuccessful removal message
+			// TODO: return unsuccessful removal message
 		}
 	}
 
@@ -58,9 +60,23 @@ public class DeleteCommand extends Command {
 		}
 		if (resultTaskIndexes.size() == 1) {
 			taskList.remove(resultTaskIndexes.get(0));
-			//TODO: return successful removal message
+			// TODO: return successful removal message
 		} else {
-			//TODO: return unsuccessful removal message
+			// TODO: return unsuccessful removal message
+		}
+	}
+
+	private void executeWithTag(String name, String tag) {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
+				resultTaskIndexes.add(index);
+			}
+		}
+		if (resultTaskIndexes.size() == 1) {
+			taskList.get(resultTaskIndexes.get(0)).removeTag(tag);
+			// TODO: return successful removal message
+		} else {
+			// TODO: return unsuccessful removal message
 		}
 	}
 }

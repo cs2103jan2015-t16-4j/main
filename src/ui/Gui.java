@@ -61,7 +61,7 @@ public class Gui {
 	    panel.add(textField, BorderLayout.CENTER);
 		textField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				AnyTask.formatCommand(((JTextField) e.getSource()).getText());
+				AnyTask.processCommand(((JTextField) e.getSource()).getText());
 				((JTextField) e.getSource()).setText("");
 				updateVisual();				
 			}
@@ -90,6 +90,8 @@ public class Gui {
 	}
 	
 	private static void updateVisual(){
+		textArea.setText("command received");
+		//model.setData(new ArrayList<Task>());
 		updateTable();
 	}
 	

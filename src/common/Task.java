@@ -1,77 +1,94 @@
 package common;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 
 public class Task {
 	private int id;
 	private String name;
-	private Date startTime;
-	private Date endTime;
+	private Calendar startTime;
+	private Calendar endTime;
 	private ArrayList<String> tags = new ArrayList<String>();
-	
-	public Task(String name){
+
+	public Task(String name) {
 		this.name = name;
 	}
-	
-	public int getId(){
+
+	public int getId() {
 		return id;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
-	
-	public ArrayList<String> getTags(){
+
+	public ArrayList<String> getTags() {
 		return tags;
 	}
-	
-	public Date getStartTime(){
+
+	public Calendar getStartTime() {
 		return startTime;
 	}
-	
-	public Date getEndTime(){
+
+	public Calendar getEndTime() {
 		return endTime;
 	}
-	
-	public void addTag(String newTag){
+
+	public void addTag(String newTag) {
 		tags.add(newTag);
 	}
-	
-	public void addTags(ArrayList<String> newTags){
+
+	public void addTags(ArrayList<String> newTags) {
 		tags.addAll(newTags);
 	}
-	
-	public void setStartTime(Date startTime){
+
+	public void setStartTime(Calendar startTime) {
 		this.startTime = startTime;
 	}
-	
-	public void setEndTime(Date endTime){
+
+	public void setEndTime(Calendar endTime) {
 		this.endTime = endTime;
 	}
-	
-	public void setName(String name){
+
+	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public boolean isDone(){
+
+	public void removeTag(String tag) {
+		if (tags.contains(tag)) {
+			tags.remove(tag);
+		}
+	}
+
+	public void replaceTag(String oldTag, String newTag) {
+		if (tags.contains(oldTag)) {
+			tags.remove(oldTag);
+			tags.add(newTag);
+		}
+	}
+
+	public boolean isDone() {
 		return tags.contains("#done");
 	}
-	
-	public boolean isDue(){
-		Date now = new Date();
+
+	public boolean isDue() {
+		Calendar now = Calendar.getInstance();
 		return now.before(endTime);
 	}
-	
-	public boolean isFloating(){
-		return (startTime==null)&&(endTime==null);
+
+	public boolean isFloating() {
+		return (startTime == null) && (endTime == null);
 	}
-	
-	public boolean isDeadline(){
-		return (startTime==null)&&(endTime!=null);
+
+	public boolean isDeadline() {
+		return (startTime == null) && (endTime != null);
 	}
-	
-	public boolean isTentative(){
-		return (startTime!=null)&&(endTime!=null);
+
+	public boolean isScheduled() {
+		return (startTime != null) && (endTime != null);
+	}
+
+	public boolean isContainedTag(String tag) {
+		return tags.contains(tag);
 	}
 }

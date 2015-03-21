@@ -5,11 +5,14 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import logic.Data;
 import common.Task;
 
 public class TaskTableModel extends AbstractTableModel {
-    private String[] columnNames = {"id","Name","Start","End","Tags"};
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String[] columnNames = {"id","Name","Start","End","Tags"};
     private Class<?>[] columnTypes = {String.class,String.class,Time.class,Time.class,ArrayList.class};
     private ArrayList<Task> data;
     
@@ -19,6 +22,10 @@ public class TaskTableModel extends AbstractTableModel {
     public static final int    END_COL = 3;
     public static final int    TAGS_COL = 4;
 
+    public void setData(ArrayList<Task> data){
+    	this.data=data;
+    }
+    
     public Class<?> getColumnClass(int col) {
         return columnTypes[col];
     }
@@ -37,23 +44,37 @@ public class TaskTableModel extends AbstractTableModel {
 
     public Object getValueAt(int row, int col) {
     	Task task =data.get(row);
-    	 
-        switch(col)
-        {
-        case ID_COL : return task.getId();
-        case NAME_COL : return task.getName();
-        case START_COL : return task.getStartTime();
-        case END_COL : return task.getEndTime();
-        case TAGS_COL : return task.getTags();
-        }
-
+    	
+    	
+    	if(col==ID_COL){
+    		return task.getId();
+    		
+    	} else if(col==NAME_COL){
+    		return task.getName();
+    		
+    	} else if (col==START_COL){
+    		return task.getStartTime();
+    		
+    	} else if (col==END_COL){
+    		return task.getEndTime();
+    		
+    	} else if (col==TAGS_COL){
+    		ArrayList<String> tags=task.getTags();
+    		String tagString="";
+    		if(tags!=null&&!tags.isEmpty()){
+	    		for(int i=0; i<tags.size();i++){
+	    			tagString+=tags.get(i);
+	    		}
+    		}
+    		return tagString;
+    	}
+      
         return "";
     }
     
     public TaskTableModel(ArrayList<Task> taskList)
     {
         super();
-
         data = taskList;
     }
 

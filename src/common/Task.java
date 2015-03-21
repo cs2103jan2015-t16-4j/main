@@ -54,6 +54,19 @@ public class Task {
 		this.name = name;
 	}
 	
+	public void removeTag(String tag){
+		if(tags.contains(tag)){
+			tags.remove(tag);
+		}
+	}
+	
+	public void replaceTag(String oldTag, String newTag){
+		if(tags.contains(oldTag)){
+			tags.remove(oldTag);
+			tags.add(newTag);
+		}
+	}
+	
 	public boolean isDone(){
 		return tags.contains("#done");
 	}
@@ -73,5 +86,9 @@ public class Task {
 	
 	public boolean isScheduled(){
 		return (startTime!=null)&&(endTime!=null);
+	}
+	
+	public boolean isContainedTag(String tag){
+		return tags.contains(tag);
 	}
 }

@@ -71,7 +71,7 @@ public class Task {
 		return (startTime==null)&&(endTime!=null);
 	}
 	
-	public boolean isTentative(){
+	public boolean isScheduled(){
 		return (startTime!=null)&&(endTime!=null);
 	}
 }

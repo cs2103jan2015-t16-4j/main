@@ -1,13 +1,13 @@
 package common;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 
 public class Task {
 	private int id;
 	private String name;
-	private Date startTime;
-	private Date endTime;
+	private Calendar startTime;
+	private Calendar endTime;
 	private ArrayList<String> tags = new ArrayList<String>();
 	
 	public Task(String name){
@@ -26,11 +26,11 @@ public class Task {
 		return tags;
 	}
 	
-	public Date getStartTime(){
+	public Calendar getStartTime(){
 		return startTime;
 	}
 	
-	public Date getEndTime(){
+	public Calendar getEndTime(){
 		return endTime;
 	}
 	
@@ -42,11 +42,11 @@ public class Task {
 		tags.addAll(newTags);
 	}
 	
-	public void setStartTime(Date startTime){
+	public void setStartTime(Calendar startTime){
 		this.startTime = startTime;
 	}
 	
-	public void setEndTime(Date endTime){
+	public void setEndTime(Calendar endTime){
 		this.endTime = endTime;
 	}
 	
@@ -59,7 +59,7 @@ public class Task {
 	}
 	
 	public boolean isDue(){
-		Date now = new Date();
+		Calendar now = Calendar.getInstance();
 		return now.before(endTime);
 	}
 	

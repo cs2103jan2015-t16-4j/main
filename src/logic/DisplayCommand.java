@@ -22,7 +22,7 @@ public class DisplayCommand extends Command {
 	}
 
 	public void execute() {
-		if (keyword == null){
+		if (keyword == null) {
 			displayWithNothing();
 		} else {
 			displayWithKeyword(keyword);
@@ -35,20 +35,22 @@ public class DisplayCommand extends Command {
 
 	private void displayWithKeyword(String keyword) {
 		for (int index = 0; index < taskList.size(); index++) {
-			if (taskList.get(index).getName().toLowerCase().contains(keyword.toLowerCase())) {
+			if (taskList.get(index).getName().toLowerCase()
+					.contains(keyword.toLowerCase())) {
 				resultTaskIndexes.add(index);
 			}
 		}
 
 		if (resultTaskIndexes.size() > 0) {
 			System.out.print("Task ID. Task Name. IsDone. Tags\n");
-			
+
 			for (int index = 0; index < resultTaskIndexes.size(); index++) {
 				System.out.printf(MESSAGE_DISPLAY_NOT_EMPTY,
 						taskList.get(resultTaskIndexes.get(index)).getId(),
 						taskList.get(resultTaskIndexes.get(index)).getName(),
 						taskList.get(resultTaskIndexes.get(index)).isDone(),
-						taskList.get(resultTaskIndexes.get(index)).getTags().toString());
+						taskList.get(resultTaskIndexes.get(index)).getTags()
+								.toString());
 			}
 		} else {
 			System.out.printf(MESSAGE_DISPLAY_EMPTY, keyword);

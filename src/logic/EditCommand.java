@@ -11,32 +11,32 @@ public class EditCommand extends Command {
 	private ArrayList<Task> taskList = Database.getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	private Calendar newDeadline;
-	
+
 	public EditCommand(String oldName, String newName) {
 		this.name = oldName;
 		this.newName = newName;
 	}
-	
-	public EditCommand(String name, Calendar newDeadline){
+
+	public EditCommand(String name, Calendar newDeadline) {
 		this.name = name;
 		this.newDeadline = newDeadline;
 	}
-	
-	public EditCommand(String name, String oldTag, String newTag){
+
+	public EditCommand(String name, String oldTag, String newTag) {
 		this.name = name;
 		this.oldTag = oldTag;
 		this.newTag = newTag;
 	}
 
 	public void execute() {
-		if (newName != null){
+		if (newName != null) {
 			editName(name, newName);
-		} else if (newDeadline != null){
+		} else if (newDeadline != null) {
 			editDeadline(name, newDeadline);
 		} else if (newTag != null) {
 			editTag(name, oldTag, newTag);
 		}
-		
+
 	}
 
 	private void editTag(String name, String oldTag, String newTag) {
@@ -46,14 +46,15 @@ public class EditCommand extends Command {
 			}
 		}
 		if (resultTaskIndexes.size() == 1) {
-			if(taskList.get(resultTaskIndexes.get(0)).isContainedTag(oldTag)){
-				taskList.get(resultTaskIndexes.get(0)).replaceTag(oldTag, newTag);
-				//TODO: return successful edit message
+			if (taskList.get(resultTaskIndexes.get(0)).isContainedTag(oldTag)) {
+				taskList.get(resultTaskIndexes.get(0)).replaceTag(oldTag,
+						newTag);
+				// TODO: return successful edit message
 			} else {
-				//TODO: return unsuccessful edit message
+				// TODO: return unsuccessful edit message
 			}
 		} else {
-			//TODO: return unsuccessful edit message
+			// TODO: return unsuccessful edit message
 		}
 	}
 
@@ -65,9 +66,9 @@ public class EditCommand extends Command {
 		}
 		if (resultTaskIndexes.size() == 1) {
 			taskList.get(resultTaskIndexes.get(0)).setEndTime(newDeadline);
-			//TODO: return successful edit message
+			// TODO: return successful edit message
 		} else {
-			//TODO: return unsuccessful edit message
+			// TODO: return unsuccessful edit message
 		}
 	}
 
@@ -79,9 +80,9 @@ public class EditCommand extends Command {
 		}
 		if (resultTaskIndexes.size() == 1) {
 			taskList.get(resultTaskIndexes.get(0)).setName(newName);
-			//TODO: return successful edit message
+			// TODO: return successful edit message
 		} else {
-			//TODO: return unsuccessful edit message
+			// TODO: return unsuccessful edit message
 		}
 	}
 }

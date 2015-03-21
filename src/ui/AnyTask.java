@@ -67,7 +67,7 @@ public class AnyTask {
 		}
 	}
 	
-	public static void processCommand(String command){
+	public static void formatCommand(String command){
 		executeUserCommand(getFirstWord(command).toLowerCase(), removeFirstWord(command));
 		
 	}

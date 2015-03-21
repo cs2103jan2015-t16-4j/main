@@ -2,14 +2,13 @@ package common;
 
 import java.util.ArrayList;
 import java.util.Date;
-import logic.Data;
 
 public class Task {
 	private int id;
 	private String name;
 	private Date startTime;
 	private Date endTime;
-	private ArrayList<String> tags;
+	private ArrayList<String> tags = new ArrayList<String>();
 	
 	public Task(String name){
 		this.name = name;
@@ -51,8 +50,12 @@ public class Task {
 		this.endTime = endTime;
 	}
 	
+	public void setName(String name){
+		this.name = name;
+	}
+	
 	public boolean isDone(){
-		return tags.contains("done");
+		return tags.contains("#done");
 	}
 	
 	public boolean isDue(){

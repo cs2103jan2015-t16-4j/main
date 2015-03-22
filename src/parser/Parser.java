@@ -1,7 +1,7 @@
 package parser;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+//import java.text.ParseException;
+//import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -161,6 +161,18 @@ public class Parser {
 		return new ExitCommand();
 	}
 
+	private Calendar parseDate(String dateString) {
+		return DateParser.datePaser(dateString);
+//		SimpleDateFormat dateSdf = new SimpleDateFormat("dd/MM/yyyy");
+//		Calendar dateCalendar = Calendar.getInstance();
+//		try {
+//			dateCalendar.setTime(dateSdf.parse(dateString));
+//		} catch (ParseException e) {
+//			return null;
+//		}
+//		return dateCalendar;
+	}
+
 	private boolean isAddFloatingTask(String paras) {
 		return paras != CONSTANT_EMPTY_STRING;
 	}
@@ -185,6 +197,7 @@ public class Parser {
 		} catch (Exception e1) {
 			return new InvalidCommand(commandString);
 		}
+		
 		Calendar beginTimeCalendar = parseDate(beginTimeString);
 		Calendar endTimeCalendar = parseDate(endTimeString);
 
@@ -210,17 +223,6 @@ public class Parser {
 		} else {
 			return new InvalidCommand(commandString);
 		}
-	}
-
-	private Calendar parseDate(String dateString) {
-		SimpleDateFormat dateSdf = new SimpleDateFormat("dd/MM/yyyy");
-		Calendar dateCalendar = Calendar.getInstance();
-		try {
-			dateCalendar.setTime(dateSdf.parse(dateString));
-		} catch (ParseException e) {
-			return null;
-		}
-		return dateCalendar;
 	}
 
 	private boolean isDeleteTaskWithName(String paras) {
@@ -272,7 +274,7 @@ public class Parser {
 		
 		Calendar newEndTimeCalendar = parseDate(newEndTimeString);
 		if (newEndTimeCalendar != null) {
-			return new AddCommand(name, null, newEndTimeCalendar);
+			return new EditCommand(name, null, newEndTimeCalendar);
 		} else {
 			return new InvalidCommand(commandString);
 		}
@@ -290,7 +292,7 @@ public class Parser {
 		
 		Calendar newStartTimeCalendar = parseDate(newStartTimeString);
 		if (newStartTimeCalendar != null) {
-			return new AddCommand(name, null, newStartTimeCalendar);
+			return new EditCommand(name, newStartTimeCalendar, null);
 		} else {
 			return new InvalidCommand(commandString);
 		}
@@ -308,7 +310,7 @@ public class Parser {
 		
 		Calendar newDeadlineCalendar = parseDate(newDeadlineString);
 		if (newDeadlineCalendar != null) {
-			return new AddCommand(name, null, newDeadlineCalendar);
+			return new EditCommand(name, null, newDeadlineCalendar);
 		} else {
 			return new InvalidCommand(commandString);
 		}

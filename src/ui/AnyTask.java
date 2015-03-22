@@ -91,10 +91,11 @@ public class AnyTask {
 	}
 
 	private static void displayResults(ArrayList<Task> taskList) {
-		if (taskList.size() > 0) {
+		if (taskList == null){
+		} else if (taskList.size() > 0) {
 			System.out.printf("%-10s %-10s %-20s %-10s\n", "Task ID",
 					"Task Name", "End Time", "Tags");
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 			for (int index = 0; index < taskList.size(); index++) {
 				System.out.printf(

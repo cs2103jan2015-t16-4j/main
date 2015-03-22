@@ -105,7 +105,7 @@ public class Gui {
 		while (true) {
 			Display.displayMsgPrompt();
 			String command = sc.nextLine();
-			AnyTask.formatCommand(command);
+			AnyTask.processCommand(command);
 			updateTable();
 		}
 	}

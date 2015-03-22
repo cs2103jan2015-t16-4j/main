@@ -1,3 +1,5 @@
+//@author A0119384Y
+
 package parser;
 
 //import java.text.ParseException;
@@ -74,7 +76,8 @@ public class Parser {
 		} else if (isAddFloatingTask(paras)) {
 			return new AddCommand(paras, null, null);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 
 	}
@@ -89,7 +92,8 @@ public class Parser {
 		} else if (isDeleteTaskWithName(paras)) {
 			return new DeleteCommand(paras);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 	}
 
@@ -105,7 +109,8 @@ public class Parser {
 		} else if (isEditTag(paras)) {
 			return editTag(paras);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 	}
 
@@ -120,13 +125,11 @@ public class Parser {
 	private Command tagParser(String paras) {
 		String name;
 		String[] tags;
-		try {
-			name = paras.split(KEYWORD_TAG)[0];
-			tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_TAG, 2)[1])
-					.split(CONSTANT_SPACE);
-		} catch (Exception e) {
-			return new InvalidCommand(commandString);
-		}
+
+		name = paras.split(KEYWORD_TAG)[0];
+		tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_TAG, 2)[1])
+				.split(CONSTANT_SPACE);
+
 		return new TagCommand(name, tags);
 	}
 
@@ -163,14 +166,14 @@ public class Parser {
 
 	private Calendar parseDate(String dateString) {
 		return DateParser.datePaser(dateString);
-//		SimpleDateFormat dateSdf = new SimpleDateFormat("dd/MM/yyyy");
-//		Calendar dateCalendar = Calendar.getInstance();
-//		try {
-//			dateCalendar.setTime(dateSdf.parse(dateString));
-//		} catch (ParseException e) {
-//			return null;
-//		}
-//		return dateCalendar;
+		// SimpleDateFormat dateSdf = new SimpleDateFormat("dd/MM/yyyy");
+		// Calendar dateCalendar = Calendar.getInstance();
+		// try {
+		// dateCalendar.setTime(dateSdf.parse(dateString));
+		// } catch (ParseException e) {
+		// return null;
+		// }
+		// return dateCalendar;
 	}
 
 	private boolean isAddFloatingTask(String paras) {
@@ -189,39 +192,37 @@ public class Parser {
 		String name;
 		String beginTimeString;
 		String endTimeString;
-		try {
-			name = paras.split(KEYWORD_ADD_SCHEDULED)[0];
-			String timeString = paras.split(KEYWORD_ADD_SCHEDULED)[1];
-			beginTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[0];
-			endTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[1];
-		} catch (Exception e1) {
-			return new InvalidCommand(commandString);
-		}
-		
+
+		name = paras.split(KEYWORD_ADD_SCHEDULED)[0];
+		String timeString = paras.split(KEYWORD_ADD_SCHEDULED)[1];
+		beginTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[0];
+		endTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[1];
+
 		Calendar beginTimeCalendar = parseDate(beginTimeString);
 		Calendar endTimeCalendar = parseDate(endTimeString);
 
-		if (beginTimeCalendar!=null && endTimeString != null) {
+		if (beginTimeCalendar != null && endTimeCalendar != null
+				&& beginTimeCalendar.before(endTimeCalendar)) {
 			return new AddCommand(name, beginTimeCalendar, endTimeCalendar);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command addTaskWithDeadline(String paras) {
 		String name;
 		String deadlineString;
-		try {
-			name = paras.split(KEYWORD_ADD_DEADLINE)[0];
-			deadlineString = paras.split(KEYWORD_ADD_DEADLINE)[1];
-		} catch (Exception e) {
-			return new InvalidCommand(commandString);
-		}
+
+		name = paras.split(KEYWORD_ADD_DEADLINE)[0];
+		deadlineString = paras.split(KEYWORD_ADD_DEADLINE)[1];
+
 		Calendar deadlineCalendar = parseDate(deadlineString);
 		if (deadlineCalendar != null) {
 			return new AddCommand(name, null, deadlineCalendar);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 	}
 
@@ -265,66 +266,58 @@ public class Parser {
 	private Command editEndTime(String paras) {
 		String name;
 		String newEndTimeString;
-		try {
-			name = paras.split(KEYWORD_EDIT_END_TIME)[0];
-			newEndTimeString = paras.split(KEYWORD_EDIT_END_TIME)[1];
-		} catch (Exception e1) {
-			return new InvalidCommand(commandString);
-		}
-		
+
+		name = paras.split(KEYWORD_EDIT_END_TIME)[0];
+		newEndTimeString = paras.split(KEYWORD_EDIT_END_TIME)[1];
+
 		Calendar newEndTimeCalendar = parseDate(newEndTimeString);
 		if (newEndTimeCalendar != null) {
 			return new EditCommand(name, null, newEndTimeCalendar);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command editStartTime(String paras) {
 		String name;
 		String newStartTimeString;
-		try {
-			name = paras.split(KEYWORD_EDIT_START_TIME)[0];
-			newStartTimeString = paras.split(KEYWORD_EDIT_START_TIME)[1];
-		} catch (Exception e1) {
-			return new InvalidCommand(commandString);
-		}
-		
+
+		name = paras.split(KEYWORD_EDIT_START_TIME)[0];
+		newStartTimeString = paras.split(KEYWORD_EDIT_START_TIME)[1];
+
 		Calendar newStartTimeCalendar = parseDate(newStartTimeString);
 		if (newStartTimeCalendar != null) {
 			return new EditCommand(name, newStartTimeCalendar, null);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command editDeadline(String paras) {
 		String name;
 		String newDeadlineString;
-		try {
-			name = paras.split(KEYWORD_EDIT_DEADLINE)[0];
-			newDeadlineString = paras.split(KEYWORD_EDIT_DEADLINE)[1];
-		} catch (Exception e1) {
-			return new InvalidCommand(commandString);
-		}
-		
+
+		name = paras.split(KEYWORD_EDIT_DEADLINE)[0];
+		newDeadlineString = paras.split(KEYWORD_EDIT_DEADLINE)[1];
+
 		Calendar newDeadlineCalendar = parseDate(newDeadlineString);
 		if (newDeadlineCalendar != null) {
 			return new EditCommand(name, null, newDeadlineCalendar);
 		} else {
-			return new InvalidCommand(commandString);
+			return null;
+			// return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command editName(String paras) {
 		String oldName;
 		String newName;
-		try {
-			oldName = paras.split(KEYWORD_EDIT_NAME)[0];
-			newName = paras.split(KEYWORD_EDIT_NAME)[1];
-		} catch (Exception e) {
-			return new InvalidCommand(commandString);
-		}
+
+		oldName = paras.split(KEYWORD_EDIT_NAME)[0];
+		newName = paras.split(KEYWORD_EDIT_NAME)[1];
+
 		return new EditCommand(oldName, newName);
 	}
 
@@ -332,15 +325,13 @@ public class Parser {
 		String name;
 		String oldTag;
 		String newTag;
-		try {
-			name = paras.split(KEYWORD_TAG, 2)[0];
-			oldTag = CONSTANT_HASHTAG
-					+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[0];
-			newTag = CONSTANT_HASHTAG
-					+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[1];
-		} catch (Exception e) {
-			return new InvalidCommand(commandString);
-		}
+
+		name = paras.split(KEYWORD_TAG, 2)[0];
+		oldTag = CONSTANT_HASHTAG
+				+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[0];
+		newTag = CONSTANT_HASHTAG
+				+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[1];
+
 		return new EditCommand(name, oldTag, newTag);
 	}
 

@@ -13,7 +13,7 @@ public class DoneCommand extends Command {
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 
 	public DoneCommand(String name) {
-		assert (name != null);
+		assert name != null && name != "";
 		this.name = name;
 	}
 

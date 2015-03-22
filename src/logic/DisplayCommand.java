@@ -7,10 +7,11 @@ import common.Task;
 import database.Database;
 
 public class DisplayCommand extends Command {
+	private static final String CONSTANT_HASHTAG = "#";
 	private static final String MESSAGE_DISPLAY_NOT_EMPTY = "%-10d %-10s %-20s %-10s\n";
 	private static final String MESSAGE_DISPLAY_EMPTY = "no result for keyword %s.\n";
 	private static final String KEYWORD_FLOATING = "floating";
-	private static final String KEYWORD_UNDONE = "undone";
+	private static final String KEYWORD_DONE = "done";
 
 	private String keyword;
 	private ArrayList<Task> taskList = Database.getTaskList();
@@ -21,26 +22,38 @@ public class DisplayCommand extends Command {
 	}
 
 	public DisplayCommand(String keyword) {
-		assert (keyword != null);
+		assert keyword != null && keyword !="";
 		this.keyword = keyword;
 	}
 
 	public void execute() {
-		if (keyword == null) {
-			displayWithNothing();
-		} else if (keyword.equalsIgnoreCase(KEYWORD_FLOATING)) {
-			displayFloating();
-		} else if (keyword.equalsIgnoreCase(KEYWORD_UNDONE)) {
+		if (isDisplayUndone()) {
 			displayUndone();
-		} else if (keyword.substring(0, 0) == "#") {
+		} else if (isDisplayFloating()) {
+			displayFloating();
+		} else if (isDisplayDone()) {
+			displayDone();
+		} else if (isDisplayWithTag()) {
 			displayWithTag(keyword);
 		} else {
 			displayWithKeyword(keyword);
 		}
 	}
 
-	private void displayWithNothing() {
-		displayWithKeyword("");
+	private boolean isDisplayWithTag() {
+		return keyword.substring(0, 0) == CONSTANT_HASHTAG;
+	}
+
+	private boolean isDisplayDone() {
+		return keyword.equalsIgnoreCase(KEYWORD_DONE);
+	}
+
+	private boolean isDisplayFloating() {
+		return keyword.equalsIgnoreCase(KEYWORD_FLOATING);
+	}
+
+	private boolean isDisplayUndone() {
+		return keyword == null;
 	}
 
 	private void displayWithKeyword(String keyword) {
@@ -66,6 +79,15 @@ public class DisplayCommand extends Command {
 	private void displayFloating() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).isFloating()) {
+				resultTaskIndexes.add(index);
+			}
+		}
+		displayResults(resultTaskIndexes, keyword);
+	}
+
+	private void displayDone() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).isDone()) {
 				resultTaskIndexes.add(index);
 			}
 		}

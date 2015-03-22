@@ -14,10 +14,17 @@ public class TagCommand extends Command{
 	
 	public TagCommand(String name, String[] tags){
 		this.name = name;
-		// TODO: check correct tag format
 		for (String tag: tags){
+			tag = formatTag(tag);
 			this.tags.add(tag.toLowerCase());
 		}
+	}
+
+	private String formatTag(String tag) {
+		if(tag.subSequence(0, 0) != "#"){
+			tag = "#" + tag;
+		}
+		return tag;
 	}
 	
 	public void execute(){

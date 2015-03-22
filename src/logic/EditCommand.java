@@ -13,16 +13,26 @@ public class EditCommand extends Command {
 	private Calendar newDeadline;
 
 	public EditCommand(String oldName, String newName) {
+		assert oldName != null && oldName !="";
+		assert newName != null && newName !="";
+		
 		this.name = oldName;
 		this.newName = newName;
 	}
 
 	public EditCommand(String name, Calendar newDeadline) {
+		assert name != null && name !="";
+		assert newDeadline != null;
+		
 		this.name = name;
 		this.newDeadline = newDeadline;
 	}
 
 	public EditCommand(String name, String oldTag, String newTag) {
+		assert name != null && name !="";
+		assert oldTag != null && oldTag !="";
+		assert newTag != null && newTag !="";
+		
 		this.name = name;
 		this.oldTag = oldTag;
 		this.newTag = newTag;
@@ -30,14 +40,28 @@ public class EditCommand extends Command {
 
 	public void execute() {
 		assert (name != null);
-		if (newName != null) {
+		if (isEditName()) {
 			editName(name, newName);
-		} else if (newDeadline != null) {
+		} else if (isEditDeadline()) {
 			editDeadline(name, newDeadline);
-		} else if (newTag != null) {
+		} else if (isEditTag()) {
 			editTag(name, oldTag, newTag);
+		} else {
+			// return invalid
 		}
 
+	}
+
+	private boolean isEditTag() {
+		return newTag != null;
+	}
+
+	private boolean isEditDeadline() {
+		return newDeadline != null;
+	}
+
+	private boolean isEditName() {
+		return newName != null;
 	}
 
 	private void editTag(String name, String oldTag, String newTag) {

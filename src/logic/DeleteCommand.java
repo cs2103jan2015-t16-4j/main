@@ -12,28 +12,46 @@ public class DeleteCommand extends Command {
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 
 	public DeleteCommand(String name) {
-		assert(name == null);
+		assert name != null;
+		assert name != "";
 		this.name = name;
 	}
 
 	public DeleteCommand(int taskId) {
+		assert taskId > 0;
 		this.taskId = taskId;
 	}
 
 	public DeleteCommand(String name, String tag) {
+		assert name != null && name != "";
+		assert tag != null && tag != "";
 		this.name = name;
 		this.tag = tag;
 	}
 
 	public void execute() {
 
-		if (name == null) {
+		if (isDeleteTaskWithId()) {
 			executeWithId(taskId);
-		} else if (tag == null) {
+		} else if (isDeleteTaskWithName()) {
 			executeWithName(name);
-		} else {
+		} else if (isDeleteTagWithName()){
 			executeWithTag(name, tag);
+		} else {
+			//return invalid
 		}
+	}
+
+	private boolean isDeleteTagWithName() {
+		return name != null && tag == null;
+	}
+
+	private boolean isDeleteTaskWithName() {
+		return tag == null;
+	}
+
+	private boolean isDeleteTaskWithId() {
+		return name == null;
 	}
 
 	private void executeWithId(int taskId) {
@@ -48,7 +66,7 @@ public class DeleteCommand extends Command {
 			taskList.remove(taskList.get(resultTaskIndexes.get(0)));
 			// TODO: return successful removal message
 		} else {
-			// TODO: return unsuccessful removal message
+			executeWithName(String.valueOf(taskId));
 		}
 	}
 

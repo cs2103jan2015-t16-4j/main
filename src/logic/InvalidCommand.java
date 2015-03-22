@@ -7,7 +7,6 @@ public class InvalidCommand extends Command{
 	}
 	
 	public void execute(){
-		//TODO: return error message
 		System.out.println("Command invalid: "+userCommand);
 	}
 }

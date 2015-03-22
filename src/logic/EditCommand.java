@@ -29,6 +29,7 @@ public class EditCommand extends Command {
 	}
 
 	public void execute() {
+		assert (name != null);
 		if (newName != null) {
 			editName(name, newName);
 		} else if (newDeadline != null) {

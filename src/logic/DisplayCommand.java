@@ -21,6 +21,7 @@ public class DisplayCommand extends Command {
 	}
 
 	public DisplayCommand(String keyword) {
+		assert (keyword != null);
 		this.keyword = keyword;
 	}
 
@@ -92,9 +93,8 @@ public class DisplayCommand extends Command {
 						MESSAGE_DISPLAY_NOT_EMPTY,
 						taskList.get(resultTaskIndexes.get(index)).getId(),
 						taskList.get(resultTaskIndexes.get(index)).getName(),
-						(taskList
-								.get(resultTaskIndexes.get(index)).getEndTime()
-								!= null) ? format.format(taskList
+						(taskList.get(resultTaskIndexes.get(index))
+								.getEndTime() != null) ? format.format(taskList
 								.get(resultTaskIndexes.get(index)).getEndTime()
 								.getTime()) : "none",
 						taskList.get(resultTaskIndexes.get(index)).getTags());

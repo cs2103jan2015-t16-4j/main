@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import common.Task;
+import common.Settings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -19,8 +20,29 @@ import com.google.gson.reflect.TypeToken;
 public class Database  {
 	private static String filepath = "anytasklist.txt";
 	private static ArrayList<Task> taskList = new ArrayList<Task>();
-
+	private static int id=-1;
+	
 	final static Logger logger = LoggerFactory.getLogger(Database.class);
+	
+	public static int getId(){
+		setIdFromList();
+		return id;
+	}
+	
+	public static void setId(int newId){
+		id=newId;
+	}
+	
+	private static void setIdFromList(){
+		int taskid;
+		id=0;
+		for(int i=0;i<taskList.size();i++){
+			taskid=taskList.get(i).getId();
+			if (id<taskList.get(i).getId()){
+				id=taskid;
+			}
+		}
+	}
 	
 	public static ArrayList<Task> getTaskList() {
 		assert (taskList!=null);
@@ -35,7 +57,9 @@ public class Database  {
 		saveTasksToFile();
 		filepath = userText;
 		taskList.clear();
-		fetchTasksFromFile();
+		if(fetchTasksFromFile()){
+			Settings.setFilePath(filepath);
+		}
 	}
 	
 	public static boolean clearFile() {
@@ -53,11 +77,12 @@ public class Database  {
 	
 	public static boolean fetchTasksFromFile() {
 		boolean isFileRead=false;
+		Settings.setFilePath(filepath);
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filepath));
 			if (br.ready()) {
 				isFileRead= readJsonFile(br);
-				br.close();		
+				br.close();
 				return isFileRead;
 			} else {
 				br.close();
@@ -76,6 +101,7 @@ public class Database  {
 			if(taskList==null){
 				taskList=new ArrayList<Task>();
 			}
+			setIdFromList();
 			return true;
 		} catch (JsonParseException e) {
 			logger.error("Error reading {}: file exists but is not in json format",filepath, e);
@@ -97,4 +123,5 @@ public class Database  {
 			return false;
 		}
 	}
+	
 }

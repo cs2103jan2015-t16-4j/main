@@ -86,7 +86,7 @@ public class Parser {
 	}
 
 	private Command addParser(String paras) {
-		
+
 		if (paras.toLowerCase().contains(KEYWORD_ADD_DEADLINE)) {
 			String name;
 			String deadlineString;
@@ -136,8 +136,12 @@ public class Parser {
 				return new InvalidCommand(commandString);
 			}
 			return new AddCommand(name, beginTimeCalendar, endTimeCalendar);
+		} else if (paras != "") {
+			return new AddCommand(paras, null, null);
+		} else {
+			return new InvalidCommand(commandString);
 		}
-		return new AddCommand(paras, null, null);
+
 	}
 
 	private Command deleteParser(String paras) {
@@ -147,8 +151,10 @@ public class Parser {
 			String name = paras.split(KEYWORD_DELETE_TAG)[0];
 			String tag = "#" + paras.split(KEYWORD_DELETE_TAG)[1];
 			return new DeleteCommand(name, tag);
-		} else {
+		} else if (paras != "") {
 			return new DeleteCommand(paras);
+		} else {
+			return new InvalidCommand(commandString);
 		}
 	}
 
@@ -168,8 +174,8 @@ public class Parser {
 			String newDeadlineString;
 			try {
 				name = paras.split("\\s+" + KEYWORD_EDIT_DEADLINE + "\\s+")[0];
-				newDeadlineString = paras.split("\\s+"
-						+ KEYWORD_EDIT_DEADLINE + "\\s+")[1];
+				newDeadlineString = paras.split("\\s+" + KEYWORD_EDIT_DEADLINE
+						+ "\\s+")[1];
 			} catch (Exception e1) {
 				return new InvalidCommand(commandString);
 			}
@@ -216,7 +222,7 @@ public class Parser {
 		String[] tags;
 		try {
 			name = paras.split(KEYWORD_TAG)[0];
-			tags = ("#"+paras.split(KEYWORD_TAG, 2)[1]).split("\\s+");
+			tags = ("#" + paras.split(KEYWORD_TAG, 2)[1]).split("\\s+");
 		} catch (Exception e) {
 			return new InvalidCommand(commandString);
 		}

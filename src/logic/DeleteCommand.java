@@ -12,7 +12,7 @@ public class DeleteCommand extends Command {
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 
 	public DeleteCommand(String name) {
-		// TODO: check name is not null.
+		assert(name == null);
 		this.name = name;
 	}
 

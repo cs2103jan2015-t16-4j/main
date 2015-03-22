@@ -45,7 +45,7 @@ public class DeleteCommand extends Command {
 		}
 		assert (resultTaskIndexes.size() == 0 || resultTaskIndexes.size() == 1);
 		if (resultTaskIndexes.size() == 1) {
-			taskList.remove(taskList.remove(resultTaskIndexes.get(0)));
+			taskList.remove(taskList.get(resultTaskIndexes.get(0)));
 			// TODO: return successful removal message
 		} else {
 			// TODO: return unsuccessful removal message

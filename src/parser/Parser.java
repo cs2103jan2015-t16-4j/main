@@ -248,7 +248,7 @@ public class Parser {
 	}
 
 	private Command invalidParser(String userCommand) {
-		return new InvalidCommand(userCommand);
+		return new InvalidCommand(commandString);
 	}
 
 	private Command exitParser(String paras) {

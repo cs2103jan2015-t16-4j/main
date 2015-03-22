@@ -12,16 +12,16 @@ import logic.Command.CommandType;
 public class Parser {
 	private static final String CONSTANT_EMPTY_STRING = "";
 	private static final String CONSTANT_HASHTAG = "#";
-	private static final String CONSTANT_SPACE = "\\s+";
-	private static final String KEYWORD_ADD_DEADLINE = "\\s+by\\s";
-	private static final String KEYWORD_ADD_SCHEDULED = "\\s+from\\s+";
-	private static final String KEYWORD_ADD_SCHEDULED_2 = "\\s+to\\s+";
-	private static final String KEYWORD_EDIT_NAME = "\\s+name to\\s+";
-	private static final String KEYWORD_EDIT_DEADLINE = "\\s+deadline to\\s+";
-	private static final String KEYWORD_EDIT_TAG = "\\s+to #";
-	private static final String KEYWORD_TAG = "\\s+#";
-	private static final String KEYWORD_EDIT_START_TIME = "\\s+start time to\\s+";
-	private static final String KEYWORD_EDIT_END_TIME = "\\s+end time to\\s+";
+	private static final String CONSTANT_SPACE = " ";
+	private static final String KEYWORD_ADD_DEADLINE = " by ";
+	private static final String KEYWORD_ADD_SCHEDULED = " from ";
+	private static final String KEYWORD_ADD_SCHEDULED_2 = " to ";
+	private static final String KEYWORD_EDIT_NAME = " name to ";
+	private static final String KEYWORD_EDIT_DEADLINE = " deadline to ";
+	private static final String KEYWORD_EDIT_TAG = " to #";
+	private static final String KEYWORD_TAG = " #";
+	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
+	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
 	private String commandString;
 
 	public Parser(String cmd) {

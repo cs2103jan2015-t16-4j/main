@@ -22,7 +22,7 @@ public class TagCommand extends Command{
 	}
 
 	private String formatTag(String tag) {
-		if(tag.subSequence(0, 0) != "#"){
+		if(!tag.startsWith("#")){
 			tag = "#" + tag;
 		}
 		return tag;

@@ -27,7 +27,7 @@ public class TagCommand extends Command{
 		return tag;
 	}
 	
-	public void execute(){
+	public ArrayList<Task> execute(){
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
@@ -35,9 +35,13 @@ public class TagCommand extends Command{
 		}
 		if (resultTaskIndexes.size() == 1) {
 			taskList.get(resultTaskIndexes.get(0)).addTags(tags);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
 			//TODO: return successful tag message
 		} else {
 			//TODO: return unsuccessful tag message
+			return null;
 		}
 	}
 }

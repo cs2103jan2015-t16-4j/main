@@ -29,16 +29,17 @@ public class DeleteCommand extends Command {
 		this.tag = tag;
 	}
 
-	public void execute() {
+	public ArrayList<Task> execute() {
 
 		if (isDeleteTaskWithId()) {
-			executeWithId(taskId);
+			return executeWithId(taskId);
 		} else if (isDeleteTaskWithName()) {
-			executeWithName(name);
+			return executeWithName(name);
 		} else if (isDeleteTagWithName()){
-			executeWithTag(name, tag);
+			return executeWithTag(name, tag);
 		} else {
 			//return invalid
+			return null;
 		}
 	}
 
@@ -54,7 +55,7 @@ public class DeleteCommand extends Command {
 		return name == null;
 	}
 
-	private void executeWithId(int taskId) {
+	private ArrayList<Task> executeWithId(int taskId) {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getId() == taskId) {
 				resultTaskIndexes.add(index);
@@ -63,37 +64,48 @@ public class DeleteCommand extends Command {
 		}
 		assert (resultTaskIndexes.size() == 0 || resultTaskIndexes.size() == 1);
 		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
 			taskList.remove(taskList.get(resultTaskIndexes.get(0)));
+			return r;
 			// TODO: return successful removal message
 		} else {
-			executeWithName(String.valueOf(taskId));
+			return executeWithName(String.valueOf(taskId));
 		}
 	}
 
-	private void executeWithName(String name) {
+	private ArrayList<Task> executeWithName(String name) {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
 			}
 		}
 		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
 			taskList.remove(taskList.get(resultTaskIndexes.get(0)));
+			return r;
 			// TODO: return successful removal message
 		} else {
 			// TODO: return unsuccessful removal message
+			return null;
 		}
 	}
 
-	private void executeWithTag(String name, String tag) {
+	private ArrayList<Task> executeWithTag(String name, String tag) {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
 			}
 		}
 		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
 			taskList.get(resultTaskIndexes.get(0)).removeTag(tag);
+			return r;
 			// TODO: return successful removal message
 		} else {
+			return null;
 			// TODO: return unsuccessful removal message
 		}
 	}

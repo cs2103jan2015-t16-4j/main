@@ -1,5 +1,9 @@
 package logic;
 
+import java.util.ArrayList;
+
+import common.Task;
+
 import database.Database;
 
 public class SetpathCommand extends Command{
@@ -8,7 +12,8 @@ public class SetpathCommand extends Command{
 		this.path = path;
 	}
 	
-	public void execute(){
+	public ArrayList<Task> execute(){
 		Database.setFilePath(path);
+		return null;
 	}
 }

@@ -1,5 +1,9 @@
 package logic;
 
+import java.util.ArrayList;
+
+import common.Task;
+
 public abstract class Command {
 	public static enum CommandType {
 		ADD("add"), DELETE("delete"), EDIT("edit"), DISPLAY("display"), TAG(
@@ -28,5 +32,5 @@ public abstract class Command {
 		}
 	}
 
-	public abstract void execute();
+	public abstract ArrayList<Task> execute();
 }

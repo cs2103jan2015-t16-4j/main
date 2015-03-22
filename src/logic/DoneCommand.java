@@ -17,7 +17,7 @@ public class DoneCommand extends Command {
 		this.name = name;
 	}
 
-	public void execute() {
+	public ArrayList<Task> execute() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
@@ -25,9 +25,13 @@ public class DoneCommand extends Command {
 		}
 		if (resultTaskIndexes.size() == 1) {
 			taskList.get(resultTaskIndexes.get(0)).addTag(TAG_DONE);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
 			// TODO: return successful edit message
 		} else {
 			// TODO: return unsuccessful edit message
+			return null;
 		}
 
 	}

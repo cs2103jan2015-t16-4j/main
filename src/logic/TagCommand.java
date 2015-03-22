@@ -14,13 +14,20 @@ public class TagCommand extends Command{
 	
 	public TagCommand(String name, String[] tags){
 		this.name = name;
-		// TODO: check correct tag format
 		for (String tag: tags){
+			tag = formatTag(tag);
 			this.tags.add(tag.toLowerCase());
 		}
 	}
+
+	private String formatTag(String tag) {
+		if(tag.subSequence(0, 0) != "#"){
+			tag = "#" + tag;
+		}
+		return tag;
+	}
 	
-	public void execute(){
+	public ArrayList<Task> execute(){
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
@@ -28,9 +35,13 @@ public class TagCommand extends Command{
 		}
 		if (resultTaskIndexes.size() == 1) {
 			taskList.get(resultTaskIndexes.get(0)).addTags(tags);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
 			//TODO: return successful tag message
 		} else {
 			//TODO: return unsuccessful tag message
+			return null;
 		}
 	}
 }

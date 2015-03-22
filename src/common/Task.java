@@ -3,6 +3,8 @@ package common;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import database.Database;
+
 public class Task {
 	private int id;
 	private String name;
@@ -12,6 +14,7 @@ public class Task {
 
 	public Task(String name) {
 		this.name = name;
+		this.id = Database.getId();
 	}
 
 	public int getId() {

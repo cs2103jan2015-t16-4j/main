@@ -12,31 +12,50 @@ public class DeleteCommand extends Command {
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 
 	public DeleteCommand(String name) {
-		assert(name == null);
+		assert name != null;
+		assert name != "";
 		this.name = name;
 	}
 
 	public DeleteCommand(int taskId) {
+		assert taskId > 0;
 		this.taskId = taskId;
 	}
 
 	public DeleteCommand(String name, String tag) {
+		assert name != null && name != "";
+		assert tag != null && tag != "";
 		this.name = name;
 		this.tag = tag;
 	}
 
-	public void execute() {
+	public ArrayList<Task> execute() {
 
-		if (name == null) {
-			executeWithId(taskId);
-		} else if (tag == null) {
-			executeWithName(name);
+		if (isDeleteTaskWithId()) {
+			return executeWithId();
+		} else if (isDeleteTaskWithName()) {
+			return executeWithName();
+		} else if (isDeleteTagWithName()){
+			return executeWithTag();
 		} else {
-			executeWithTag(name, tag);
+			//return invalid
+			return null;
 		}
 	}
 
-	private void executeWithId(int taskId) {
+	private boolean isDeleteTagWithName() {
+		return name != null && tag == null;
+	}
+
+	private boolean isDeleteTaskWithName() {
+		return tag == null;
+	}
+
+	private boolean isDeleteTaskWithId() {
+		return name == null;
+	}
+
+	private ArrayList<Task> executeWithId() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getId() == taskId) {
 				resultTaskIndexes.add(index);
@@ -45,37 +64,49 @@ public class DeleteCommand extends Command {
 		}
 		assert (resultTaskIndexes.size() == 0 || resultTaskIndexes.size() == 1);
 		if (resultTaskIndexes.size() == 1) {
-			taskList.remove(taskList.remove(resultTaskIndexes.get(0)));
-			// TODO: return successful removal message
-		} else {
-			// TODO: return unsuccessful removal message
-		}
-	}
-
-	private void executeWithName(String name) {
-		for (int index = 0; index < taskList.size(); index++) {
-			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
-				resultTaskIndexes.add(index);
-			}
-		}
-		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
 			taskList.remove(taskList.get(resultTaskIndexes.get(0)));
+			return r;
 			// TODO: return successful removal message
 		} else {
-			// TODO: return unsuccessful removal message
+			name = String.valueOf(taskId);
+			return executeWithName();
 		}
 	}
 
-	private void executeWithTag(String name, String tag) {
+	private ArrayList<Task> executeWithName() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
 			}
 		}
 		if (resultTaskIndexes.size() == 1) {
-			taskList.get(resultTaskIndexes.get(0)).removeTag(tag);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			taskList.remove(taskList.get(resultTaskIndexes.get(0)));
+			return r;
 			// TODO: return successful removal message
 		} else {
+			// TODO: return unsuccessful removal message
+			return null;
+		}
+	}
+
+	private ArrayList<Task> executeWithTag() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
+				resultTaskIndexes.add(index);
+			}
+		}
+		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			taskList.get(resultTaskIndexes.get(0)).removeTag(tag);
+			return r;
+			// TODO: return successful removal message
+		} else {
+			return null;
 			// TODO: return unsuccessful removal message
 		}
 	}

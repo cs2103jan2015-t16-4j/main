@@ -92,9 +92,11 @@ public class DisplayCommand extends Command {
 						MESSAGE_DISPLAY_NOT_EMPTY,
 						taskList.get(resultTaskIndexes.get(index)).getId(),
 						taskList.get(resultTaskIndexes.get(index)).getName(),
-						format.format(taskList
+						(taskList
 								.get(resultTaskIndexes.get(index)).getEndTime()
-								.getTime()),
+								!= null) ? format.format(taskList
+								.get(resultTaskIndexes.get(index)).getEndTime()
+								.getTime()) : "none",
 						taskList.get(resultTaskIndexes.get(index)).getTags());
 			}
 		} else {

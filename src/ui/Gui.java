@@ -22,6 +22,7 @@ import logic.Data;
 import logic.Display;
 import common.Task;
 import ui.AnyTask;
+import ui.Messages.GeneralMessages;
 
 public class Gui {
 	private static TaskTableModel model;
@@ -33,6 +34,7 @@ public class Gui {
 	
 	public Gui(){
 		initFrame();
+		setTextArea(GeneralMessages.getMsgWelcome());
 	}
 
 	public static void updateTable(){
@@ -86,11 +88,10 @@ public class Gui {
 	    frame.add(initCommandFieldPanel(), BorderLayout.SOUTH);
 	    frame.setSize(500, 300);
 	    frame.setVisible(true);
-	    
 	}
 	
 	private static void updateVisual(){
-		textArea.setText("command received");
+		setTextArea("command received");
 		//model.setData(new ArrayList<Task>());
 		updateTable();
 	}

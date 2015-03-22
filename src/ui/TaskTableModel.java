@@ -1,7 +1,8 @@
 package ui;
 
-import java.sql.Time;
+import java.util.Calendar;
 import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -13,7 +14,7 @@ public class TaskTableModel extends AbstractTableModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String[] columnNames = {"id","Name","Start","End","Tags"};
-    private Class<?>[] columnTypes = {String.class,String.class,Time.class,Time.class,ArrayList.class};
+    private Class<?>[] columnTypes = {String.class,String.class,Calendar.class,Calendar.class,ArrayList.class};
     private ArrayList<Task> data;
     
     public static final int    ID_COL = 0;
@@ -44,7 +45,7 @@ public class TaskTableModel extends AbstractTableModel {
 
     public Object getValueAt(int row, int col) {
     	Task task =data.get(row);
-    	
+    	SimpleDateFormat format= new SimpleDateFormat("dd-MM-yyyy");;
     	
     	if(col==ID_COL){
     		return task.getId();
@@ -53,10 +54,18 @@ public class TaskTableModel extends AbstractTableModel {
     		return task.getName();
     		
     	} else if (col==START_COL){
-    		return task.getStartTime();
+    		String day="";
+    		if(task.getStartTime() != null){
+    			day= format.format(task.getStartTime().getTime());
+    		}
+    		return day;
     		
     	} else if (col==END_COL){
-    		return task.getEndTime();
+    		String day="";
+    		if(task.getEndTime() != null){
+    			day= format.format(task.getEndTime().getTime());
+    		}
+    		return day;
     		
     	} else if (col==TAGS_COL){
     		ArrayList<String> tags=task.getTags();

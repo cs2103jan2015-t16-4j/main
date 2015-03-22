@@ -26,6 +26,7 @@ public class Database  {
 	
 	public static int getId(){
 		setIdFromList();
+		id++;
 		return id;
 	}
 	

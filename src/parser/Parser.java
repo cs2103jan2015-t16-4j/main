@@ -185,20 +185,14 @@ public class Parser {
 		} catch (Exception e1) {
 			return new InvalidCommand(commandString);
 		}
+		Calendar beginTimeCalendar = parseDate(beginTimeString);
+		Calendar endTimeCalendar = parseDate(endTimeString);
 
-		SimpleDateFormat beginTimeSdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		SimpleDateFormat endTimeSdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-		Calendar beginTimeCalendar = Calendar.getInstance();
-		Calendar endTimeCalendar = Calendar.getInstance();
-
-		try {
-			beginTimeCalendar.setTime(beginTimeSdf.parse(beginTimeString));
-			endTimeCalendar.setTime(endTimeSdf.parse(endTimeString));
-		} catch (ParseException e) {
+		if (beginTimeCalendar!=null && endTimeString != null) {
+			return new AddCommand(name, beginTimeCalendar, endTimeCalendar);
+		} else {
 			return new InvalidCommand(commandString);
 		}
-		return new AddCommand(name, beginTimeCalendar, endTimeCalendar);
 	}
 
 	private Command addTaskWithDeadline(String paras) {
@@ -210,14 +204,23 @@ public class Parser {
 		} catch (Exception e) {
 			return new InvalidCommand(commandString);
 		}
-		SimpleDateFormat deadlineSdf = new SimpleDateFormat("dd/MM/yyyy");
-		Calendar deadlineCalendar = Calendar.getInstance();
-		try {
-			deadlineCalendar.setTime(deadlineSdf.parse(deadlineString));
-		} catch (ParseException e) {
+		Calendar deadlineCalendar = parseDate(deadlineString);
+		if (deadlineCalendar != null) {
+			return new AddCommand(name, null, deadlineCalendar);
+		} else {
 			return new InvalidCommand(commandString);
 		}
-		return new AddCommand(name, null, deadlineCalendar);
+	}
+
+	private Calendar parseDate(String dateString) {
+		SimpleDateFormat dateSdf = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar dateCalendar = Calendar.getInstance();
+		try {
+			dateCalendar.setTime(dateSdf.parse(dateString));
+		} catch (ParseException e) {
+			return null;
+		}
+		return dateCalendar;
 	}
 
 	private boolean isDeleteTaskWithName(String paras) {
@@ -266,15 +269,13 @@ public class Parser {
 		} catch (Exception e1) {
 			return new InvalidCommand(commandString);
 		}
-		SimpleDateFormat newEndTimeSdf = new SimpleDateFormat(
-				"dd/MM/yyyy HH:mm");
-		Calendar newEndTimeCalendar = Calendar.getInstance();
-		try {
-			newEndTimeCalendar.setTime(newEndTimeSdf.parse(newEndTimeString));
-		} catch (ParseException e) {
+		
+		Calendar newEndTimeCalendar = parseDate(newEndTimeString);
+		if (newEndTimeCalendar != null) {
+			return new AddCommand(name, null, newEndTimeCalendar);
+		} else {
 			return new InvalidCommand(commandString);
 		}
-		return new EditCommand(name, newEndTimeCalendar, null);
 	}
 
 	private Command editStartTime(String paras) {
@@ -286,16 +287,13 @@ public class Parser {
 		} catch (Exception e1) {
 			return new InvalidCommand(commandString);
 		}
-		SimpleDateFormat newStartTimeSdf = new SimpleDateFormat(
-				"dd/MM/yyyy HH:mm");
-		Calendar newStartTimeCalendar = Calendar.getInstance();
-		try {
-			newStartTimeCalendar.setTime(newStartTimeSdf
-					.parse(newStartTimeString));
-		} catch (ParseException e) {
+		
+		Calendar newStartTimeCalendar = parseDate(newStartTimeString);
+		if (newStartTimeCalendar != null) {
+			return new AddCommand(name, null, newStartTimeCalendar);
+		} else {
 			return new InvalidCommand(commandString);
 		}
-		return new EditCommand(name, newStartTimeCalendar, null);
 	}
 
 	private Command editDeadline(String paras) {
@@ -307,15 +305,13 @@ public class Parser {
 		} catch (Exception e1) {
 			return new InvalidCommand(commandString);
 		}
-		SimpleDateFormat newDeadlineSdf = new SimpleDateFormat("dd/MM/yyyy");
-		Calendar newDeadlineCalendar = Calendar.getInstance();
-		try {
-			newDeadlineCalendar
-					.setTime(newDeadlineSdf.parse(newDeadlineString));
-		} catch (ParseException e) {
+		
+		Calendar newDeadlineCalendar = parseDate(newDeadlineString);
+		if (newDeadlineCalendar != null) {
+			return new AddCommand(name, null, newDeadlineCalendar);
+		} else {
 			return new InvalidCommand(commandString);
 		}
-		return new EditCommand(name, newDeadlineCalendar);
 	}
 
 	private Command editName(String paras) {

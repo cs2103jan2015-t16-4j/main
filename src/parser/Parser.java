@@ -8,13 +8,16 @@ import logic.*;
 import logic.Command.CommandType;
 
 public class Parser {
-	private static final String KEYWORD_ADD_DEADLINE = "by";
-	private static final String KEYWORD_ADD_SCHEDULED = "from";
-	private static final String KEYWORD_ADD_SCHEDULED_2 = "to";
-	private static final String KEYWORD_EDIT_NAME = "name to";
-	private static final String KEYWORD_EDIT_DEADLINE = "deadline to";
-	private static final String KEYWORD_EDIT_TAG = "to #";
-	private static final String KEYWORD_DELETE_TAG = " #";
+	private static final String CONSTANT_EMPTY_STRING = "";
+	private static final String CONSTANT_HASHTAG = "#";
+	private static final String CONSTANT_SPACE = "\\s+";
+	private static final String KEYWORD_ADD_DEADLINE = "\\s+by\\s";
+	private static final String KEYWORD_ADD_SCHEDULED = "\\s+from\\s+";
+	private static final String KEYWORD_ADD_SCHEDULED_2 = "\\s+to\\s+";
+	private static final String KEYWORD_EDIT_NAME = "\\s+name to\\s+";
+	private static final String KEYWORD_EDIT_DEADLINE = "\\s+deadline to\\s+";
+	private static final String KEYWORD_EDIT_TAG = "\\s+to #";
+	private static final String KEYWORD_TAG = "\\s+#";
 	private String commandString;
 
 	public Parser(String cmd) {
@@ -85,27 +88,36 @@ public class Parser {
 	}
 
 	private Command addParser(String paras) {
+
 		if (paras.toLowerCase().contains(KEYWORD_ADD_DEADLINE)) {
-			String name = paras.split("\\s+" + KEYWORD_ADD_DEADLINE + "\\s+")[0];
-			String deadlineString = paras.split("\\s+" + KEYWORD_ADD_DEADLINE
-					+ "\\s+")[1];
+			String name;
+			String deadlineString;
+			try {
+				name = paras.split(KEYWORD_ADD_DEADLINE)[0];
+				deadlineString = paras.split(KEYWORD_ADD_DEADLINE)[1];
+			} catch (Exception e) {
+				return new InvalidCommand(commandString);
+			}
 			SimpleDateFormat deadlineSdf = new SimpleDateFormat("dd/MM/yyyy");
 			Calendar deadlineCalendar = Calendar.getInstance();
 			try {
 				deadlineCalendar.setTime(deadlineSdf.parse(deadlineString));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new InvalidCommand(commandString);
 			}
 			return new AddCommand(name, null, deadlineCalendar);
 		} else if (paras.toLowerCase().contains(KEYWORD_ADD_SCHEDULED)) {
-			String name = paras.split("\\s+" + KEYWORD_ADD_SCHEDULED + "\\s+")[0];
-			String timeString = paras.split("\\s+" + KEYWORD_ADD_SCHEDULED
-					+ "\\s+")[1];
-			String beginTimeString = timeString.split("\\s+"
-					+ KEYWORD_ADD_SCHEDULED_2 + "\\s+")[0];
-			String endTimeString = timeString.split("\\s+"
-					+ KEYWORD_ADD_SCHEDULED_2 + "\\s+")[1];
+			String name;
+			String beginTimeString;
+			String endTimeString;
+			try {
+				name = paras.split(KEYWORD_ADD_SCHEDULED)[0];
+				String timeString = paras.split(KEYWORD_ADD_SCHEDULED)[1];
+				beginTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[0];
+				endTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[1];
+			} catch (Exception e1) {
+				return new InvalidCommand(commandString);
+			}
 
 			SimpleDateFormat beginTimeSdf = new SimpleDateFormat(
 					"dd/MM/yyyy HH:mm");
@@ -119,56 +131,77 @@ public class Parser {
 				beginTimeCalendar.setTime(beginTimeSdf.parse(beginTimeString));
 				endTimeCalendar.setTime(endTimeSdf.parse(endTimeString));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new InvalidCommand(commandString);
 			}
 			return new AddCommand(name, beginTimeCalendar, endTimeCalendar);
+		} else if (paras != CONSTANT_EMPTY_STRING) {
+			return new AddCommand(paras, null, null);
+		} else {
+			return new InvalidCommand(commandString);
 		}
-		return new AddCommand(paras, null, null);
+
 	}
 
 	private Command deleteParser(String paras) {
 		if (isNumeric(paras)) {
 			return new DeleteCommand(Integer.parseInt(paras));
-		} else if (paras.toLowerCase().contains(KEYWORD_DELETE_TAG)) {
-			String name = paras.split(KEYWORD_DELETE_TAG)[0];
-			String tag = "#" + paras.split(KEYWORD_DELETE_TAG)[1];
+		} else if (paras.toLowerCase().contains(KEYWORD_TAG)) {
+			String name = paras.split(KEYWORD_TAG)[0];
+			String tag = CONSTANT_HASHTAG + paras.split(KEYWORD_TAG)[1];
 			return new DeleteCommand(name, tag);
-		} else {
+		} else if (paras != CONSTANT_EMPTY_STRING) {
 			return new DeleteCommand(paras);
+		} else {
+			return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command editParser(String paras) {
 		if (paras.toLowerCase().contains(KEYWORD_EDIT_NAME)) {
-			String oldName = paras.split("\\s+" + KEYWORD_EDIT_NAME + "\\s+")[0];
-			String newName = paras.split("\\s+" + KEYWORD_EDIT_NAME + "\\s+")[1];
+			String oldName;
+			String newName;
+			try {
+				oldName = paras.split(KEYWORD_EDIT_NAME)[0];
+				newName = paras.split(KEYWORD_EDIT_NAME)[1];
+			} catch (Exception e) {
+				return new InvalidCommand(commandString);
+			}
 			return new EditCommand(oldName, newName);
 		} else if (paras.toLowerCase().contains(KEYWORD_EDIT_DEADLINE)) {
-			String name = paras.split("\\s+" + KEYWORD_EDIT_DEADLINE + "\\s+")[0];
-			String newDeadlineString = paras.split("\\s+"
-					+ KEYWORD_EDIT_DEADLINE + "\\s+")[1];
+			String name;
+			String newDeadlineString;
+			try {
+				name = paras.split(KEYWORD_EDIT_DEADLINE)[0];
+				newDeadlineString = paras.split(KEYWORD_EDIT_DEADLINE)[1];
+			} catch (Exception e1) {
+				return new InvalidCommand(commandString);
+			}
 			SimpleDateFormat newDeadlineSdf = new SimpleDateFormat("dd/MM/yyyy");
 			Calendar newDeadlineCalendar = Calendar.getInstance();
 			try {
 				newDeadlineCalendar.setTime(newDeadlineSdf
 						.parse(newDeadlineString));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new InvalidCommand(commandString);
 			}
 			return new EditCommand(name, newDeadlineCalendar);
 		} else if (paras.toLowerCase().contains(KEYWORD_EDIT_TAG)) {
-			String name = paras.split("\\s+#", 2)[0];
-			String oldTag = "#"
-					+ paras.split("\\s+#", 2)[1].split("\\s+"
-							+ KEYWORD_EDIT_TAG)[0];
-			String newTag = "#"
-					+ paras.split("\\s+#", 2)[1].split("\\s+"
-							+ KEYWORD_EDIT_TAG)[1];
+			String name;
+			String oldTag;
+			String newTag;
+			try {
+				name = paras.split(KEYWORD_TAG, 2)[0];
+				oldTag = CONSTANT_HASHTAG
+						+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[0];
+				newTag = CONSTANT_HASHTAG
+						+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[1];
+			} catch (Exception e) {
+				return new InvalidCommand(commandString);
+			}
 			return new EditCommand(name, oldTag, newTag);
+		} else {
+			return new InvalidCommand(commandString);
 		}
-		return null;
 	}
 
 	private Command displayParser(String paras) {
@@ -180,8 +213,14 @@ public class Parser {
 	}
 
 	private Command tagParser(String paras) {
-		String name = paras.split("\\s+")[0];
-		String[] tags = paras.split("\\s+", 2)[1].split("\\s+");
+		String name;
+		String[] tags;
+		try {
+			name = paras.split(KEYWORD_TAG)[0];
+			tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_TAG, 2)[1]).split(CONSTANT_SPACE);
+		} catch (Exception e) {
+			return new InvalidCommand(commandString);
+		}
 		return new TagCommand(name, tags);
 	}
 
@@ -208,8 +247,8 @@ public class Parser {
 		return null;
 	}
 
-	private Command invalidParser(String paras) {
-		return new InvalidCommand();
+	private Command invalidParser(String userCommand) {
+		return new InvalidCommand(commandString);
 	}
 
 	private Command exitParser(String paras) {
@@ -217,14 +256,14 @@ public class Parser {
 	}
 
 	private static String getFirstWord(String userCommand) {
-		String commandTypeString = userCommand.trim().split("\\s+")[0];
+		String commandTypeString = userCommand.trim().split(CONSTANT_SPACE)[0];
 		return commandTypeString;
 	}
 
 	private static String removeFirstWord(String userCommand) {
-		String[] userCommandString = userCommand.trim().split("\\s+", 2);
+		String[] userCommandString = userCommand.trim().split(CONSTANT_SPACE, 2);
 		if (userCommandString.length == 1) {
-			return "";
+			return CONSTANT_EMPTY_STRING;
 		} else {
 			return userCommandString[1];
 		}
@@ -232,7 +271,7 @@ public class Parser {
 
 	private static boolean isNumeric(String str) {
 		try {
-			int i = Integer.parseInt(str);
+			Integer.parseInt(str);
 		} catch (NumberFormatException nfe) {
 			return false;
 		}

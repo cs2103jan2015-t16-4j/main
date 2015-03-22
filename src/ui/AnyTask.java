@@ -85,9 +85,9 @@ public class AnyTask {
 	public static void processCommand(String command) {
 		// executeUserCommand(getFirstWord(command).toLowerCase(),
 		// removeFirstWord(command));
-		Parser p = new Parser(command);
+		Parser p = Parser.getInstance();
 		try {
-			displayResults(p.parseInput());
+			displayResults(p.parseInput(command));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Invalid command");

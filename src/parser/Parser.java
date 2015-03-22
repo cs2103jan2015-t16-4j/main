@@ -23,13 +23,21 @@ public class Parser {
 	private static final String KEYWORD_TAG = " #";
 	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
 	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
+	
+	private static Parser parserInstance = new Parser();
+	
 	private String commandString;
 
-	public Parser(String cmd) {
-		this.commandString = cmd;
+	private Parser() {
+		
+	}
+	
+	public static Parser getInstance(){
+		return parserInstance;
 	}
 
-	public ArrayList<Task> parseInput() {
+	public ArrayList<Task> parseInput(String commandString) {
+		this.commandString = commandString;
 		CommandType commandType = CommandType
 				.fromString(getFirstWord(commandString));
 		Command cmd = this.parseInput(commandType,
@@ -164,7 +172,8 @@ public class Parser {
 	}
 
 	private Calendar parseDate(String dateString) {
-		return DateParser.datePaser(dateString);
+		DateParser dateParser = new DateParser(dateString);
+		return dateParser.parseDate();
 		// SimpleDateFormat dateSdf = new SimpleDateFormat("dd/MM/yyyy");
 		// Calendar dateCalendar = Calendar.getInstance();
 		// try {

@@ -8,7 +8,12 @@ import com.joestelmach.natty.*;
 
 //@author A0119384Y
 public class DateParser {
-	public static Calendar datePaser(String args) {
+	private String args;
+	public DateParser(String args){
+		this.args = args;
+	}
+	
+	public Calendar parseDate() {
 		Date date;
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser();
 		List<DateGroup> groups = parser.parse(args);

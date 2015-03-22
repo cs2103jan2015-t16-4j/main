@@ -6,6 +6,7 @@ import common.Task;
 
 import database.Database;
 
+//@author A0119384Y
 public class ExitCommand extends Command{
 	public ExitCommand(){
 		

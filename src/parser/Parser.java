@@ -1,5 +1,3 @@
-//@author A0119384Y
-
 package parser;
 
 //import java.text.ParseException;
@@ -11,6 +9,7 @@ import common.Task;
 import logic.*;
 import logic.Command.CommandType;
 
+//@author A0119384Y
 public class Parser {
 	private static final String CONSTANT_EMPTY_STRING = "";
 	private static final String CONSTANT_HASHTAG = "#";

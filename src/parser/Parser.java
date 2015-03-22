@@ -15,6 +15,7 @@ public class Parser {
 	private static final String KEYWORD_EDIT_DEADLINE = "deadline to";
 	private static final String KEYWORD_EDIT_TAG = "to #";
 	private static final String KEYWORD_DELETE_TAG = " #";
+	private static final String KEYWORD_TAG = " #";
 	private String commandString;
 
 	public Parser(String cmd) {
@@ -85,27 +86,40 @@ public class Parser {
 	}
 
 	private Command addParser(String paras) {
+		
 		if (paras.toLowerCase().contains(KEYWORD_ADD_DEADLINE)) {
-			String name = paras.split("\\s+" + KEYWORD_ADD_DEADLINE + "\\s+")[0];
-			String deadlineString = paras.split("\\s+" + KEYWORD_ADD_DEADLINE
-					+ "\\s+")[1];
+			String name;
+			String deadlineString;
+			try {
+				name = paras.split("\\s+" + KEYWORD_ADD_DEADLINE + "\\s+")[0];
+				deadlineString = paras.split("\\s+" + KEYWORD_ADD_DEADLINE
+						+ "\\s+")[1];
+			} catch (Exception e) {
+				return new InvalidCommand(commandString);
+			}
 			SimpleDateFormat deadlineSdf = new SimpleDateFormat("dd/MM/yyyy");
 			Calendar deadlineCalendar = Calendar.getInstance();
 			try {
 				deadlineCalendar.setTime(deadlineSdf.parse(deadlineString));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new InvalidCommand(commandString);
 			}
 			return new AddCommand(name, null, deadlineCalendar);
 		} else if (paras.toLowerCase().contains(KEYWORD_ADD_SCHEDULED)) {
-			String name = paras.split("\\s+" + KEYWORD_ADD_SCHEDULED + "\\s+")[0];
-			String timeString = paras.split("\\s+" + KEYWORD_ADD_SCHEDULED
-					+ "\\s+")[1];
-			String beginTimeString = timeString.split("\\s+"
-					+ KEYWORD_ADD_SCHEDULED_2 + "\\s+")[0];
-			String endTimeString = timeString.split("\\s+"
-					+ KEYWORD_ADD_SCHEDULED_2 + "\\s+")[1];
+			String name;
+			String beginTimeString;
+			String endTimeString;
+			try {
+				name = paras.split("\\s+" + KEYWORD_ADD_SCHEDULED + "\\s+")[0];
+				String timeString = paras.split("\\s+" + KEYWORD_ADD_SCHEDULED
+						+ "\\s+")[1];
+				beginTimeString = timeString.split("\\s+"
+						+ KEYWORD_ADD_SCHEDULED_2 + "\\s+")[0];
+				endTimeString = timeString.split("\\s+"
+						+ KEYWORD_ADD_SCHEDULED_2 + "\\s+")[1];
+			} catch (Exception e1) {
+				return new InvalidCommand(commandString);
+			}
 
 			SimpleDateFormat beginTimeSdf = new SimpleDateFormat(
 					"dd/MM/yyyy HH:mm");
@@ -119,8 +133,7 @@ public class Parser {
 				beginTimeCalendar.setTime(beginTimeSdf.parse(beginTimeString));
 				endTimeCalendar.setTime(endTimeSdf.parse(endTimeString));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new InvalidCommand(commandString);
 			}
 			return new AddCommand(name, beginTimeCalendar, endTimeCalendar);
 		}
@@ -141,34 +154,53 @@ public class Parser {
 
 	private Command editParser(String paras) {
 		if (paras.toLowerCase().contains(KEYWORD_EDIT_NAME)) {
-			String oldName = paras.split("\\s+" + KEYWORD_EDIT_NAME + "\\s+")[0];
-			String newName = paras.split("\\s+" + KEYWORD_EDIT_NAME + "\\s+")[1];
+			String oldName;
+			String newName;
+			try {
+				oldName = paras.split("\\s+" + KEYWORD_EDIT_NAME + "\\s+")[0];
+				newName = paras.split("\\s+" + KEYWORD_EDIT_NAME + "\\s+")[1];
+			} catch (Exception e) {
+				return new InvalidCommand(commandString);
+			}
 			return new EditCommand(oldName, newName);
 		} else if (paras.toLowerCase().contains(KEYWORD_EDIT_DEADLINE)) {
-			String name = paras.split("\\s+" + KEYWORD_EDIT_DEADLINE + "\\s+")[0];
-			String newDeadlineString = paras.split("\\s+"
-					+ KEYWORD_EDIT_DEADLINE + "\\s+")[1];
+			String name;
+			String newDeadlineString;
+			try {
+				name = paras.split("\\s+" + KEYWORD_EDIT_DEADLINE + "\\s+")[0];
+				newDeadlineString = paras.split("\\s+"
+						+ KEYWORD_EDIT_DEADLINE + "\\s+")[1];
+			} catch (Exception e1) {
+				return new InvalidCommand(commandString);
+			}
 			SimpleDateFormat newDeadlineSdf = new SimpleDateFormat("dd/MM/yyyy");
 			Calendar newDeadlineCalendar = Calendar.getInstance();
 			try {
 				newDeadlineCalendar.setTime(newDeadlineSdf
 						.parse(newDeadlineString));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new InvalidCommand(commandString);
 			}
 			return new EditCommand(name, newDeadlineCalendar);
 		} else if (paras.toLowerCase().contains(KEYWORD_EDIT_TAG)) {
-			String name = paras.split("\\s+#", 2)[0];
-			String oldTag = "#"
-					+ paras.split("\\s+#", 2)[1].split("\\s+"
-							+ KEYWORD_EDIT_TAG)[0];
-			String newTag = "#"
-					+ paras.split("\\s+#", 2)[1].split("\\s+"
-							+ KEYWORD_EDIT_TAG)[1];
+			String name;
+			String oldTag;
+			String newTag;
+			try {
+				name = paras.split("\\s+#", 2)[0];
+				oldTag = "#"
+						+ paras.split("\\s+#", 2)[1].split("\\s+"
+								+ KEYWORD_EDIT_TAG)[0];
+				newTag = "#"
+						+ paras.split("\\s+#", 2)[1].split("\\s+"
+								+ KEYWORD_EDIT_TAG)[1];
+			} catch (Exception e) {
+				return new InvalidCommand(commandString);
+			}
 			return new EditCommand(name, oldTag, newTag);
+		} else {
+			return new InvalidCommand(commandString);
 		}
-		return null;
 	}
 
 	private Command displayParser(String paras) {
@@ -180,8 +212,14 @@ public class Parser {
 	}
 
 	private Command tagParser(String paras) {
-		String name = paras.split("\\s+")[0];
-		String[] tags = paras.split("\\s+", 2)[1].split("\\s+");
+		String name;
+		String[] tags;
+		try {
+			name = paras.split(KEYWORD_TAG)[0];
+			tags = ("#"+paras.split(KEYWORD_TAG, 2)[1]).split("\\s+");
+		} catch (Exception e) {
+			return new InvalidCommand(commandString);
+		}
 		return new TagCommand(name, tags);
 	}
 
@@ -208,8 +246,8 @@ public class Parser {
 		return null;
 	}
 
-	private Command invalidParser(String paras) {
-		return new InvalidCommand();
+	private Command invalidParser(String userCommand) {
+		return new InvalidCommand(userCommand);
 	}
 
 	private Command exitParser(String paras) {
@@ -232,7 +270,7 @@ public class Parser {
 
 	private static boolean isNumeric(String str) {
 		try {
-			int i = Integer.parseInt(str);
+			Integer.parseInt(str);
 		} catch (NumberFormatException nfe) {
 			return false;
 		}

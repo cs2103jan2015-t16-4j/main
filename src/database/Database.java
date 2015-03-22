@@ -25,7 +25,6 @@ public class Database  {
 	final static Logger logger = LoggerFactory.getLogger(Database.class);
 	
 	public static int getId(){
-		setIdFromList();
 		id++;
 		return id;
 	}

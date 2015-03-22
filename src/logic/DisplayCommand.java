@@ -34,9 +34,9 @@ public class DisplayCommand extends Command {
 		} else if (isDisplayDone()) {
 			return displayDone();
 		} else if (isDisplayWithTag()) {
-			return displayWithTag(keyword);
+			return displayWithTag();
 		} else {
-			return displayWithKeyword(keyword);
+			return displayWithKeyword();
 		}
 	}
 
@@ -56,7 +56,7 @@ public class DisplayCommand extends Command {
 		return keyword == null;
 	}
 
-	private ArrayList<Task> displayWithKeyword(String keyword) {
+	private ArrayList<Task> displayWithKeyword() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().toLowerCase()
 					.contains(keyword.toLowerCase())) {
@@ -66,7 +66,7 @@ public class DisplayCommand extends Command {
 		return resultTasklist;
 	}
 
-	private ArrayList<Task> displayWithTag(String keyword) {
+	private ArrayList<Task> displayWithTag() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getTags().contains(keyword.toLowerCase())) {
 				resultTasklist.add(taskList.get(index));

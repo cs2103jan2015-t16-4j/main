@@ -32,11 +32,11 @@ public class DeleteCommand extends Command {
 	public ArrayList<Task> execute() {
 
 		if (isDeleteTaskWithId()) {
-			return executeWithId(taskId);
+			return executeWithId();
 		} else if (isDeleteTaskWithName()) {
-			return executeWithName(name);
+			return executeWithName();
 		} else if (isDeleteTagWithName()){
-			return executeWithTag(name, tag);
+			return executeWithTag();
 		} else {
 			//return invalid
 			return null;
@@ -55,7 +55,7 @@ public class DeleteCommand extends Command {
 		return name == null;
 	}
 
-	private ArrayList<Task> executeWithId(int taskId) {
+	private ArrayList<Task> executeWithId() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getId() == taskId) {
 				resultTaskIndexes.add(index);
@@ -70,11 +70,12 @@ public class DeleteCommand extends Command {
 			return r;
 			// TODO: return successful removal message
 		} else {
-			return executeWithName(String.valueOf(taskId));
+			name = String.valueOf(taskId);
+			return executeWithName();
 		}
 	}
 
-	private ArrayList<Task> executeWithName(String name) {
+	private ArrayList<Task> executeWithName() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);
@@ -92,7 +93,7 @@ public class DeleteCommand extends Command {
 		}
 	}
 
-	private ArrayList<Task> executeWithTag(String name, String tag) {
+	private ArrayList<Task> executeWithTag() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
 				resultTaskIndexes.add(index);

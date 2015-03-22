@@ -2,8 +2,10 @@ package parser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
+import common.Task;
 import logic.*;
 import logic.Command.CommandType;
 
@@ -18,18 +20,20 @@ public class Parser {
 	private static final String KEYWORD_EDIT_DEADLINE = "\\s+deadline to\\s+";
 	private static final String KEYWORD_EDIT_TAG = "\\s+to #";
 	private static final String KEYWORD_TAG = "\\s+#";
+	private static final String KEYWORD_EDIT_START_TIME = "\\s+start time to\\s+";
+	private static final String KEYWORD_EDIT_END_TIME = "\\s+end time to\\s+";
 	private String commandString;
 
 	public Parser(String cmd) {
 		this.commandString = cmd;
 	}
 
-	public void parseInput() {
+	public ArrayList<Task> parseInput() {
 		CommandType commandType = CommandType
 				.fromString(getFirstWord(commandString));
 		Command cmd = this.parseInput(commandType,
 				removeFirstWord(commandString));
-		cmd.execute();
+		return cmd.execute();
 	}
 
 	private Command parseInput(CommandType commandType, String paras) {
@@ -94,6 +98,10 @@ public class Parser {
 			return editName(paras);
 		} else if (isEditDeadline(paras)) {
 			return editDeadline(paras);
+		} else if (isEditStartTime(paras)) {
+			return editStartTime(paras);
+		} else if (isEditEndTime(paras)) {
+			return editEndTime(paras);
 		} else if (isEditTag(paras)) {
 			return editTag(paras);
 		} else {
@@ -114,7 +122,8 @@ public class Parser {
 		String[] tags;
 		try {
 			name = paras.split(KEYWORD_TAG)[0];
-			tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_TAG, 2)[1]).split(CONSTANT_SPACE);
+			tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_TAG, 2)[1])
+					.split(CONSTANT_SPACE);
 		} catch (Exception e) {
 			return new InvalidCommand(commandString);
 		}
@@ -156,6 +165,14 @@ public class Parser {
 		return paras != CONSTANT_EMPTY_STRING;
 	}
 
+	private boolean isAddTaskWithTime(String paras) {
+		return paras.toLowerCase().contains(KEYWORD_ADD_SCHEDULED);
+	}
+
+	private boolean isAddTaskWithDeadline(String paras) {
+		return paras.toLowerCase().contains(KEYWORD_ADD_DEADLINE);
+	}
+
 	private Command addTaskWithTime(String paras) {
 		String name;
 		String beginTimeString;
@@ -168,15 +185,13 @@ public class Parser {
 		} catch (Exception e1) {
 			return new InvalidCommand(commandString);
 		}
-	
-		SimpleDateFormat beginTimeSdf = new SimpleDateFormat(
-				"dd/MM/yyyy HH:mm");
-		SimpleDateFormat endTimeSdf = new SimpleDateFormat(
-				"dd/MM/yyyy HH:mm");
-	
+
+		SimpleDateFormat beginTimeSdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		SimpleDateFormat endTimeSdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
 		Calendar beginTimeCalendar = Calendar.getInstance();
 		Calendar endTimeCalendar = Calendar.getInstance();
-	
+
 		try {
 			beginTimeCalendar.setTime(beginTimeSdf.parse(beginTimeString));
 			endTimeCalendar.setTime(endTimeSdf.parse(endTimeString));
@@ -203,14 +218,6 @@ public class Parser {
 			return new InvalidCommand(commandString);
 		}
 		return new AddCommand(name, null, deadlineCalendar);
-	}
-
-	private boolean isAddTaskWithTime(String paras) {
-		return paras.toLowerCase().contains(KEYWORD_ADD_SCHEDULED);
-	}
-
-	private boolean isAddTaskWithDeadline(String paras) {
-		return paras.toLowerCase().contains(KEYWORD_ADD_DEADLINE);
 	}
 
 	private boolean isDeleteTaskWithName(String paras) {
@@ -242,6 +249,55 @@ public class Parser {
 		return paras.toLowerCase().contains(KEYWORD_EDIT_NAME);
 	}
 
+	private boolean isEditStartTime(String paras) {
+		return paras.toLowerCase().contains(KEYWORD_EDIT_START_TIME);
+	}
+
+	private boolean isEditEndTime(String paras) {
+		return paras.toLowerCase().contains(KEYWORD_EDIT_END_TIME);
+	}
+
+	private Command editEndTime(String paras) {
+		String name;
+		String newEndTimeString;
+		try {
+			name = paras.split(KEYWORD_EDIT_END_TIME)[0];
+			newEndTimeString = paras.split(KEYWORD_EDIT_END_TIME)[1];
+		} catch (Exception e1) {
+			return new InvalidCommand(commandString);
+		}
+		SimpleDateFormat newEndTimeSdf = new SimpleDateFormat(
+				"dd/MM/yyyy HH:mm");
+		Calendar newEndTimeCalendar = Calendar.getInstance();
+		try {
+			newEndTimeCalendar.setTime(newEndTimeSdf.parse(newEndTimeString));
+		} catch (ParseException e) {
+			return new InvalidCommand(commandString);
+		}
+		return new EditCommand(name, newEndTimeCalendar, null);
+	}
+
+	private Command editStartTime(String paras) {
+		String name;
+		String newStartTimeString;
+		try {
+			name = paras.split(KEYWORD_EDIT_START_TIME)[0];
+			newStartTimeString = paras.split(KEYWORD_EDIT_START_TIME)[1];
+		} catch (Exception e1) {
+			return new InvalidCommand(commandString);
+		}
+		SimpleDateFormat newStartTimeSdf = new SimpleDateFormat(
+				"dd/MM/yyyy HH:mm");
+		Calendar newStartTimeCalendar = Calendar.getInstance();
+		try {
+			newStartTimeCalendar.setTime(newStartTimeSdf
+					.parse(newStartTimeString));
+		} catch (ParseException e) {
+			return new InvalidCommand(commandString);
+		}
+		return new EditCommand(name, newStartTimeCalendar, null);
+	}
+
 	private Command editDeadline(String paras) {
 		String name;
 		String newDeadlineString;
@@ -254,8 +310,8 @@ public class Parser {
 		SimpleDateFormat newDeadlineSdf = new SimpleDateFormat("dd/MM/yyyy");
 		Calendar newDeadlineCalendar = Calendar.getInstance();
 		try {
-			newDeadlineCalendar.setTime(newDeadlineSdf
-					.parse(newDeadlineString));
+			newDeadlineCalendar
+					.setTime(newDeadlineSdf.parse(newDeadlineString));
 		} catch (ParseException e) {
 			return new InvalidCommand(commandString);
 		}
@@ -296,7 +352,8 @@ public class Parser {
 	}
 
 	private static String removeFirstWord(String userCommand) {
-		String[] userCommandString = userCommand.trim().split(CONSTANT_SPACE, 2);
+		String[] userCommandString = userCommand.trim()
+				.split(CONSTANT_SPACE, 2);
 		if (userCommandString.length == 1) {
 			return CONSTANT_EMPTY_STRING;
 		} else {

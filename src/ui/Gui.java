@@ -34,7 +34,6 @@ public class Gui {
 	private static Scanner sc = new Scanner(System.in);
 	private static JScrollPane taskScrollPane;
 	private static JFrame frame;
-	private static final String CONSTANT_SPACE = " ";
 	
 	public Gui(){
 		initFrame();
@@ -108,23 +107,9 @@ public class Gui {
 		}
 	}
 	
-	private static CommandType getCommandType(String userCommand) {
-		return CommandType.fromString(userCommand.trim().split(CONSTANT_SPACE)[0]);
-	}
-	
-	private static String getCommandInfo(String userCommand) {
-		String[] userCommandString = userCommand.trim()
-				.split(CONSTANT_SPACE, 2);
-		if (userCommandString.length == 1) {
-			return "";
-		} else {
-			return userCommandString[1];
-		}
-	}
-	
 	private static void displayResults(String command, ArrayList<Task> taskList) {
-		CommandType commandType=getCommandType(command);
-		switch (commandType) {
+		String commandType=Parser.getInstance().parseCommandType(command);
+		switch (CommandType.fromString(commandType)) {
 		case ADD:
 			model.setData(Data.getTaskList());
 			updateTable();
@@ -145,7 +130,7 @@ public class Gui {
 			} else if (taskList.size() > 0) {
 				model.setData(taskList);
 				updateTable();
-				setTextArea(GeneralMessages.getMsgDisplay(getCommandInfo(command)));
+				setTextArea(GeneralMessages.getMsgDisplay(Parser.getInstance().getCommandInfo(command)));
 			} else if (taskList.size() == 0){
 				model.setData(taskList);
 				updateTable();
@@ -178,6 +163,9 @@ public class Gui {
 		case HELP:
 			//TODO: Help Command Display
 			break;
+		//case SAVE:
+		//	setTextArea(GeneralMessages.getMsgSave();
+		//	break;
 		case INVALID:
 			setTextArea(GeneralMessages.getMsgInvalid());
 			break;

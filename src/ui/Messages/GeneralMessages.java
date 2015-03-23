@@ -16,6 +16,7 @@ public class GeneralMessages {
 	private static final String MESSAGE_DONE = "Task %s set to done\n";
 	private static final String MESSAGE_UNDO= "Previous command undo success";
 	private static final String MESSAGE_PATH = "%s is ready for use\n";
+	private static final String MESSAGE_SAVE = "%s saved successfully\n";
 	
 	public static String getMsgWelcome() {
 		return String.format(MESSAGE_WELCOME, Settings.getFilePath());
@@ -59,8 +60,10 @@ public class GeneralMessages {
 	public static String getMsgPrompt() {
 		return String.format(MESSAGE_PROMPT);
 	}
-	
+	public static String getMsgSave() {
+		return String.format(MESSAGE_SAVE);
+	}
 	public static String getMsgError() {
-		return String.format(MESSAGE_ERROR);
+		return String.format(MESSAGE_ERROR, Settings.getFilePath());
 	}
 }

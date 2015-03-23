@@ -77,7 +77,6 @@ public class TaskTableModel extends AbstractTableModel {
     		}
     		return tagString;
     	}
-      
         return "";
     }
     

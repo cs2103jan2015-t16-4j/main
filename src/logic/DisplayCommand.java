@@ -13,6 +13,7 @@ public class DisplayCommand extends Command {
 //	private static final String MESSAGE_DISPLAY_EMPTY = "no result for keyword %s.\n";
 	private static final String KEYWORD_FLOATING = "floating";
 	private static final String KEYWORD_DONE = "done";
+	private static final String KEYWORD_ALL = "all";
 
 	private String keyword;
 	private ArrayList<Task> taskList = Database.getTaskList();
@@ -28,7 +29,9 @@ public class DisplayCommand extends Command {
 	}
 
 	public ArrayList<Task> execute() {
-		if (isDisplayUndone()) {
+		if(isDisplayAll()){
+			return displayAll();
+		}else if (isDisplayUndone()) {
 			return displayUndone();
 		} else if (isDisplayFloating()) {
 			return displayFloating();
@@ -39,6 +42,10 @@ public class DisplayCommand extends Command {
 		} else {
 			return displayWithKeyword();
 		}
+	}
+
+	private ArrayList<Task> displayAll() {
+		return taskList;
 	}
 
 	private boolean isDisplayWithTag() {
@@ -55,6 +62,10 @@ public class DisplayCommand extends Command {
 
 	private boolean isDisplayUndone() {
 		return keyword == null;
+	}
+
+	private boolean isDisplayAll() {
+		return keyword.equalsIgnoreCase(KEYWORD_ALL);
 	}
 
 	private ArrayList<Task> displayWithKeyword() {

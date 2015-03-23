@@ -1,4 +1,4 @@
-package ui.Messages;
+package ui.messages;
 
 import common.Settings;
 

@@ -23,8 +23,9 @@ import java.util.Scanner;
 import logic.Data;
 import logic.Display;
 import logic.Command.CommandType;
+
 import common.Task;
-import ui.Messages.GeneralMessages;
+import ui.messages.GeneralMessages;
 
 public class Gui {
 	private static TaskTableModel model;
@@ -171,7 +172,6 @@ public class Gui {
 			setTextArea(GeneralMessages.getMsgUndo());
 			break;
 		case SETPATH:
-			//TODO: setpath Display
 			updateTable();
 			setTextArea(GeneralMessages.getMsgPath());
 			break;

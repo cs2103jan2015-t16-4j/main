@@ -86,10 +86,4 @@ public class TaskTableModel extends AbstractTableModel {
         super();
         data = taskList;
     }
-
-    /*
-    public Class<? extends Object> getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
-    }
-    */
 }

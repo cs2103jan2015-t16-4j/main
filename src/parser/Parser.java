@@ -23,26 +23,33 @@ public class Parser {
 	private static final String KEYWORD_TAG = " #";
 	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
 	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
-	
+
 	private static Parser parserInstance = new Parser();
-	
+
 	private String commandString;
 
 	private Parser() {
-		
+
 	}
-	
-	public static Parser getInstance(){
+
+	public static Parser getInstance() {
 		return parserInstance;
 	}
 
 	public ArrayList<Task> parseInput(String commandString) {
 		this.commandString = commandString;
-		CommandType commandType = CommandType
-				.fromString(getFirstWord(commandString));
-		Command cmd = this.parseInput(commandType,
-				removeFirstWord(commandString));
+		Command cmd = parseInput(
+				CommandType.fromString(parseCommandType(commandString)),
+				getCommandInfo(commandString));
 		return cmd.execute();
+	}
+
+	public String getCommandInfo(String commandString) {
+		return removeFirstWord(commandString);
+	}
+
+	public String parseCommandType(String commandString) {
+		return getFirstWord(commandString);
 	}
 
 	private Command parseInput(CommandType commandType, String paras) {
@@ -75,7 +82,6 @@ public class Parser {
 	}
 
 	private Command addParser(String paras) {
-
 		if (isAddTaskWithDeadline(paras)) {
 			return addTaskWithDeadline(paras);
 		} else if (isAddTaskWithTime(paras)) {
@@ -84,23 +90,17 @@ public class Parser {
 			return new AddCommand(paras, null, null);
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 
 	}
 
 	private Command deleteParser(String paras) {
-		if (isDeleteTaskWithId(paras)) {
-			return new DeleteCommand(Integer.parseInt(paras));
-		} else if (isDeleteTagWithName(paras)) {
-			String name = paras.split(KEYWORD_TAG)[0];
-			String tag = CONSTANT_HASHTAG + paras.split(KEYWORD_TAG)[1];
-			return new DeleteCommand(name, tag);
-		} else if (isDeleteTaskWithName(paras)) {
-			return new DeleteCommand(paras);
+		if (isDeleteTag(paras)) {
+			return deleteTag(paras);
+		} else if (isDeleteTask(paras)) {
+			return deleteTask(paras);
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 	}
 
@@ -117,7 +117,6 @@ public class Parser {
 			return editTag(paras);
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 	}
 
@@ -136,12 +135,20 @@ public class Parser {
 		name = paras.split(KEYWORD_TAG)[0];
 		tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_TAG, 2)[1])
 				.split(CONSTANT_SPACE);
+		if (isNumerical(name)) {
+			return new TagCommand(Integer.parseInt(name), tags);
+		} else {
+			return new TagCommand(name, tags);
+		}
 
-		return new TagCommand(name, tags);
 	}
 
 	private Command doneParser(String paras) {
-		return new DoneCommand(paras);
+		if (isNumerical(paras)) {
+			return new DoneCommand(Integer.parseInt(paras));
+		} else {
+			return new DoneCommand(paras);
+		}
 	}
 
 	private Command undoParser(String paras) {
@@ -150,7 +157,6 @@ public class Parser {
 	}
 
 	private Command setpathParser(String paras) {
-		// TODO: check correct path
 		return new SetpathCommand(paras);
 	}
 
@@ -214,7 +220,6 @@ public class Parser {
 			return new AddCommand(name, beginTimeCalendar, endTimeCalendar);
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 	}
 
@@ -230,19 +235,18 @@ public class Parser {
 			return new AddCommand(name, null, deadlineCalendar);
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 	}
 
-	private boolean isDeleteTaskWithName(String paras) {
+	private boolean isDeleteTask(String paras) {
 		return paras != CONSTANT_EMPTY_STRING;
 	}
 
-	private boolean isDeleteTagWithName(String paras) {
+	private boolean isDeleteTag(String paras) {
 		return paras.toLowerCase().contains(KEYWORD_TAG);
 	}
 
-	private boolean isDeleteTaskWithId(String str) {
+	private boolean isNumerical(String str) {
 		try {
 			Integer.parseInt(str);
 		} catch (NumberFormatException nfe) {
@@ -272,75 +276,93 @@ public class Parser {
 	}
 
 	private Command editEndTime(String paras) {
-		String name;
-		String newEndTimeString;
-
-		name = paras.split(KEYWORD_EDIT_END_TIME)[0];
-		newEndTimeString = paras.split(KEYWORD_EDIT_END_TIME)[1];
+		String name = paras.split(KEYWORD_EDIT_END_TIME)[0];
+		String newEndTimeString = paras.split(KEYWORD_EDIT_END_TIME)[1];
 
 		Calendar newEndTimeCalendar = parseDate(newEndTimeString);
 		if (newEndTimeCalendar != null) {
-			return new EditCommand(name, null, newEndTimeCalendar);
+			if(isNumerical(name)){
+				return new EditCommand(Integer.parseInt(name), null, newEndTimeCalendar);
+			} else {
+				return new EditCommand(name, null, newEndTimeCalendar);
+			}
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command editStartTime(String paras) {
-		String name;
-		String newStartTimeString;
-
-		name = paras.split(KEYWORD_EDIT_START_TIME)[0];
-		newStartTimeString = paras.split(KEYWORD_EDIT_START_TIME)[1];
+		String name = paras.split(KEYWORD_EDIT_START_TIME)[0];
+		String newStartTimeString = paras.split(KEYWORD_EDIT_START_TIME)[1];
 
 		Calendar newStartTimeCalendar = parseDate(newStartTimeString);
 		if (newStartTimeCalendar != null) {
-			return new EditCommand(name, newStartTimeCalendar, null);
+			if(isNumerical(name)){
+				return new EditCommand(Integer.parseInt(name), newStartTimeCalendar, null);
+			} else {
+				return new EditCommand(name, newStartTimeCalendar, null);
+			}
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command editDeadline(String paras) {
-		String name;
-		String newDeadlineString;
-
-		name = paras.split(KEYWORD_EDIT_DEADLINE)[0];
-		newDeadlineString = paras.split(KEYWORD_EDIT_DEADLINE)[1];
+		String name = paras.split(KEYWORD_EDIT_DEADLINE)[0];
+		String newDeadlineString = paras.split(KEYWORD_EDIT_DEADLINE)[1];
 
 		Calendar newDeadlineCalendar = parseDate(newDeadlineString);
 		if (newDeadlineCalendar != null) {
-			return new EditCommand(name, null, newDeadlineCalendar);
+			if(isNumerical(name)){
+				return new EditCommand(Integer.parseInt(name), null, newDeadlineCalendar);
+			} else {
+				return new EditCommand(name, null, newDeadlineCalendar);
+			}
 		} else {
 			return null;
-			// return new InvalidCommand(commandString);
 		}
 	}
 
 	private Command editName(String paras) {
-		String oldName;
-		String newName;
-
-		oldName = paras.split(KEYWORD_EDIT_NAME)[0];
-		newName = paras.split(KEYWORD_EDIT_NAME)[1];
-
-		return new EditCommand(oldName, newName);
+		String oldName = paras.split(KEYWORD_EDIT_NAME)[0];
+		String newName = paras.split(KEYWORD_EDIT_NAME)[1];
+		if(isNumerical(oldName)){
+			return new EditCommand(Integer.parseInt(oldName), newName);
+		} else {
+			return new EditCommand(oldName, newName);
+		}
 	}
 
 	private Command editTag(String paras) {
-		String name;
-		String oldTag;
-		String newTag;
-
-		name = paras.split(KEYWORD_TAG, 2)[0];
-		oldTag = CONSTANT_HASHTAG
+		String name = paras.split(KEYWORD_TAG, 2)[0];
+		String oldTag = CONSTANT_HASHTAG
 				+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[0];
-		newTag = CONSTANT_HASHTAG
+		String newTag = CONSTANT_HASHTAG
 				+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[1];
 
-		return new EditCommand(name, oldTag, newTag);
+		if(isNumerical(name)){
+			return new EditCommand(Integer.parseInt(name), oldTag, newTag);
+		} else {
+			return new EditCommand(name, oldTag, newTag);
+		}
+	}
+
+	private Command deleteTask(String paras) {
+		if (isNumerical(paras)) {
+			return new DeleteCommand(Integer.parseInt(paras));
+		} else {
+			return new DeleteCommand(paras);
+		}
+	}
+
+	private Command deleteTag(String paras) {
+		String name = paras.split(KEYWORD_TAG)[0];
+		String tag = CONSTANT_HASHTAG + paras.split(KEYWORD_TAG)[1];
+		if (isNumerical(name)) {
+			return new DeleteCommand(Integer.parseInt(name), tag);
+		} else {
+			return new DeleteCommand(name, tag);
+		}
 	}
 
 	private static String getFirstWord(String userCommand) {

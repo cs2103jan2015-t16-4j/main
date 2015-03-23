@@ -9,8 +9,10 @@ import database.Database;
 //@author A0119384Y
 public class DisplayCommand extends Command {
 	private static final String CONSTANT_HASHTAG = "#";
-//	private static final String MESSAGE_DISPLAY_NOT_EMPTY = "%-10d %-10s %-20s %-10s\n";
-//	private static final String MESSAGE_DISPLAY_EMPTY = "no result for keyword %s.\n";
+	// private static final String MESSAGE_DISPLAY_NOT_EMPTY =
+	// "%-10d %-10s %-20s %-10s\n";
+	// private static final String MESSAGE_DISPLAY_EMPTY =
+	// "no result for keyword %s.\n";
 	private static final String KEYWORD_FLOATING = "floating";
 	private static final String KEYWORD_DONE = "done";
 	private static final String KEYWORD_ALL = "all";
@@ -24,15 +26,15 @@ public class DisplayCommand extends Command {
 	}
 
 	public DisplayCommand(String keyword) {
-		assert keyword != null && keyword !="";
+		assert keyword != null && keyword != "";
 		this.keyword = keyword;
 	}
 
 	public ArrayList<Task> execute() {
-		if(isDisplayAll()){
-			return displayAll();
-		}else if (isDisplayUndone()) {
+		if (isDisplayUndone()) {
 			return displayUndone();
+		} else if (isDisplayAll()) {
+			return displayAll();
 		} else if (isDisplayFloating()) {
 			return displayFloating();
 		} else if (isDisplayDone()) {
@@ -113,29 +115,29 @@ public class DisplayCommand extends Command {
 			}
 		}
 		return resultTasklist;
-//		displayResults(resultTaskIndexes, keyword);
+		// displayResults(resultTaskIndexes, keyword);
 	}
 
-//	private void displayResults(ArrayList<Integer> resultTaskIndexes,
-//			String keyword) {
-//		if (resultTaskIndexes.size() > 0) {
-//			System.out.printf("%-10s %-10s %-20s %-10s\n", "Task ID",
-//					"Task Name", "End Time", "Tags");
-//			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//
-//			for (int index = 0; index < resultTaskIndexes.size(); index++) {
-//				System.out.printf(
-//						MESSAGE_DISPLAY_NOT_EMPTY,
-//						taskList.get(resultTaskIndexes.get(index)).getId(),
-//						taskList.get(resultTaskIndexes.get(index)).getName(),
-//						(taskList.get(resultTaskIndexes.get(index))
-//								.getEndTime() != null) ? format.format(taskList
-//								.get(resultTaskIndexes.get(index)).getEndTime()
-//								.getTime()) : "none",
-//						taskList.get(resultTaskIndexes.get(index)).getTags());
-//			}
-//		} else {
-//			System.out.printf(MESSAGE_DISPLAY_EMPTY, keyword);
-//		}
-//	}
+	// private void displayResults(ArrayList<Integer> resultTaskIndexes,
+	// String keyword) {
+	// if (resultTaskIndexes.size() > 0) {
+	// System.out.printf("%-10s %-10s %-20s %-10s\n", "Task ID",
+	// "Task Name", "End Time", "Tags");
+	// SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	//
+	// for (int index = 0; index < resultTaskIndexes.size(); index++) {
+	// System.out.printf(
+	// MESSAGE_DISPLAY_NOT_EMPTY,
+	// taskList.get(resultTaskIndexes.get(index)).getId(),
+	// taskList.get(resultTaskIndexes.get(index)).getName(),
+	// (taskList.get(resultTaskIndexes.get(index))
+	// .getEndTime() != null) ? format.format(taskList
+	// .get(resultTaskIndexes.get(index)).getEndTime()
+	// .getTime()) : "none",
+	// taskList.get(resultTaskIndexes.get(index)).getTags());
+	// }
+	// } else {
+	// System.out.printf(MESSAGE_DISPLAY_EMPTY, keyword);
+	// }
+	// }
 }

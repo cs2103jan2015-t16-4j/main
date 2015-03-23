@@ -38,7 +38,7 @@ public class Parser {
 
 	public ArrayList<Task> parseInput(String commandString) {
 		this.commandString = commandString;
-		Command cmd = parseInput(
+		Command cmd = parseInfo(
 				CommandType.fromString(parseCommandType(commandString)),
 				getCommandInfo(commandString));
 		return cmd.execute();
@@ -52,7 +52,7 @@ public class Parser {
 		return getFirstWord(commandString);
 	}
 
-	private Command parseInput(CommandType commandType, String paras) {
+	private Command parseInfo(CommandType commandType, String paras) {
 		switch (commandType) {
 		case ADD:
 			return addParser(paras);
@@ -152,8 +152,7 @@ public class Parser {
 	}
 
 	private Command undoParser(String paras) {
-		// TODO: to be completed
-		return null;
+		return new UndoCommand();
 	}
 
 	private Command setpathParser(String paras) {

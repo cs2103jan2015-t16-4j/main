@@ -23,7 +23,7 @@ public class Data {
 	}
 	
 	public static ArrayList<Task> getTaskList(){
-		return taskList;
+		return Database.getTaskList();
 	}
 	
 	public static void setTaskList(ArrayList<Task> newTaskList){

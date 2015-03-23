@@ -1,77 +1,66 @@
 package ui.Messages;
 
-import java.util.ArrayList;
-
-import logic.Data;
-
-import common.Task;
 import common.Settings;
 
 public class GeneralMessages {
 	private static final String MESSAGE_WELCOME = "Welcome to AnyTask. %s is ready for use\n";
 	private static final String MESSAGE_ADD = "Added %s \n";
-	private static final String MESSAGE_DELETELINE = "Deleted %s \n";
-	private static final String MESSAGE_DISPLAY_SUCCESS = "%d. %s \n";
-	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display \n";
-	private static final String MESSAGE_DISPLAY_INVALID = "Command invalid \n";
+	private static final String MESSAGE_EDIT= "Edited %s \n";
+	private static final String MESSAGE_DELETE= "Deleted %s \n";
+	private static final String MESSAGE_DISPLAY_SUCCESS = "Displaying all %s tasks\n";
 	private static final String MESSAGE_PROMPT = "Command:";
 	private static final String MESSAGE_ERROR = "An Error has occured. Check the log file for more details \n";
-
-	private static String output = "";
-
-	private static void print() {
-		System.out.printf(output);
-	}
-
+	private static final String MESSAGE_DISPLAY_EMPTY = "No results\n";
+	private static final String MESSAGE_INVALID = "Invalid command\n";
+	private static final String MESSAGE_TAG = "Added tag to %s \n";
+	private static final String MESSAGE_DONE = "Task %s set to done\n";
+	private static final String MESSAGE_UNDO= "Previous command undo success";
+	private static final String MESSAGE_PATH = "%s is ready for use\n";
+	
 	public static String getMsgWelcome() {
 		return String.format(MESSAGE_WELCOME, Settings.getFilePath());
 	}
 
-	public static void getMsgAdd(String userText) {
-		output = String.format(MESSAGE_ADD, userText);
-		print();
-	}
-
-	public static void getMsgDeleteLine(String line) {
-		output = String.format(MESSAGE_DELETELINE, line);
-		print();
-	}
-
-	public static void getMsgDisplay(int i, String line) {
-		output = String.format(MESSAGE_DISPLAY_SUCCESS, i, line);
-		print();
-	}
-
-	public static void getMsgEmpty() {
-		output = String.format(MESSAGE_DISPLAY_EMPTY);
-		print();
-	}
-
-	public static void getMsgPrompt() {
-		output = String.format(MESSAGE_PROMPT);
-		print();
+	public static String getMsgAdd(String userText) {
+		return String.format(MESSAGE_ADD, userText);
 	}
 	
-	public static void getMsgError() {
-		output = String.format(MESSAGE_ERROR);
-		print();
+	public static String getMsgDisplayEmpty() {
+		return String.format(MESSAGE_DISPLAY_EMPTY);
+	}
+	public static String getMsgInvalid() {
+		return String.format(MESSAGE_INVALID);
 	}
 	
-	public static void displayAll() {
-		ArrayList<Task> taskList = Data.getTaskList();
-		int i = 1;
-		if (taskList.isEmpty()) {
-			getMsgEmpty();
-		} else {
-			for (Task task : taskList) {
-				getMsgDisplay(i, task.getName());
-				i++;
-			}
-		}
+	public static String getMsgDelete(String line) {
+		return String.format(MESSAGE_DELETE, line);
 	}
-
-	public static void getMsgInvalid() {
-		output = String.format(MESSAGE_DISPLAY_INVALID);
-		print();
+	public static String getMsgEdit(String line) {
+		return String.format(MESSAGE_EDIT, line);
+	}
+	public static String getMsgDisplay(String line) {
+		return String.format(MESSAGE_DISPLAY_SUCCESS, line);
+	}
+	public static String getMsgTag(String line) {
+		return String.format(MESSAGE_TAG, line);
+	}
+	public static String getMsgUndo() {
+		return String.format(MESSAGE_UNDO);
+	}
+	public static String getMsgDone(String line) {
+		return String.format(MESSAGE_DONE, line);
+	}
+	public static String getMsgPath() {
+		return String.format(MESSAGE_PATH,  Settings.getFilePath());
+	}
+	public static String getMsgEmpty() {
+		return String.format(MESSAGE_DISPLAY_EMPTY);
+	}
+	public static String getMsgPrompt() {
+		return String.format(MESSAGE_PROMPT);
+	}
+	
+	public static String getMsgError() {
+		return String.format(MESSAGE_ERROR);
 	}
 }

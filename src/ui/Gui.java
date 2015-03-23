@@ -14,14 +14,16 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
+import parser.Parser;
+
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import logic.Data;
 import logic.Display;
+import logic.Command.CommandType;
 import common.Task;
-import ui.AnyTask;
 import ui.Messages.GeneralMessages;
 
 public class Gui {
@@ -31,6 +33,7 @@ public class Gui {
 	private static Scanner sc = new Scanner(System.in);
 	private static JScrollPane taskScrollPane;
 	private static JFrame frame;
+	private static final String CONSTANT_SPACE = " ";
 	
 	public Gui(){
 		initFrame();
@@ -48,6 +51,11 @@ public class Gui {
 	private static JScrollPane initTablePane(ArrayList<Task> list){
 	    model = new TaskTableModel(list);	 
 	    JTable table = new JTable(model);
+	    table.getColumnModel().getColumn(0).setMaxWidth(50);
+	    table.getColumnModel().getColumn(2).setMinWidth(110);
+	    table.getColumnModel().getColumn(2).setMaxWidth(110);
+	    table.getColumnModel().getColumn(3).setMinWidth(110);
+	    table.getColumnModel().getColumn(3).setMaxWidth(110);;
 	    TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 	    table.setRowSorter(sorter);
 	    taskScrollPane = new JScrollPane(table);
@@ -63,9 +71,8 @@ public class Gui {
 	    panel.add(textField, BorderLayout.CENTER);
 		textField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				AnyTask.processCommand(((JTextField) e.getSource()).getText());
-				((JTextField) e.getSource()).setText("");
-				updateVisual();				
+				processCommand(((JTextField) e.getSource()).getText());
+				((JTextField) e.getSource()).setText("");			
 			}
 		});
 	    label.setDisplayedMnemonic(KeyEvent.VK_N);
@@ -86,14 +93,99 @@ public class Gui {
 	    frame.add(initTablePane(Data.getTaskList()));
 	    frame.add(initTextArea(),BorderLayout.BEFORE_FIRST_LINE);
 	    frame.add(initCommandFieldPanel(), BorderLayout.SOUTH);
-	    frame.setSize(500, 300);
+	    frame.setSize(800, 600);
 	    frame.setVisible(true);
 	}
+
 	
-	private static void updateVisual(){
-		setTextArea("command received");
-		//model.setData(new ArrayList<Task>());
-		updateTable();
+	private static void processCommand(String command) {
+		Parser p = Parser.getInstance();
+		try {
+			displayResults(command,p.parseInput(command));
+		} catch (Exception e) {
+			setTextArea(GeneralMessages.getMsgInvalid());
+		}
+	}
+	
+	private static CommandType getCommandType(String userCommand) {
+		return CommandType.fromString(userCommand.trim().split(CONSTANT_SPACE)[0]);
+	}
+	
+	private static String getCommandInfo(String userCommand) {
+		String[] userCommandString = userCommand.trim()
+				.split(CONSTANT_SPACE, 2);
+		if (userCommandString.length == 1) {
+			return "";
+		} else {
+			return userCommandString[1];
+		}
+	}
+	
+	private static void displayResults(String command, ArrayList<Task> taskList) {
+		CommandType commandType=getCommandType(command);
+		switch (commandType) {
+		case ADD:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgAdd(taskList.get(0).getName()));
+			break;
+		case DELETE:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgDelete(taskList.get(0).getName()));
+			break;
+		case EDIT:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgEdit(taskList.get(0).getName()));
+			break;
+		case DISPLAY:
+			if (taskList == null){
+			} else if (taskList.size() > 0) {
+				model.setData(taskList);
+				updateTable();
+				setTextArea(GeneralMessages.getMsgDisplay(getCommandInfo(command)));
+			} else if (taskList.size() == 0){
+				model.setData(taskList);
+				updateTable();
+				setTextArea(GeneralMessages.getMsgDisplayEmpty());
+			} else{
+				model.setData(Data.getTaskList());
+				updateTable();
+				setTextArea(GeneralMessages.getMsgInvalid());
+			}
+			break;
+		case TAG:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgTag(taskList.get(0).getName()));
+			break;
+		case DONE:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgDone(taskList.get(0).getName()));
+			break;
+		case UNDO:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgUndo());
+			break;
+		case SETPATH:
+			//TODO: setpath Display
+			updateTable();
+			setTextArea(GeneralMessages.getMsgPath());
+			break;
+		case HELP:
+			//TODO: Help Command Display
+			break;
+		case INVALID:
+			setTextArea(GeneralMessages.getMsgInvalid());
+			break;
+		case EXIT:
+			break;
+		default:
+			throw new Error("Unrecognized command type");
+		}	
 	}
 	
 	public static void main(String[] args) {

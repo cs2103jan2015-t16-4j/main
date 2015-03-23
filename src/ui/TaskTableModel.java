@@ -45,7 +45,7 @@ public class TaskTableModel extends AbstractTableModel {
 
     public Object getValueAt(int row, int col) {
     	Task task =data.get(row);
-    	SimpleDateFormat format= new SimpleDateFormat("dd-MM-yyyy");;
+    	SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm");;
     	
     	if(col==ID_COL){
     		return task.getId();

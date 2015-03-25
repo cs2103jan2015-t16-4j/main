@@ -41,9 +41,8 @@ public class Database {
 
 	public boolean clearFile() {
 		try {
-			BufferedWriter bWrite = new BufferedWriter(new FileWriter(filepath,
-					false));
-			bWrite.write("");
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(filepath,false));
+			bWrite.write(" ");
 			bWrite.close();
 			return true;
 		} catch (IOException e) {

@@ -1,4 +1,4 @@
-##AnyTask
+﻿##AnyTask
 
 AnyTask is a simple scheduler, built with efficiency in mind. AnyTask is CLI based, and is a no-frills way to managing your time well. Our aim is to excel in the basic functions. AnyTask will not be bloated with functions, an thus will run in the shortest possible time. We have designed AnyTask to be simple and easy to use – users will never feel lost with the assistance of our in-built ‘help’ feature and easily understandable commands.
 
@@ -52,11 +52,7 @@ done <Task Name>
 ```
 setpath <Path>
 ```
-###8. help
-```
-help
-help <Command Type>
-```
+
 ##Unimplemented Functionalities
 ###1. undo
 ```
@@ -65,4 +61,9 @@ undo
 ###2. display
 ```
 display from <Start Time> to <End Time>
+```
+###3. help
+```
+help
+help <Command Type>
 ```

@@ -13,7 +13,7 @@ public class ExitCommand extends Command{
 	}
 	
 	public ArrayList<Task> execute(){
-		Database.saveTasksToFile();
+		Database.getInstance().saveTasksToFile();
 		System.exit(0);
 		return null;
 	}

@@ -58,7 +58,8 @@ public class AnyTask {
 //			isCorrectFormat = true;
 			Display.displayMsgWelcome();
 		} else if (args.length == 1) {
-			Database.setFilePath(args[0]);
+			Database db = Database.getInstance();
+			db.setFilePath(args[0]);
 //			isCorrectFormat = true;
 			Display.displayMsgWelcome();
 		} else {
@@ -85,6 +86,7 @@ public class AnyTask {
 	public static void processCommand(String command) {
 		// executeUserCommand(getFirstWord(command).toLowerCase(),
 		// removeFirstWord(command));
+		
 		Parser p = Parser.getInstance();
 		try {
 			displayResults(p.parseInput(command));

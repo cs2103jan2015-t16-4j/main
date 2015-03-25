@@ -25,7 +25,8 @@ public class AddCommand extends Command{
 	}
 	
 	public ArrayList<Task> execute(){
-		Database.getTaskList().add(task);
+		Database db = Database.getInstance();
+		db.getTaskList().add(task);
 		ArrayList<Task> r = new ArrayList<Task>();
 		r.add(task);
 		return r;

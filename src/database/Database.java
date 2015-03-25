@@ -24,16 +24,30 @@ public class Database  {
 	
 	final static Logger logger = LoggerFactory.getLogger(Database.class);
 	
-	public static int getId(){
+	private static class DatabaseLoader {
+        private static final Database INSTANCE = new Database();
+    }
+
+    private Database() {
+        if (DatabaseLoader.INSTANCE != null) {
+            throw new IllegalStateException("Already instantiated");
+        }
+    }
+
+    public static Database getInstance() {
+        return DatabaseLoader.INSTANCE;
+    }
+    
+	public int getId(){
 		id++;
 		return id;
 	}
 	
-	public static void setId(int newId){
+	public void setId(int newId){
 		id=newId;
 	}
 	
-	private static void setIdFromList(){
+	private void setIdFromList(){
 		int taskid;
 		id=0;
 		for(int i=0;i<taskList.size();i++){
@@ -44,16 +58,16 @@ public class Database  {
 		}
 	}
 	
-	public static ArrayList<Task> getTaskList() {
+	public ArrayList<Task> getTaskList() {
 		assert (taskList!=null);
 		return taskList;
 	}
-	public static void setTaskList(ArrayList<Task> newTaskList){
+	public void setTaskList(ArrayList<Task> newTaskList){
 		saveTasksToFile();
 		taskList=newTaskList;
 	}
 	//@author insert Zirui's admin here
-	public static void setFilePath(String userText) {
+	public void setFilePath(String userText) {
 		saveTasksToFile();
 		filepath = userText;
 		taskList.clear();
@@ -62,7 +76,7 @@ public class Database  {
 		}
 	}
 	
-	public static boolean clearFile() {
+	public boolean clearFile() {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(
 					filepath, false));
@@ -75,7 +89,7 @@ public class Database  {
 		}
 	}
 	
-	public static boolean fetchTasksFromFile() {
+	public boolean fetchTasksFromFile() {
 		boolean isFileRead=false;
 		Settings.setFilePath(filepath);
 		try {
@@ -94,7 +108,7 @@ public class Database  {
 		}
 	}
 
-	private static boolean readJsonFile(BufferedReader br){
+	private boolean readJsonFile(BufferedReader br){
 		try {
 			Gson gson= new Gson();
 			taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>(){}.getType());	
@@ -109,7 +123,7 @@ public class Database  {
 		}
 	}
 	
-	public static boolean saveTasksToFile() {
+	public boolean saveTasksToFile() {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(
 					filepath, false));

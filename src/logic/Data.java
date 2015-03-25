@@ -15,15 +15,17 @@ public class Data {
 	final static Logger logger = LoggerFactory.getLogger(Database.class);
 	
 	public static boolean initTaskList(){
-		if(Database.fetchTasksFromFile()){
-			taskList=Database.getTaskList();
+		Database db = Database.getInstance();
+		if(db.fetchTasksFromFile()){
+			taskList=db.getTaskList();
 			return true;
 		}
 		return false;
 	}
 	
 	public static ArrayList<Task> getTaskList(){
-		return Database.getTaskList();
+		Database db = Database.getInstance();
+		return db.getTaskList();
 	}
 	
 	public static void setTaskList(ArrayList<Task> newTaskList){

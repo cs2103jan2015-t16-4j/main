@@ -10,7 +10,7 @@ import database.Database;
 public class EditCommand extends Command {
 	private String name, newName, oldTag, newTag;
 	int taskId = -1;
-	private ArrayList<Task> taskList = Database.getTaskList();
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	private Calendar newDeadline, newStartTime, newEndTime;
 

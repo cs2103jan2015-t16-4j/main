@@ -10,7 +10,7 @@ public class TagCommand extends Command {
 	private String name;
 	private int taskId = -1;
 	private ArrayList<String> tags = new ArrayList<String>();
-	private ArrayList<Task> taskList = Database.getTaskList();
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 
 	public TagCommand(String name, String[] tags) {

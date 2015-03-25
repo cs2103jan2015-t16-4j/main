@@ -18,7 +18,7 @@ public class DisplayCommand extends Command {
 	private static final String KEYWORD_ALL = "all";
 
 	private String keyword;
-	private ArrayList<Task> taskList = Database.getTaskList();
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
 	private ArrayList<Task> resultTasklist = new ArrayList<Task>();
 
 	public DisplayCommand() {

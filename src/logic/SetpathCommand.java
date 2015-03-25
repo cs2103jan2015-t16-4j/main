@@ -14,7 +14,7 @@ public class SetpathCommand extends Command{
 	}
 	
 	public ArrayList<Task> execute(){
-		Database.setFilePath(path);
+		Database.getInstance().setFilePath(path);
 		return null;
 	}
 }

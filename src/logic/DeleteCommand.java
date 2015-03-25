@@ -9,7 +9,7 @@ import database.Database;
 public class DeleteCommand extends Command {
 	private String name, tag;
 	private int taskId = -1;
-	private ArrayList<Task> taskList = Database.getTaskList();
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 
 	public DeleteCommand(String name) {

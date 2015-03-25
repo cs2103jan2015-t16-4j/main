@@ -12,10 +12,11 @@ public class Task {
 	private Calendar startTime;
 	private Calendar endTime;
 	private ArrayList<String> tags = new ArrayList<String>();
-
+	
 	public Task(String name) {
 		this.name = name;
-		this.id = Database.getId();
+		Database db = Database.getInstance();
+		this.id = db.getId();
 	}
 
 	public int getId() {

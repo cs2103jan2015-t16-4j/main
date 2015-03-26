@@ -51,7 +51,7 @@ public class DisplayCommand extends Command {
 	}
 
 	private boolean isDisplayWithTag() {
-		return keyword.substring(0, 0) == CONSTANT_HASHTAG;
+		return keyword.startsWith(CONSTANT_HASHTAG);
 	}
 
 	private boolean isDisplayDone() {

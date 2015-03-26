@@ -7,6 +7,7 @@ import database.Database;
 
 //@author A0119384Y
 public class Task {
+	private Task copy;
 	private Calendar endTime;
 	private int id;
 	private String name;
@@ -17,6 +18,14 @@ public class Task {
 		this.name = name;
 		Database db = Database.getInstance();
 		this.id = db.getId();
+	}
+	
+	public Task(Task another){
+		copy = new Task(another.name);
+		copy.id = another.id;
+		copy.startTime = another.startTime;
+		copy.endTime = another.endTime;
+		copy.tags = new ArrayList<String>(another.tags);
 	}
 
 	public void addTag(String newTag) {

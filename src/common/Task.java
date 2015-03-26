@@ -76,6 +76,7 @@ public class Task {
 		return true;
 	}
 
+	// @author A0119384Y
 	public Calendar getEndTime() {
 		return this.endTime;
 	}
@@ -113,6 +114,7 @@ public class Task {
 		return result;
 	}
 
+	// @author A0119384Y
 	public boolean isContainedTag(String tag) {
 		return this.tags.contains(tag);
 	}

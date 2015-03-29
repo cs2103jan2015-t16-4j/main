@@ -187,8 +187,24 @@ public class Gui {
 		model.fireTableDataChanged();
 	}
 
+	public static void initSystemTray(){
+		if(!SystemTray.isSupported()){
+			return void;
+		}
+		Image image = Toolkit.getDefaultToolkit().getImage("./icon.jpg");
+		PopupMenu trayPopupMenu = new PopupMenu();
+		TrayIcon trayIcon = new TrayIcon(image, "AnyTask", trayPopupMenu);
+		SystemTray systemTray = SystemTray.getSystemTray();
+		try{
+			systemTray.add(trayIcon);
+		}catch(AWTException awtException){
+			awtException.printStackTrace();
+		}
+	}
+
 	public Gui() {
 		initFrame();
+		initSystemTray();
 		setTextArea(GeneralMessages.getMsgWelcome());
 	}
 }

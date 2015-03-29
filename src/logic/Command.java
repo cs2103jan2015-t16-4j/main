@@ -7,7 +7,7 @@ import common.Task;
 //@author A0119384Y
 public abstract class Command {
 	public static enum CommandType {
-		ADD("add"), DELETE("delete"), EDIT("edit"), DISPLAY("display"), TAG(
+		SAVE("save"), ADD("add"), DELETE("delete"), EDIT("edit"), DISPLAY("display"), TAG(
 				"tag"), DONE("done"), UNDO("undo"), SETPATH("setpath"), INVALID(
 				"invalid"), EXIT("exit"), HELP("help");
 

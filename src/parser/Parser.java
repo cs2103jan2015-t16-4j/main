@@ -76,6 +76,8 @@ public class Parser {
 			return invalidParser(paras);
 		case EXIT:
 			return exitParser(paras);
+		case SAVE:
+			return saveParser(paras);
 		default:
 			throw new Error("Unrecognized command type");
 		}
@@ -174,6 +176,10 @@ public class Parser {
 
 	private Command exitParser(String paras) {
 		return new ExitCommand();
+	}
+
+	private Command saveParser(String paras) {
+		return new SaveCommand();
 	}
 
 	private Calendar parseDate(String dateString) {

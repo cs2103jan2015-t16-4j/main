@@ -13,6 +13,7 @@ public class DisplayCommand extends Command {
 	private static final String KEYWORD_FLOATING = "floating";
 	private static final String KEYWORD_DONE = "done";
 	private static final String KEYWORD_ALL = "all";
+	private static final String KEYWORD_RECURRING = "recurring";
 
 	private String keyword;
 	private Calendar startTimeCalendar, endTimeCalendar;
@@ -49,6 +50,8 @@ public class DisplayCommand extends Command {
 			return displayFloating();
 		} else if (isDisplayDone()) {
 			return displayDone();
+		} else if (isDisplayRecurring()) {
+			return displayRecurring();
 		} else if (isDisplayWithTag()) {
 			return displayWithTag();
 		} else {
@@ -74,6 +77,10 @@ public class DisplayCommand extends Command {
 
 	private boolean isDisplayUndone() {
 		return keyword == null;
+	}
+
+	private boolean isDisplayRecurring() {
+		return keyword.equalsIgnoreCase(KEYWORD_RECURRING);
 	}
 
 	private boolean isDisplayAll() {
@@ -129,6 +136,15 @@ public class DisplayCommand extends Command {
 	private ArrayList<Task> displayUndone() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (!taskList.get(index).isDone()) {
+				resultTasklist.add(taskList.get(index));
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayRecurring() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).isRecurring()) {
 				resultTasklist.add(taskList.get(index));
 			}
 		}

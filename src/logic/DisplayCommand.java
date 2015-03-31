@@ -138,7 +138,7 @@ public class DisplayCommand extends Command {
 	private ArrayList<Task> displayWithEndTime() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getEndTime() != null) {
-				if (endTimeCalendar.after(taskList.get(index).getEndTime())) {
+				if (!endTimeCalendar.before(taskList.get(index).getEndTime())) {
 					resultTasklist.add(taskList.get(index));
 				}
 			}
@@ -149,8 +149,8 @@ public class DisplayCommand extends Command {
 	private ArrayList<Task> displayWithTimePeriod() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getEndTime() != null) {
-				if (startTimeCalendar.before(taskList.get(index).getEndTime())
-						&& endTimeCalendar.after(taskList.get(index)
+				if (!startTimeCalendar.after(taskList.get(index).getEndTime())
+						&& !endTimeCalendar.before(taskList.get(index)
 								.getEndTime())) {
 					resultTasklist.add(taskList.get(index));
 				}

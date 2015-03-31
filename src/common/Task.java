@@ -7,10 +7,10 @@ import database.Database;
 
 //@author A0119384Y
 public class Task {
-	private Calendar endTime;
 	private int id;
+	private int precId = -1;
 	private String name;
-	private Calendar startTime;
+	private Calendar startTime, endTime;
 	private ArrayList<String> tags = new ArrayList<String>();
 
 	public Task(String name) {
@@ -18,14 +18,14 @@ public class Task {
 		Database db = Database.getInstance();
 		this.id = db.getId();
 	}
-	
-	public Task(Task another){
+
+	public Task(Task another) {
 		this.name = another.name;
 		this.id = another.id;
-		if(another.startTime != null){
+		if (another.startTime != null) {
 			this.startTime = (Calendar) another.startTime.clone();
 		}
-		if(another.endTime != null){
+		if (another.endTime != null) {
 			this.endTime = (Calendar) another.endTime.clone();
 		}
 		this.tags = new ArrayList<String>(another.tags);
@@ -152,6 +152,10 @@ public class Task {
 		return (this.startTime != null) && (this.endTime != null);
 	}
 
+	public boolean isRecurring() {
+		return this.precId >= 0;
+	}
+
 	public void removeTag(String tag) {
 		if (this.tags.contains(tag)) {
 			this.tags.remove(tag);
@@ -175,5 +179,9 @@ public class Task {
 
 	public void setStartTime(Calendar startTime) {
 		this.startTime = startTime;
+	}
+
+	public void setPrecId(int precId) {
+		this.precId = precId;
 	}
 }

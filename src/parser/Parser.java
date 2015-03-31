@@ -92,7 +92,56 @@ public class Parser {
 	}
 
 	private Command addParser(String paras) {
+		// add daily/weekly/monthly/annually <Task Name> by <Deadline> before <End Time>
 		backupTaskList();
+		String firstWord = paras.split(CONSTANT_SPACE)[0].toLowerCase();
+		if (firstWord.equals("daily") || firstWord.equals("weekly")
+				|| firstWord.equals("monthly") || firstWord.equals("annually")) {
+			String new_paras = paras.split(CONSTANT_SPACE, 2)[1];
+			if (isAddTaskWithDeadline(new_paras)) {
+				String name;
+				String deadlineString, endRecurringTimeString;
+
+				name = new_paras.split(KEYWORD_ADD_DEADLINE)[0];
+				deadlineString = new_paras.split(KEYWORD_ADD_DEADLINE)[1].split(" before ")[0];
+				endRecurringTimeString = new_paras.split(KEYWORD_ADD_DEADLINE)[1].split(" before ")[1];
+
+				Calendar deadlineCalendar = parseDate(deadlineString);
+				Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
+
+				if (deadlineCalendar != null && endRecurringTimeCalendar != null) {
+					return new AddCommand(name, firstWord, null, deadlineCalendar, endRecurringTimeCalendar);
+				} else {
+					return null;
+				}
+			} else if (isAddTaskWithTime(new_paras)) {
+				String name;
+				String beginTimeString, endTimeString, endRecurringTimeString;
+
+				name = new_paras.split(KEYWORD_ADD_SCHEDULED)[0];
+				
+				String timeString = new_paras.split(KEYWORD_ADD_SCHEDULED)[1];
+				beginTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[0];
+				endTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[1].split(" before ")[0];
+				
+				endRecurringTimeString = timeString.split(" before ")[1];
+
+				Calendar beginTimeCalendar = parseDate(beginTimeString);
+				Calendar endTimeCalendar = parseDate(endTimeString);
+				Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
+
+				if (beginTimeCalendar != null && endTimeCalendar != null && endRecurringTimeCalendar != null) {
+					return new AddCommand(name, firstWord, beginTimeCalendar, endTimeCalendar, endRecurringTimeCalendar);
+				} else {
+					return null;
+				}
+			} else{
+			
+			}
+		} else {
+			
+		}
+
 		if (isAddTaskWithDeadline(paras)) {
 			return addTaskWithDeadline(paras);
 		} else if (isAddTaskWithTime(paras)) {
@@ -138,11 +187,11 @@ public class Parser {
 	private Command displayParser(String paras) {
 		if (paras.length() == 0) {
 			return new DisplayCommand();
-		} else if(isDisplayWithEndTime(paras)){
+		} else if (isDisplayWithEndTime(paras)) {
 			return displayWithEndTime(paras);
-		} else if(isDisplayWithTimePeriod(paras)){
+		} else if (isDisplayWithTimePeriod(paras)) {
 			return displayWithTimePeriod(paras);
-		}else {
+		} else {
 			return new DisplayCommand(paras);
 		}
 	}
@@ -313,7 +362,8 @@ public class Parser {
 	}
 
 	private Command displayWithEndTime(String paras) {
-		String endTimeString = paras.split(KEYWORD_DISPLAY_BEFORE+CONSTANT_SPACE)[1];
+		String endTimeString = paras.split(KEYWORD_DISPLAY_BEFORE
+				+ CONSTANT_SPACE)[1];
 		Calendar endTimeCalendar = parseDate(endTimeString);
 		if (endTimeCalendar != null) {
 			return new DisplayCommand(endTimeCalendar);
@@ -321,10 +371,14 @@ public class Parser {
 			return null;
 		}
 	}
-	
+
 	private Command displayWithTimePeriod(String paras) {
-		String startTimeString = paras.split(KEYWORD_DISPLAY_AFTER+CONSTANT_SPACE)[1].split(CONSTANT_SPACE+KEYWORD_DISPLAY_BEFORE)[0];
-		String endTimeString = paras.split(KEYWORD_DISPLAY_AFTER+CONSTANT_SPACE)[1].split(CONSTANT_SPACE+KEYWORD_DISPLAY_BEFORE+CONSTANT_SPACE)[1];
+		String startTimeString = paras.split(KEYWORD_DISPLAY_AFTER
+				+ CONSTANT_SPACE)[1].split(CONSTANT_SPACE
+				+ KEYWORD_DISPLAY_BEFORE)[0];
+		String endTimeString = paras.split(KEYWORD_DISPLAY_AFTER
+				+ CONSTANT_SPACE)[1].split(CONSTANT_SPACE
+				+ KEYWORD_DISPLAY_BEFORE + CONSTANT_SPACE)[1];
 
 		Calendar startTimeCalendar = parseDate(startTimeString);
 		Calendar endTimeCalendar = parseDate(endTimeString);
@@ -430,24 +484,28 @@ public class Parser {
 	}
 
 	private Command deleteAttribute(String paras) {
-		if(paras.toLowerCase().contains(KEYWORD_DELETE_START_TIME)){
-			String name = paras.split(CONSTANT_SPACE+KEYWORD_DELETE_START_TIME)[0];
+		if (paras.toLowerCase().contains(KEYWORD_DELETE_START_TIME)) {
+			String name = paras.split(CONSTANT_SPACE
+					+ KEYWORD_DELETE_START_TIME)[0];
 			if (isNumerical(name)) {
-				return new DeleteCommand(Integer.parseInt(name), KEYWORD_DELETE_START_TIME);
+				return new DeleteCommand(Integer.parseInt(name),
+						KEYWORD_DELETE_START_TIME);
 			} else {
 				return new DeleteCommand(name, KEYWORD_DELETE_START_TIME);
 			}
-		} else if (paras.toLowerCase().contains(KEYWORD_DELETE_END_TIME)){
-			String name = paras.split(CONSTANT_SPACE+KEYWORD_DELETE_END_TIME)[0];
+		} else if (paras.toLowerCase().contains(KEYWORD_DELETE_END_TIME)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_DELETE_END_TIME)[0];
 			if (isNumerical(name)) {
-				return new DeleteCommand(Integer.parseInt(name), KEYWORD_DELETE_END_TIME);
+				return new DeleteCommand(Integer.parseInt(name),
+						KEYWORD_DELETE_END_TIME);
 			} else {
 				return new DeleteCommand(name, KEYWORD_DELETE_END_TIME);
 			}
-		} else if (paras.toLowerCase().contains(KEYWORD_DELETE_DEADLINE)){
-			String name = paras.split(CONSTANT_SPACE+KEYWORD_DELETE_DEADLINE)[0];
+		} else if (paras.toLowerCase().contains(KEYWORD_DELETE_DEADLINE)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_DELETE_DEADLINE)[0];
 			if (isNumerical(name)) {
-				return new DeleteCommand(Integer.parseInt(name), KEYWORD_DELETE_DEADLINE);
+				return new DeleteCommand(Integer.parseInt(name),
+						KEYWORD_DELETE_DEADLINE);
 			} else {
 				return new DeleteCommand(name, KEYWORD_DELETE_DEADLINE);
 			}

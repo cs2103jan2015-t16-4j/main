@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import common.Task;
+import database.Database;
 import logic.*;
 import logic.Command.CommandType;
 
@@ -23,6 +24,7 @@ public class Parser {
 	private static final String KEYWORD_TAG = " #";
 	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
 	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
+	private ArrayList<Task> taskListBackup = new ArrayList<Task>();
 
 	private static Parser parserInstance = new Parser();
 
@@ -84,6 +86,7 @@ public class Parser {
 	}
 
 	private Command addParser(String paras) {
+		backupTaskList();
 		if (isAddTaskWithDeadline(paras)) {
 			return addTaskWithDeadline(paras);
 		} else if (isAddTaskWithTime(paras)) {
@@ -97,6 +100,7 @@ public class Parser {
 	}
 
 	private Command deleteParser(String paras) {
+		backupTaskList();
 		if (isDeleteTag(paras)) {
 			return deleteTag(paras);
 		} else if (isDeleteTask(paras)) {
@@ -107,6 +111,7 @@ public class Parser {
 	}
 
 	private Command editParser(String paras) {
+		backupTaskList();
 		if (isEditName(paras)) {
 			return editName(paras);
 		} else if (isEditDeadline(paras)) {
@@ -133,7 +138,7 @@ public class Parser {
 	private Command tagParser(String paras) {
 		String name;
 		String[] tags;
-
+		backupTaskList();
 		name = paras.split(KEYWORD_TAG)[0];
 		tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_TAG, 2)[1])
 				.split(CONSTANT_SPACE);
@@ -146,6 +151,7 @@ public class Parser {
 	}
 
 	private Command doneParser(String paras) {
+		backupTaskList();
 		if (isNumerical(paras)) {
 			return new DoneCommand(Integer.parseInt(paras));
 		} else {
@@ -154,7 +160,7 @@ public class Parser {
 	}
 
 	private Command undoParser(String paras) {
-		return new UndoCommand();
+		return new UndoCommand(taskListBackup);
 	}
 
 	private Command setpathParser(String paras) {
@@ -367,6 +373,13 @@ public class Parser {
 			return new DeleteCommand(Integer.parseInt(name), tag);
 		} else {
 			return new DeleteCommand(name, tag);
+		}
+	}
+	
+	private void backupTaskList(){
+		taskListBackup.clear();
+		for(Task t: Database.getInstance().getTaskList()){
+			taskListBackup.add(new Task(t));
 		}
 	}
 

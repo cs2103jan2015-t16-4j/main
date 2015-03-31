@@ -23,8 +23,8 @@ public class Task {
 	public Task(Task another){
 		copy = new Task(another.name);
 		copy.id = another.id;
-		copy.startTime = another.startTime;
-		copy.endTime = another.endTime;
+		copy.startTime = (Calendar) another.startTime.clone();
+		copy.endTime = (Calendar) another.endTime.clone();
 		copy.tags = new ArrayList<String>(another.tags);
 	}
 

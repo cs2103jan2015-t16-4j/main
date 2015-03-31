@@ -24,6 +24,9 @@ public class Parser {
 	private static final String KEYWORD_TAG = " #";
 	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
 	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
+	private static final String KEYWORD_DELETE_DEADLINE = "deadline";
+	private static final String KEYWORD_DELETE_END_TIME = "end time";
+	private static final String KEYWORD_DELETE_START_TIME = "start time";
 	private ArrayList<Task> taskListBackup = new ArrayList<Task>();
 
 	private static Parser parserInstance = new Parser();
@@ -103,6 +106,8 @@ public class Parser {
 		backupTaskList();
 		if (isDeleteTag(paras)) {
 			return deleteTag(paras);
+		} else if (isDeleteAttribute(paras)) {
+			return deleteAttribute(paras);
 		} else if (isDeleteTask(paras)) {
 			return deleteTask(paras);
 		} else {
@@ -257,6 +262,12 @@ public class Parser {
 		return paras.toLowerCase().contains(KEYWORD_TAG);
 	}
 
+	private boolean isDeleteAttribute(String paras) {
+		return paras.toLowerCase().contains(KEYWORD_DELETE_START_TIME)
+				|| paras.toLowerCase().contains(KEYWORD_DELETE_END_TIME)
+				|| paras.toLowerCase().contains(KEYWORD_DELETE_DEADLINE);
+	}
+
 	private boolean isNumerical(String str) {
 		try {
 			Integer.parseInt(str);
@@ -292,8 +303,9 @@ public class Parser {
 
 		Calendar newEndTimeCalendar = parseDate(newEndTimeString);
 		if (newEndTimeCalendar != null) {
-			if(isNumerical(name)){
-				return new EditCommand(Integer.parseInt(name), null, newEndTimeCalendar);
+			if (isNumerical(name)) {
+				return new EditCommand(Integer.parseInt(name), null,
+						newEndTimeCalendar);
 			} else {
 				return new EditCommand(name, null, newEndTimeCalendar);
 			}
@@ -308,8 +320,9 @@ public class Parser {
 
 		Calendar newStartTimeCalendar = parseDate(newStartTimeString);
 		if (newStartTimeCalendar != null) {
-			if(isNumerical(name)){
-				return new EditCommand(Integer.parseInt(name), newStartTimeCalendar, null);
+			if (isNumerical(name)) {
+				return new EditCommand(Integer.parseInt(name),
+						newStartTimeCalendar, null);
 			} else {
 				return new EditCommand(name, newStartTimeCalendar, null);
 			}
@@ -324,8 +337,9 @@ public class Parser {
 
 		Calendar newDeadlineCalendar = parseDate(newDeadlineString);
 		if (newDeadlineCalendar != null) {
-			if(isNumerical(name)){
-				return new EditCommand(Integer.parseInt(name), null, newDeadlineCalendar);
+			if (isNumerical(name)) {
+				return new EditCommand(Integer.parseInt(name), null,
+						newDeadlineCalendar);
 			} else {
 				return new EditCommand(name, null, newDeadlineCalendar);
 			}
@@ -337,7 +351,7 @@ public class Parser {
 	private Command editName(String paras) {
 		String oldName = paras.split(KEYWORD_EDIT_NAME)[0];
 		String newName = paras.split(KEYWORD_EDIT_NAME)[1];
-		if(isNumerical(oldName)){
+		if (isNumerical(oldName)) {
 			return new EditCommand(Integer.parseInt(oldName), newName);
 		} else {
 			return new EditCommand(oldName, newName);
@@ -351,7 +365,7 @@ public class Parser {
 		String newTag = CONSTANT_HASHTAG
 				+ paras.split(KEYWORD_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[1];
 
-		if(isNumerical(name)){
+		if (isNumerical(name)) {
 			return new EditCommand(Integer.parseInt(name), oldTag, newTag);
 		} else {
 			return new EditCommand(name, oldTag, newTag);
@@ -375,10 +389,37 @@ public class Parser {
 			return new DeleteCommand(name, tag);
 		}
 	}
-	
-	private void backupTaskList(){
+
+	private Command deleteAttribute(String paras) {
+		if(paras.toLowerCase().contains(KEYWORD_DELETE_START_TIME)){
+			String name = paras.split(CONSTANT_SPACE+KEYWORD_DELETE_START_TIME)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name), KEYWORD_DELETE_START_TIME);
+			} else {
+				return new DeleteCommand(name, KEYWORD_DELETE_START_TIME);
+			}
+		} else if (paras.toLowerCase().contains(KEYWORD_DELETE_END_TIME)){
+			String name = paras.split(CONSTANT_SPACE+KEYWORD_DELETE_END_TIME)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name), KEYWORD_DELETE_END_TIME);
+			} else {
+				return new DeleteCommand(name, KEYWORD_DELETE_END_TIME);
+			}
+		} else if (paras.toLowerCase().contains(KEYWORD_DELETE_DEADLINE)){
+			String name = paras.split(CONSTANT_SPACE+KEYWORD_DELETE_DEADLINE)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name), KEYWORD_DELETE_DEADLINE);
+			} else {
+				return new DeleteCommand(name, KEYWORD_DELETE_DEADLINE);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private void backupTaskList() {
 		taskListBackup.clear();
-		for(Task t: Database.getInstance().getTaskList()){
+		for (Task t : Database.getInstance().getTaskList()) {
 			taskListBackup.add(new Task(t));
 		}
 	}

@@ -20,15 +20,11 @@ public class Task {
 	}
 	
 	public Task(Task another){
-		this.name = another.name;
-		this.id = another.id;
-		if(another.startTime != null){
-			this.startTime = (Calendar) another.startTime.clone();
-		}
-		if(another.endTime != null){
-			this.endTime = (Calendar) another.endTime.clone();
-		}
-		this.tags = new ArrayList<String>(another.tags);
+		copy = new Task(another.name);
+		copy.id = another.id;
+		copy.startTime = (Calendar) another.startTime.clone();
+		copy.endTime = (Calendar) another.endTime.clone();
+		copy.tags = new ArrayList<String>(another.tags);
 	}
 
 	public void addTag(String newTag) {

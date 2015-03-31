@@ -153,7 +153,7 @@ public class Task {
 	}
 
 	public boolean isRecurring() {
-		return this.precId >= 0;
+		return Database.getInstance().getTaskList().get(this.id+1).precId == this.id;
 	}
 
 	public void removeTag(String tag) {

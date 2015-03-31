@@ -2,6 +2,7 @@ package logic;
 
 //import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import common.Task;
 import database.Database;
@@ -9,15 +10,12 @@ import database.Database;
 //@author A0119384Y
 public class DisplayCommand extends Command {
 	private static final String CONSTANT_HASHTAG = "#";
-	// private static final String MESSAGE_DISPLAY_NOT_EMPTY =
-	// "%-10d %-10s %-20s %-10s\n";
-	// private static final String MESSAGE_DISPLAY_EMPTY =
-	// "no result for keyword %s.\n";
 	private static final String KEYWORD_FLOATING = "floating";
 	private static final String KEYWORD_DONE = "done";
 	private static final String KEYWORD_ALL = "all";
 
 	private String keyword;
+	private Calendar startTimeCalendar, endTimeCalendar;
 	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
 	private ArrayList<Task> resultTasklist = new ArrayList<Task>();
 
@@ -26,12 +24,24 @@ public class DisplayCommand extends Command {
 	}
 
 	public DisplayCommand(String keyword) {
-		assert keyword != null && keyword != "";
 		this.keyword = keyword;
 	}
 
+	public DisplayCommand(Calendar endTimeCalendar) {
+		this.endTimeCalendar = endTimeCalendar;
+	}
+
+	public DisplayCommand(Calendar startTimeCalendar, Calendar endTimeCalendar) {
+		this.startTimeCalendar = startTimeCalendar;
+		this.endTimeCalendar = endTimeCalendar;
+	}
+
 	public ArrayList<Task> execute() {
-		if (isDisplayUndone()) {
+		if (isDisplayWithEndTime()) {
+			return displayWithEndTime();
+		} else if (isDisplayWithTimePeriod()) {
+			return displayWithTimePeriod();
+		}else if (isDisplayUndone()) {
 			return displayUndone();
 		} else if (isDisplayAll()) {
 			return displayAll();
@@ -68,6 +78,14 @@ public class DisplayCommand extends Command {
 
 	private boolean isDisplayAll() {
 		return keyword.equalsIgnoreCase(KEYWORD_ALL);
+	}
+
+	private boolean isDisplayWithEndTime() {
+		return startTimeCalendar == null && endTimeCalendar != null;
+	}
+
+	private boolean isDisplayWithTimePeriod() {
+		return startTimeCalendar != null && endTimeCalendar != null;
 	}
 
 	private ArrayList<Task> displayWithKeyword() {
@@ -115,29 +133,29 @@ public class DisplayCommand extends Command {
 			}
 		}
 		return resultTasklist;
-		// displayResults(resultTaskIndexes, keyword);
 	}
 
-	// private void displayResults(ArrayList<Integer> resultTaskIndexes,
-	// String keyword) {
-	// if (resultTaskIndexes.size() > 0) {
-	// System.out.printf("%-10s %-10s %-20s %-10s\n", "Task ID",
-	// "Task Name", "End Time", "Tags");
-	// SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-	//
-	// for (int index = 0; index < resultTaskIndexes.size(); index++) {
-	// System.out.printf(
-	// MESSAGE_DISPLAY_NOT_EMPTY,
-	// taskList.get(resultTaskIndexes.get(index)).getId(),
-	// taskList.get(resultTaskIndexes.get(index)).getName(),
-	// (taskList.get(resultTaskIndexes.get(index))
-	// .getEndTime() != null) ? format.format(taskList
-	// .get(resultTaskIndexes.get(index)).getEndTime()
-	// .getTime()) : "none",
-	// taskList.get(resultTaskIndexes.get(index)).getTags());
-	// }
-	// } else {
-	// System.out.printf(MESSAGE_DISPLAY_EMPTY, keyword);
-	// }
-	// }
+	private ArrayList<Task> displayWithEndTime() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getEndTime() != null) {
+				if (endTimeCalendar.after(taskList.get(index).getEndTime())) {
+					resultTasklist.add(taskList.get(index));
+				}
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayWithTimePeriod() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getEndTime() != null) {
+				if (startTimeCalendar.before(taskList.get(index).getEndTime())
+						&& endTimeCalendar.after(taskList.get(index)
+								.getEndTime())) {
+					resultTasklist.add(taskList.get(index));
+				}
+			}
+		}
+		return resultTasklist;
+	}
 }

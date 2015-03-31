@@ -27,6 +27,9 @@ public class Parser {
 	private static final String KEYWORD_DELETE_DEADLINE = "deadline";
 	private static final String KEYWORD_DELETE_END_TIME = "end time";
 	private static final String KEYWORD_DELETE_START_TIME = "start time";
+	private static final String KEYWORD_DISPLAY_BEFORE = "before";
+	private static final String KEYWORD_DISPLAY_AFTER = "after";
+
 	private ArrayList<Task> taskListBackup = new ArrayList<Task>();
 
 	private static Parser parserInstance = new Parser();
@@ -135,7 +138,11 @@ public class Parser {
 	private Command displayParser(String paras) {
 		if (paras.length() == 0) {
 			return new DisplayCommand();
-		} else {
+		} else if(isDisplayWithEndTime(paras)){
+			return displayWithEndTime(paras);
+		} else if(isDisplayWithTimePeriod(paras)){
+			return displayWithTimePeriod(paras);
+		}else {
 			return new DisplayCommand(paras);
 		}
 	}
@@ -268,6 +275,14 @@ public class Parser {
 				|| paras.toLowerCase().contains(KEYWORD_DELETE_DEADLINE);
 	}
 
+	private boolean isDisplayWithEndTime(String paras) {
+		return paras.startsWith(KEYWORD_DISPLAY_BEFORE);
+	}
+
+	private boolean isDisplayWithTimePeriod(String paras) {
+		return paras.startsWith(KEYWORD_DISPLAY_AFTER);
+	}
+
 	private boolean isNumerical(String str) {
 		try {
 			Integer.parseInt(str);
@@ -295,6 +310,30 @@ public class Parser {
 
 	private boolean isEditEndTime(String paras) {
 		return paras.toLowerCase().contains(KEYWORD_EDIT_END_TIME);
+	}
+
+	private Command displayWithEndTime(String paras) {
+		String endTimeString = paras.split(KEYWORD_DISPLAY_BEFORE+CONSTANT_SPACE)[1];
+		Calendar endTimeCalendar = parseDate(endTimeString);
+		if (endTimeCalendar != null) {
+			return new DisplayCommand(endTimeCalendar);
+		} else {
+			return null;
+		}
+	}
+	
+	private Command displayWithTimePeriod(String paras) {
+		String startTimeString = paras.split(KEYWORD_DISPLAY_AFTER+CONSTANT_SPACE)[1].split(CONSTANT_SPACE+KEYWORD_DISPLAY_BEFORE)[0];
+		String endTimeString = paras.split(KEYWORD_DISPLAY_AFTER+CONSTANT_SPACE)[1].split(CONSTANT_SPACE+KEYWORD_DISPLAY_BEFORE+CONSTANT_SPACE)[1];
+
+		Calendar startTimeCalendar = parseDate(startTimeString);
+		Calendar endTimeCalendar = parseDate(endTimeString);
+
+		if (startTimeCalendar != null && endTimeCalendar != null) {
+			return new DisplayCommand(startTimeCalendar, endTimeCalendar);
+		} else {
+			return null;
+		}
 	}
 
 	private Command editEndTime(String paras) {

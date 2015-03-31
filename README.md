@@ -14,55 +14,55 @@ AnyTask is a simple scheduler, built with efficiency in mind. AnyTask is CLI bas
 ###1. add
 ```
 add <Task Name>
-add <Task Name> by <deadline, format 31/12/2015>
-add <Task Name> from <Start Time> to <End Time, format 31/12/2015 23:59>
+add <Task Name> by <Deadline>
+add <Task Name> from <Start Time> to <End Time>
+add [daily, weekly, monthly, annually] <Task Name> by <Deadline> before <EndRecurringTime>
+add [daily, weekly, monthly, annually] <Task Name> from <Start Time> to <End Time> before <EndRecurringTime>
 ```
 ###2. tag
 tags are begin with `#`.
 ```
-tag <Task Name> <Tags>
+tag <Task Name/ID> <Tags>
 ```
 ###3. delete
 ```
-delete <Unique Task ID>
-delete <Task Name> <Tag>
-delete <Task Name>
+delete <Task Name/ID> <Tag>
+delete <Task Name/ID>
 ```
 ###4. edit
 ```
-edit <Old Task Name> name to <New Task Name>
-edit <Task Name> deadline to <New Deadline>
-edit <Task Name> start time to <New Start Time>
-edit <Task Name> end time to <New End Time>
-edit <Task Name> <Old Tag> to <New Tag>
+edit <Old Task Name/ID> name to <New Task Name>
+edit <Task Name/ID> deadline to <New Deadline>
+edit <Task Name/ID> start time to <New Start Time>
+edit <Task Name/ID> end time to <New End Time>
+edit <Task Name/ID> <Old Tag> to <New Tag>
 ```
 ###5. display
 ```
 display // display undone
+display all
 display floating
 display done
+display recurring
 display <Keyword>
 display <Tag>
+display after <Start Time> before <End Time>
+display before <End Time>
 ```
 ###6. done
 ```
-done <Task Name>
+done <Task Name/ID>
 ```
 ###7. setpath
 ```
 setpath <Path>
 ```
-
-##Unimplemented Functionalities
-###1. undo
+###8. undo
 ```
 undo
 ```
-###2. display
-```
-display from <Start Time> to <End Time>
-```
-###3. help
+##Unimplemented Functionalities
+###1. help
 ```
 help
 help <Command Type>

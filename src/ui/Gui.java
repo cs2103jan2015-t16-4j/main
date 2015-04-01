@@ -1,6 +1,13 @@
 package ui;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -91,9 +98,9 @@ public class Gui {
 		case HELP:
 			// TODO: Help Command Display
 			break;
-		// case SAVE:
-		// setTextArea(GeneralMessages.getMsgSave();
-		// break;
+			// case SAVE:
+			// setTextArea(GeneralMessages.getMsgSave();
+			// break;
 		case INVALID:
 			setTextArea(GeneralMessages.getMsgInvalid());
 			break;
@@ -130,6 +137,30 @@ public class Gui {
 		frame.add(initCommandFieldPanel(), BorderLayout.SOUTH);
 		frame.setSize(800, 600);
 		frame.setVisible(true);
+	}
+
+	public static void initSystemTray() {
+		if (!SystemTray.isSupported()) {
+			return;
+		}
+		Image image = Toolkit.getDefaultToolkit().getImage("src/ui/icon.jpg");
+		PopupMenu trayPopupMenu = new PopupMenu();
+		MenuItem exit = new MenuItem("Exit");
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		trayPopupMenu.add(exit);
+
+		TrayIcon trayIcon = new TrayIcon(image, "AnyTask", trayPopupMenu);
+		SystemTray systemTray = SystemTray.getSystemTray();
+		try {
+			systemTray.add(trayIcon);
+		} catch (AWTException awtException) {
+			awtException.printStackTrace();
+		}
 	}
 
 	private static JScrollPane initTablePane(ArrayList<Task> list) {
@@ -189,6 +220,7 @@ public class Gui {
 
 	public Gui() {
 		initFrame();
+		initSystemTray();
 		setTextArea(GeneralMessages.getMsgWelcome());
 	}
 }

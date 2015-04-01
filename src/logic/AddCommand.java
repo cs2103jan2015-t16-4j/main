@@ -25,16 +25,16 @@ public class AddCommand extends Command {
 	public AddCommand(String name, String recurringCycle, Calendar startTime,
 			Calendar endTime, Calendar endRecurringTimeCalendar) {
 		tasks = new ArrayList<Task>();
-		int precId = -1;
+		ArrayList<Integer> recurringId = new ArrayList<Integer>();
 		while (!endTime.after(endRecurringTimeCalendar)) {
 			Task t = new Task(name);
 			if (startTime != null) {
 				t.setStartTime(startTime);
 			}
+			recurringId.add(t.getId());
 			t.setEndTime(endTime);
-			t.setPrecId(precId);
+			t.setRecurringId(recurringId.get(0));
 			tasks.add(t);
-			precId = t.getId();
 			if (recurringCycle.equals("daily")) {
 				if (startTime != null) {
 					startTime = (Calendar) endTime.clone();

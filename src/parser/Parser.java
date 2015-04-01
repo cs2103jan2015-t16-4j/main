@@ -29,6 +29,7 @@ public class Parser {
 	private static final String KEYWORD_DELETE_START_TIME = "start time";
 	private static final String KEYWORD_DISPLAY_BEFORE = "before";
 	private static final String KEYWORD_DISPLAY_AFTER = "after";
+	private static final String KEYWORD_DELETE_RECURRING = "recurring";
 
 	private ArrayList<Task> taskListBackup = new ArrayList<Task>();
 
@@ -92,7 +93,8 @@ public class Parser {
 	}
 
 	private Command addParser(String paras) {
-		// add daily/weekly/monthly/annually <Task Name> by <Deadline> before <End Time>
+		// add daily/weekly/monthly/annually <Task Name> by <Deadline> before
+		// <End Time>
 		backupTaskList();
 		String firstWord = paras.split(CONSTANT_SPACE)[0].toLowerCase();
 		if (firstWord.equals("daily") || firstWord.equals("weekly")
@@ -103,14 +105,18 @@ public class Parser {
 				String deadlineString, endRecurringTimeString;
 
 				name = new_paras.split(KEYWORD_ADD_DEADLINE)[0];
-				deadlineString = new_paras.split(KEYWORD_ADD_DEADLINE)[1].split(" before ")[0];
-				endRecurringTimeString = new_paras.split(KEYWORD_ADD_DEADLINE)[1].split(" before ")[1];
+				deadlineString = new_paras.split(KEYWORD_ADD_DEADLINE)[1]
+						.split(" before ")[0];
+				endRecurringTimeString = new_paras.split(KEYWORD_ADD_DEADLINE)[1]
+						.split(" before ")[1];
 
 				Calendar deadlineCalendar = parseDate(deadlineString);
 				Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
 
-				if (deadlineCalendar != null && endRecurringTimeCalendar != null) {
-					return new AddCommand(name, firstWord, null, deadlineCalendar, endRecurringTimeCalendar);
+				if (deadlineCalendar != null
+						&& endRecurringTimeCalendar != null) {
+					return new AddCommand(name, firstWord, null,
+							deadlineCalendar, endRecurringTimeCalendar);
 				} else {
 					return null;
 				}
@@ -119,27 +125,30 @@ public class Parser {
 				String beginTimeString, endTimeString, endRecurringTimeString;
 
 				name = new_paras.split(KEYWORD_ADD_SCHEDULED)[0];
-				
+
 				String timeString = new_paras.split(KEYWORD_ADD_SCHEDULED)[1];
 				beginTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[0];
-				endTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[1].split(" before ")[0];
-				
+				endTimeString = timeString.split(KEYWORD_ADD_SCHEDULED_2)[1]
+						.split(" before ")[0];
+
 				endRecurringTimeString = timeString.split(" before ")[1];
 
 				Calendar beginTimeCalendar = parseDate(beginTimeString);
 				Calendar endTimeCalendar = parseDate(endTimeString);
 				Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
 
-				if (beginTimeCalendar != null && endTimeCalendar != null && endRecurringTimeCalendar != null) {
-					return new AddCommand(name, firstWord, beginTimeCalendar, endTimeCalendar, endRecurringTimeCalendar);
+				if (beginTimeCalendar != null && endTimeCalendar != null
+						&& endRecurringTimeCalendar != null) {
+					return new AddCommand(name, firstWord, beginTimeCalendar,
+							endTimeCalendar, endRecurringTimeCalendar);
 				} else {
 					return null;
 				}
-			} else{
-			
+			} else {
+
 			}
 		} else {
-			
+
 		}
 
 		if (isAddTaskWithDeadline(paras)) {
@@ -160,6 +169,8 @@ public class Parser {
 			return deleteTag(paras);
 		} else if (isDeleteAttribute(paras)) {
 			return deleteAttribute(paras);
+		} else if (isDeleteRecurring(paras)) {
+			return deleteRecurring(paras);
 		} else if (isDeleteTask(paras)) {
 			return deleteTask(paras);
 		} else {
@@ -322,6 +333,10 @@ public class Parser {
 		return paras.toLowerCase().contains(KEYWORD_DELETE_START_TIME)
 				|| paras.toLowerCase().contains(KEYWORD_DELETE_END_TIME)
 				|| paras.toLowerCase().contains(KEYWORD_DELETE_DEADLINE);
+	}
+
+	private boolean isDeleteRecurring(String paras) {
+		return paras.toLowerCase().contains(KEYWORD_DELETE_RECURRING);
 	}
 
 	private boolean isDisplayWithEndTime(String paras) {
@@ -512,6 +527,17 @@ public class Parser {
 		} else {
 			return null;
 		}
+	}
+
+	private Command deleteRecurring(String paras) {
+		String name = paras.split(CONSTANT_SPACE + KEYWORD_DELETE_RECURRING)[0];
+		if (isNumerical(name)) {
+			return new DeleteCommand(Integer.parseInt(name),
+					KEYWORD_DELETE_RECURRING);
+		} else {
+			return new DeleteCommand(name, KEYWORD_DELETE_RECURRING);
+		}
+
 	}
 
 	private void backupTaskList() {

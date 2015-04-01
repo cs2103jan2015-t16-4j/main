@@ -8,7 +8,7 @@ import database.Database;
 //@author A0119384Y
 public class Task {
 	private int id;
-	private int precId = -1;
+	private int recurringId = -1;
 	private String name;
 	private Calendar startTime, endTime;
 	private ArrayList<String> tags = new ArrayList<String>();
@@ -108,6 +108,10 @@ public class Task {
 	public ArrayList<String> getTags() {
 		return this.tags;
 	}
+	
+	public int getRecurringId() {
+		return this.recurringId;
+	}
 
 	// @author A0112734N
 	@Override
@@ -153,7 +157,7 @@ public class Task {
 	}
 
 	public boolean isRecurring() {
-		return Database.getInstance().getTaskList().get(this.id+1).precId == this.id;
+		return this.recurringId >= 0;
 	}
 
 	public void removeTag(String tag) {
@@ -181,7 +185,7 @@ public class Task {
 		this.startTime = startTime;
 	}
 
-	public void setPrecId(int precId) {
-		this.precId = precId;
+	public void setRecurringId(int precId) {
+		this.recurringId = precId;
 	}
 }

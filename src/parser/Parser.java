@@ -240,12 +240,7 @@ public class Parser {
 	}
 
 	private Command helpParser(String paras) {
-		// if (paras.length() == 0){
-		// return new HelpCommand();
-		// } else {
-		// return new HelpCommand(paras);
-		// }
-		return null;
+		return new HelpCommand();
 	}
 
 	private Command invalidParser(String userCommand) {

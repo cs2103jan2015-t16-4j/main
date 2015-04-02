@@ -14,7 +14,7 @@ public class GeneralMessages {
 	private static final String MESSAGE_INVALID = "Invalid command\n";
 	private static final String MESSAGE_PATH = "%s is ready for use\n";
 	private static final String MESSAGE_PROMPT = "Command:";
-	private static final String MESSAGE_SAVE = "%s saved successfully\n";
+	private static final String MESSAGE_SAVE = "Saved successfully\n";
 	private static final String MESSAGE_TAG = "Added tag to %s \n";
 	private static final String MESSAGE_UNDO = "Previous command undo success";
 	private static final String MESSAGE_WELCOME = "Welcome to AnyTask. %s is ready for use\n";

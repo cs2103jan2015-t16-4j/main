@@ -29,7 +29,7 @@ import logic.Data;
 import logic.Display;
 import parser.Parser;
 import ui.messages.GeneralMessages;
-
+import ui.messages.HelpMessages;
 import common.Task;
 
 //@author A0112734N
@@ -97,10 +97,11 @@ public class Gui {
 			break;
 		case HELP:
 			// TODO: Help Command Display
+			setTextArea(HelpMessages.getMsgHelp((Parser.getInstance().getCommandInfo(command))));
 			break;
-			// case SAVE:
-			// setTextArea(GeneralMessages.getMsgSave();
-			// break;
+		case SAVE:
+			setTextArea(GeneralMessages.getMsgSave());
+			break;
 		case INVALID:
 			setTextArea(GeneralMessages.getMsgInvalid());
 			break;

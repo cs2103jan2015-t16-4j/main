@@ -13,7 +13,7 @@ public class DatabaseTest {
 	
 	private Database db = Database.getInstance();
 	//create a backup list so that we can put back the data in the file after the testing
-	private ArrayList<Task> backupList=new ArrayList<Task>();;
+	private ArrayList<Task> backupList=new ArrayList<Task>();
 	@Test
 	public void testClearSaveFile() {
 		db.fetchTasksFromFile();

@@ -8,8 +8,8 @@ import database.Database;
 //@author A0119384Y
 public class Task {
 	private int id;
-	private int recurringId = -1;
 	private String name;
+	private int recurringId = -1;
 	private Calendar startTime, endTime;
 	private ArrayList<String> tags = new ArrayList<String>();
 
@@ -51,9 +51,7 @@ public class Task {
 		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
-
 		Task other = (Task) obj;
-
 		if (this.endTime == null) {
 			if (other.endTime != null) {
 				return false;
@@ -69,6 +67,9 @@ public class Task {
 				return false;
 			}
 		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		if (this.recurringId != other.recurringId) {
 			return false;
 		}
 		if (this.startTime == null) {
@@ -101,16 +102,16 @@ public class Task {
 		return this.name;
 	}
 
+	public int getRecurringId() {
+		return this.recurringId;
+	}
+
 	public Calendar getStartTime() {
 		return this.startTime;
 	}
 
 	public ArrayList<String> getTags() {
 		return this.tags;
-	}
-	
-	public int getRecurringId() {
-		return this.recurringId;
 	}
 
 	// @author A0112734N
@@ -123,6 +124,7 @@ public class Task {
 		result = (prime * result) + this.id;
 		result = (prime * result)
 				+ ((this.name == null) ? 0 : this.name.hashCode());
+		result = (prime * result) + this.recurringId;
 		result = (prime * result)
 				+ ((this.startTime == null) ? 0 : this.startTime.hashCode());
 		result = (prime * result)
@@ -152,12 +154,12 @@ public class Task {
 		return (this.startTime == null) && (this.endTime == null);
 	}
 
-	public boolean isScheduled() {
-		return (this.startTime != null) && (this.endTime != null);
-	}
-
 	public boolean isRecurring() {
 		return this.recurringId >= 0;
+	}
+
+	public boolean isScheduled() {
+		return (this.startTime != null) && (this.endTime != null);
 	}
 
 	public void removeTag(String tag) {
@@ -181,11 +183,11 @@ public class Task {
 		this.name = name;
 	}
 
-	public void setStartTime(Calendar startTime) {
-		this.startTime = startTime;
-	}
-
 	public void setRecurringId(int precId) {
 		this.recurringId = precId;
+	}
+
+	public void setStartTime(Calendar startTime) {
+		this.startTime = startTime;
 	}
 }

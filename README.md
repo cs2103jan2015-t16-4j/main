@@ -65,9 +65,9 @@ undo
 ```
 add <Task Name> by <Deadline> before <EndRecurringTime> [daily, weekly, monthly, annually]
 add <Task Name> from <Start Time> to <End Time> before <EndRecurringTime> [daily, weekly, monthly, annually]
-delete <Task Name/ID> recurring
-tag <Task Name/ID> <Tag(s)> recurring
-delete <Task Name/ID> <Tag> recurring
+delete <ID> recurring
+tag <ID> <Tag(s)> recurring
+delete <ID> <Tag> recurring
 display recurring
 ```
 ###10. help

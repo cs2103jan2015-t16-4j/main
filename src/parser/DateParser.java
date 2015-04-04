@@ -1,8 +1,9 @@
 package parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import com.joestelmach.natty.*;
 
@@ -13,21 +14,24 @@ public class DateParser {
 		this.args = args;
 	}
 	
-	public Calendar parseDate() {
-		Date date;
+	public ArrayList<Calendar> parseDate() {
+		List<Date> dates;
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser();
 		List<DateGroup> groups = parser.parse(args);
 		try {
-			date = groups.get(0).getDates().get(0);
+			dates = groups.get(0).getDates();
 		} catch (Exception e) {
 			return null;
 		}
-		return dateToCalendar(date);
-		
+		return dateToCalendar(dates);
 	}
-	private static Calendar dateToCalendar(Date date){ 
-		  Calendar cal = Calendar.getInstance();
-		  cal.setTime(date);
-		  return cal;
+	private ArrayList<Calendar> dateToCalendar(List<Date> dates){ 
+		ArrayList<Calendar> cals = new ArrayList<Calendar>();
+		for(Date date: dates){
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			cals.add(cal);
+		}
+		return cals;
 	}
 }

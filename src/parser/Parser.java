@@ -26,6 +26,9 @@ public class Parser {
 	private static final String KEYWORD_DELETE_TAG = " #";
 	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
 	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
+	private static final String KEYWORD_DELETE_RECURRING = " recurring";
+	private static final String KEYWORD_DISPLAY_BEFORE = "before ";
+	private static final String KEYWORD_DISPLAY_FROM = "from ";
 	private static final String CONSTANT_HASHTAG = "#";
 	private static final String KEYWORD_BY = "by";
 	private static final String KEYWORD_TO = "to";
@@ -108,10 +111,11 @@ public class Parser {
 
 	private Command addParser(String paras) {
 		backupTaskList();
-		String lastWord = paras.substring(paras.lastIndexOf(CONSTANT_SPACE) + 1)
-				.toLowerCase();
+		String lastWord = paras
+				.substring(paras.lastIndexOf(CONSTANT_SPACE) + 1).toLowerCase();
 		if (isAddRecurringTask(lastWord)) {
-			String parasWithoutLastWord = paras.substring(0, paras.lastIndexOf(CONSTANT_SPACE));
+			String parasWithoutLastWord = paras.substring(0,
+					paras.lastIndexOf(CONSTANT_SPACE));
 			if (isAddTaskWithDeadline(parasWithoutLastWord)) {
 				return addRecurringTaskWithDeadline(lastWord,
 						parasWithoutLastWord);
@@ -178,18 +182,34 @@ public class Parser {
 	}
 
 	private Command tagParser(String paras) {
-		String name;
-		String[] tags;
 		backupTaskList();
-		name = paras.split(KEYWORD_DELETE_TAG)[0];
-		tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG, 2)[1])
-				.split(CONSTANT_SPACE);
-		if (isNumerical(name)) {
-			return new TagCommand(Integer.parseInt(name), tags);
-		} else {
-			return new TagCommand(recoverEscapeKeywords(name), tags);
-		}
+		if (paras.contains(KEYWORD_DELETE_RECURRING)) {
+			String parasWithoutLastWord = paras.substring(0,
+					paras.lastIndexOf(CONSTANT_SPACE));
+			String name = parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[0];
+			;
+			String[] tags = (CONSTANT_HASHTAG + parasWithoutLastWord.split(
+					KEYWORD_DELETE_TAG, 2)[1]).split(CONSTANT_SPACE);
 
+			if (isNumerical(name)) {
+				return new TagCommand(Integer.parseInt(name),
+						KEYWORD_RECURRING, tags);
+			} else {
+				return new TagCommand(recoverEscapeKeywords(name),
+						KEYWORD_RECURRING, tags);
+			}
+		} else {
+			String name = paras.split(KEYWORD_DELETE_TAG)[0];
+			;
+			String[] tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG,
+					2)[1]).split(CONSTANT_SPACE);
+
+			if (isNumerical(name)) {
+				return new TagCommand(Integer.parseInt(name), tags);
+			} else {
+				return new TagCommand(recoverEscapeKeywords(name), tags);
+			}
+		}
 	}
 
 	private Command doneParser(String paras) {
@@ -244,8 +264,10 @@ public class Parser {
 	}
 
 	private boolean isAddRecurringTask(String lastWord) {
-		return lastWord.equals(KEYWORD_DAILY) || lastWord.equals(KEYWORD_WEEKLY)
-				|| lastWord.equals(KEYWORD_MONTHLY) || lastWord.equals(KEYWORD_ANNUALLY);
+		return lastWord.equals(KEYWORD_DAILY)
+				|| lastWord.equals(KEYWORD_WEEKLY)
+				|| lastWord.equals(KEYWORD_MONTHLY)
+				|| lastWord.equals(KEYWORD_ANNUALLY);
 	}
 
 	private boolean isAddFloatingTask(String paras) {
@@ -276,15 +298,15 @@ public class Parser {
 	}
 
 	private boolean isDeleteRecurring(String paras) {
-		return paras.contains(KEYWORD_RECURRING);
+		return paras.contains(KEYWORD_DELETE_RECURRING);
 	}
 
 	private boolean isDisplayWithEndTime(String paras) {
-		return paras.startsWith(KEYWORD_BEFORE);
+		return paras.startsWith(KEYWORD_DISPLAY_BEFORE);
 	}
 
 	private boolean isDisplayWithTimePeriod(String paras) {
-		return paras.startsWith(KEYWORD_FROM)
+		return paras.startsWith(KEYWORD_DISPLAY_FROM)
 				&& paras.contains(KEYWORD_ADD_SCHEDULED_2);
 	}
 
@@ -323,7 +345,7 @@ public class Parser {
 		ArrayList<Calendar> timeCalendarList = parseDates(timeString);
 		Calendar beginTimeCalendar = timeCalendarList.get(0);
 		Calendar endTimeCalendar = timeCalendarList.get(1);
-	
+
 		if (beginTimeCalendar != null && endTimeCalendar != null
 				&& beginTimeCalendar.before(endTimeCalendar)) {
 			return new AddCommand(recoverEscapeKeywords(name),
@@ -336,10 +358,10 @@ public class Parser {
 	private Command addTaskWithDeadline(String paras) {
 		String name;
 		String deadlineString;
-	
+
 		name = paras.split(KEYWORD_ADD_DEADLINE)[0];
 		deadlineString = paras.split(KEYWORD_ADD_DEADLINE)[1];
-	
+
 		Calendar deadlineCalendar = parseDate(deadlineString);
 		if (deadlineCalendar != null) {
 			return new AddCommand(recoverEscapeKeywords(name), null,
@@ -352,18 +374,21 @@ public class Parser {
 	private Command addRecurringTaskWithTime(String lastWord,
 			String parasWithoutLastWord) {
 		String name = parasWithoutLastWord.split(KEYWORD_ADD_SCHEDULED)[0];
-		String timeString = parasWithoutLastWord.split(KEYWORD_ADD_SCHEDULED)[1].split(KEYWORD_ADD_RECURRING_BEFORE)[0];
-		String endRecurringTimeString = timeString.split(KEYWORD_ADD_RECURRING_BEFORE)[1];
-	
+		String timeString = parasWithoutLastWord.split(KEYWORD_ADD_SCHEDULED)[1]
+				.split(KEYWORD_ADD_RECURRING_BEFORE)[0];
+		String endRecurringTimeString = parasWithoutLastWord
+				.split(KEYWORD_ADD_RECURRING_BEFORE)[1];
+
 		ArrayList<Calendar> timeCalendarList = parseDates(timeString);
 		Calendar beginTimeCalendar = timeCalendarList.get(0);
 		Calendar endTimeCalendar = timeCalendarList.get(1);
 		Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
-	
+
 		if (beginTimeCalendar != null && endTimeCalendar != null
 				&& endRecurringTimeCalendar != null) {
-			return new AddCommand(recoverEscapeKeywords(name), lastWord, beginTimeCalendar,
-					endTimeCalendar, endRecurringTimeCalendar);
+			return new AddCommand(recoverEscapeKeywords(name), lastWord,
+					beginTimeCalendar, endTimeCalendar,
+					endRecurringTimeCalendar);
 		} else {
 			return null;
 		}
@@ -372,16 +397,17 @@ public class Parser {
 	private Command addRecurringTaskWithDeadline(String lastWord,
 			String parasWithoutLastWord) {
 		String name = parasWithoutLastWord.split(KEYWORD_ADD_DEADLINE)[0];
-		String deadlineString = parasWithoutLastWord.split(KEYWORD_ADD_DEADLINE)[1]
+		String deadlineString = parasWithoutLastWord
+				.split(KEYWORD_ADD_DEADLINE)[1]
 				.split(KEYWORD_ADD_RECURRING_BEFORE)[0];
-		String endRecurringTimeString = parasWithoutLastWord.split(KEYWORD_ADD_DEADLINE)[1]
+		String endRecurringTimeString = parasWithoutLastWord
+				.split(KEYWORD_ADD_DEADLINE)[1]
 				.split(KEYWORD_ADD_RECURRING_BEFORE)[1];
-	
+
 		Calendar deadlineCalendar = parseDate(deadlineString);
 		Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
-	
-		if (deadlineCalendar != null
-				&& endRecurringTimeCalendar != null) {
+
+		if (deadlineCalendar != null && endRecurringTimeCalendar != null) {
 			return new AddCommand(recoverEscapeKeywords(name), lastWord, null,
 					deadlineCalendar, endRecurringTimeCalendar);
 		} else {

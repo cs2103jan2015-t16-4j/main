@@ -16,18 +16,23 @@ AnyTask is a simple scheduler, built with efficiency in mind. AnyTask is CLI bas
 add <Task Name>
 add <Task Name> by <Deadline>
 add <Task Name> from <Start Time> to <End Time>
-add [daily, weekly, monthly, annually] <Task Name> by <Deadline> before <EndRecurringTime>
-add [daily, weekly, monthly, annually] <Task Name> from <Start Time> to <End Time> before <EndRecurringTime>
+add <Task Name> by <Deadline> before <EndRecurringTime> [daily, weekly, monthly, annually]
+add <Task Name> from <Start Time> to <End Time> before <EndRecurringTime> [daily, weekly, monthly, annually]
 ```
 ###2. tag
 tags are begin with `#`.
 ```
 tag <Task Name/ID> <Tags>
+tag <Task Name/ID> <Tags> recurring
 ```
 ###3. delete
 ```
 delete <Task Name/ID> <Tag>
+delete <Task Name/ID> <Start Time>
+delete <Task Name/ID> <End Time>
+delete <Task Name/ID> <Deadline>
 delete <Task Name/ID>
+delete <Task Name/ID> recurring
 ```
 ###4. edit
 ```
@@ -46,7 +51,7 @@ display done
 display recurring
 display <Keyword>
 display <Tag>
-display after <Start Time> before <End Time>
+display from <Start Time> to <End Time>
 display before <End Time>
 ```
 ###6. done

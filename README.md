@@ -68,7 +68,6 @@ add <Task Name> from <Start Time> to <End Time> before <EndRecurringTime> [daily
 delete <Task Name/ID> recurring
 tag <Task Name/ID> <Tag(s)> recurring
 delete <Task Name/ID> <Tag> recurring
-edit <Old Task Name/ID> name to <New Task Name> recurring
 display recurring
 ```
 ###10. help

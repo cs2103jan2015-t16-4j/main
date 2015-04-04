@@ -16,14 +16,11 @@ AnyTask is a simple scheduler, built with efficiency in mind. AnyTask is CLI bas
 add <Task Name>
 add <Task Name> by <Deadline>
 add <Task Name> from <Start Time> to <End Time>
-add <Task Name> by <Deadline> before <EndRecurringTime> [daily, weekly, monthly, annually]
-add <Task Name> from <Start Time> to <End Time> before <EndRecurringTime> [daily, weekly, monthly, annually]
 ```
 ###2. tag
 tags are begin with `#`.
 ```
-tag <Task Name/ID> <Tags>
-tag <Task Name/ID> <Tags> recurring
+tag <Task Name/ID> <Tag(s)>
 ```
 ###3. delete
 ```
@@ -32,7 +29,6 @@ delete <Task Name/ID> <Start Time>
 delete <Task Name/ID> <End Time>
 delete <Task Name/ID> <Deadline>
 delete <Task Name/ID>
-delete <Task Name/ID> recurring
 ```
 ###4. edit
 ```
@@ -48,7 +44,6 @@ display // display undone
 display all
 display floating
 display done
-display recurring
 display <Keyword>
 display <Tag>
 display from <Start Time> to <End Time>
@@ -66,8 +61,17 @@ setpath <Path>
 ```
 undo
 ```
-##Unimplemented Functionalities
-###1. help
+###9. recurring
+```
+add <Task Name> by <Deadline> before <EndRecurringTime> [daily, weekly, monthly, annually]
+add <Task Name> from <Start Time> to <End Time> before <EndRecurringTime> [daily, weekly, monthly, annually]
+delete <Task Name/ID> recurring
+tag <Task Name/ID> <Tag(s)> recurring
+delete <Task Name/ID> <Tag> recurring
+edit <Old Task Name/ID> name to <New Task Name> recurring
+display recurring
+```
+###10. help
 ```
 help
 help <Command Type>

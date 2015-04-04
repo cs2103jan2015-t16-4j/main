@@ -14,6 +14,7 @@ public class DisplayCommand extends Command {
 	private static final String KEYWORD_DONE = "done";
 	private static final String KEYWORD_ALL = "all";
 	private static final String KEYWORD_RECURRING = "recurring";
+	private static final String KEYWORD_DUE = "due";
 
 	private String keyword;
 	private Calendar startTimeCalendar, endTimeCalendar;
@@ -52,6 +53,8 @@ public class DisplayCommand extends Command {
 			return displayDone();
 		} else if (isDisplayRecurring()) {
 			return displayRecurring();
+		} else if (isDisplayDue()) {
+			return displayDue();
 		} else if (isDisplayWithTag()) {
 			return displayWithTag();
 		} else {
@@ -81,6 +84,10 @@ public class DisplayCommand extends Command {
 
 	private boolean isDisplayRecurring() {
 		return keyword.equalsIgnoreCase(KEYWORD_RECURRING);
+	}
+	
+	private boolean isDisplayDue() {
+		return keyword.equalsIgnoreCase(KEYWORD_DUE);
 	}
 
 	private boolean isDisplayAll() {
@@ -160,6 +167,11 @@ public class DisplayCommand extends Command {
 			}
 		}
 		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayDue() {
+		endTimeCalendar = Calendar.getInstance();
+		return displayWithEndTime();
 	}
 
 	private ArrayList<Task> displayWithTimePeriod() {

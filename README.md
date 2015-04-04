@@ -44,6 +44,7 @@ display // display undone
 display all
 display floating
 display done
+display due
 display <Keyword>
 display <Tag>
 display from <Start Time> to <End Time>

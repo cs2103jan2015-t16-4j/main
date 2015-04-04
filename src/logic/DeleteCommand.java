@@ -10,7 +10,6 @@ public class DeleteCommand extends Command {
 	private static final String KEYWORD_DEADLINE = "deadline";
 	private static final String KEYWORD_END_TIME = "end time";
 	private static final String KEYWORD_START_TIME = "start time";
-	private static final String KEYWORD_RECURRING = "recurring";
 	private static final String KEYWORD_HASHTAG = "#";
 	private static final String[] KEYWORD_ATTRIBUTES = { KEYWORD_START_TIME,
 			KEYWORD_END_TIME, KEYWORD_DEADLINE };
@@ -21,42 +20,40 @@ public class DeleteCommand extends Command {
 	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
 	private boolean isDeleteRecurring = false;
 
-	public DeleteCommand(String name) {
+	public DeleteCommand(String name, boolean isDeleteRecurring) {
 		assert name != null;
 		assert name != "";
 		this.name = name;
+		this.isDeleteRecurring = isDeleteRecurring;
 	}
 
-	public DeleteCommand(int taskId) {
+	public DeleteCommand(int taskId, boolean isDeleteRecurring) {
 		assert taskId >= 0;
 		this.taskId = taskId;
+		this.isDeleteRecurring = isDeleteRecurring;
 	}
 
-	public DeleteCommand(String name, String para) {
+	public DeleteCommand(String name, boolean isDeleteRecurring, String para) {
 		if (isTag(para)) {
 			this.name = name;
 			this.tag = para;
+			this.isDeleteRecurring = isDeleteRecurring;
 		} else if (isAttribute(para)) {
 			this.name = name;
 			this.attribute = para.toLowerCase();
-		} else if (isRecurring(para)) {
-			this.name = name;
-			this.isDeleteRecurring = true;
 		} else {
 
 		}
 	}
 
-	public DeleteCommand(int taskId, String para) {
+	public DeleteCommand(int taskId, boolean isDeleteRecurring, String para) {
 		if (isTag(para)) {
 			this.taskId = taskId;
 			this.tag = para;
+			this.isDeleteRecurring = isDeleteRecurring;
 		} else if (isAttribute(para)) {
 			this.taskId = taskId;
 			this.attribute = para.toLowerCase();
-		} else if (isRecurring(para)) {
-			this.taskId = taskId;
-			this.isDeleteRecurring = true;
 		} else {
 
 		}
@@ -80,6 +77,10 @@ public class DeleteCommand extends Command {
 			return deleteRecurringWithName();
 		} else if (isDeleteRecurringWithId()) {
 			return deleteRecurringWithId();
+		} else if (isDeleteRecurringTagWithName()) {
+			return deleteRecurringTagWithName();
+		} else if (isDeleteRecurringTagWithId()) {
+			return deleteRecurringTagWithId();
 		} else {
 			// return invalid
 			return null;
@@ -93,10 +94,6 @@ public class DeleteCommand extends Command {
 			}
 		}
 		return false;
-	}
-
-	private boolean isRecurring(String para) {
-		return para.toLowerCase().equals(KEYWORD_RECURRING);
 	}
 
 	private boolean isTag(String para) {
@@ -134,6 +131,14 @@ public class DeleteCommand extends Command {
 	private boolean isDeleteRecurringWithId() {
 		return taskId >= 0 && name == null && tag == null && attribute == null && isDeleteRecurring==true;
 	}
+	
+	private boolean isDeleteRecurringTagWithName() {
+		return taskId < 0 && name != null && tag != null && attribute == null&& isDeleteRecurring==true;
+	}
+
+	private boolean isDeleteRecurringTagWithId() {
+		return taskId >= 0 && name == null && tag != null && attribute == null && isDeleteRecurring==true;
+	}
 
 	private ArrayList<Task> deleteTaskWithId() {
 		searchWithId();
@@ -153,6 +158,18 @@ public class DeleteCommand extends Command {
 	private ArrayList<Task> deleteTagWithName() {
 		searchWithName();
 		return deleteTag();
+	}
+
+	private ArrayList<Task> deleteRecurringTagWithId() {
+		searchWithId();
+		searchRecurring();
+		return withIdToWithName(deleteRecurringTag());
+	}
+
+	private ArrayList<Task> deleteRecurringTagWithName() {
+		searchWithName();
+		searchRecurring();
+		return deleteRecurringTag();
 	}
 
 	private ArrayList<Task> deleteAttributeWithId() {
@@ -205,13 +222,19 @@ public class DeleteCommand extends Command {
 
 	private ArrayList<Task> deleteTag() {
 		if (resultTaskIndexes.size() == 1) {
-			ArrayList<Task> r = new ArrayList<Task>();
-			r.add(taskList.get(resultTaskIndexes.get(0)));
-			taskList.get(resultTaskIndexes.get(0)).removeTag(tag);
-			return r;
+			return deleteRecurringTag();
 		} else {
 			return null;
 		}
+	}
+
+	private ArrayList<Task> deleteRecurringTag() {
+		ArrayList<Task> r = new ArrayList<Task>();
+		for(int index = 0; index < resultTaskIndexes.size(); index++){
+			r.add(taskList.get(resultTaskIndexes.get(index)));
+			taskList.get(resultTaskIndexes.get(index)).removeTag(tag);
+		}
+		return r;
 	}
 
 	private ArrayList<Task> deleteAttribute() {
@@ -255,6 +278,26 @@ public class DeleteCommand extends Command {
 		} else {
 			return null;
 		}
+	}
+	
+	private void searchRecurring() {
+		if (resultTaskIndexes.size() == 1) {
+			if(taskList.get(resultTaskIndexes.get(0)).isRecurring()){
+				int recurringId = taskList.get(resultTaskIndexes.get(0)).getRecurringId();
+				resultTaskIndexes.clear();
+				for (int index = 0; index < taskList.size(); index++) {
+					if (taskList.get(index).getRecurringId() == recurringId) {
+						resultTaskIndexes.add(index);
+					}
+				}
+			}
+			else {
+				throw new Error("Selected task is not recurring task.");
+			}
+		} else {
+			throw new Error("More than 1 result.");
+		}
+		
 	}
 
 	private ArrayList<Task> withIdToWithName(ArrayList<Task> result) {

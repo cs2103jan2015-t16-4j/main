@@ -47,6 +47,8 @@ public class Parser {
 			KEYWORD_START_TIME, KEYWORD_BEFORE, KEYWORD_RECURRING,
 			KEYWORD_FROM, KEYWORD_DAILY, KEYWORD_WEEKLY, KEYWORD_MONTHLY,
 			KEYWORD_ANNUALLY };
+	private static final boolean BOOLEAN_NOT_RECURRING = false;
+	private static final boolean BOOLEAN_RECURRING = true;
 
 	private ArrayList<Task> taskListBackup = new ArrayList<Task>();
 
@@ -141,8 +143,10 @@ public class Parser {
 		backupTaskList();
 		if (isDeleteTag(paras)) {
 			return deleteTag(paras);
+		} else if (isDeleteRecurringTag(paras)) {
+			return deleteRecurringTag(paras);
 		} else if (isDeleteAttribute(paras)) {
-			return deleteAttribute(paras);
+			return deleteAttribute(false, paras);
 		} else if (isDeleteRecurring(paras)) {
 			return deleteRecurring(paras);
 		} else if (isDeleteTask(paras)) {
@@ -183,32 +187,10 @@ public class Parser {
 
 	private Command tagParser(String paras) {
 		backupTaskList();
-		if (paras.contains(KEYWORD_DELETE_RECURRING)) {
-			String parasWithoutLastWord = paras.substring(0,
-					paras.lastIndexOf(CONSTANT_SPACE));
-			String name = parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[0];
-			;
-			String[] tags = (CONSTANT_HASHTAG + parasWithoutLastWord.split(
-					KEYWORD_DELETE_TAG, 2)[1]).split(CONSTANT_SPACE);
-
-			if (isNumerical(name)) {
-				return new TagCommand(Integer.parseInt(name),
-						KEYWORD_RECURRING, tags);
-			} else {
-				return new TagCommand(recoverEscapeKeywords(name),
-						KEYWORD_RECURRING, tags);
-			}
+		if (isTagRecurring(paras)) {
+			return tagRecurring(paras);
 		} else {
-			String name = paras.split(KEYWORD_DELETE_TAG)[0];
-			;
-			String[] tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG,
-					2)[1]).split(CONSTANT_SPACE);
-
-			if (isNumerical(name)) {
-				return new TagCommand(Integer.parseInt(name), tags);
-			} else {
-				return new TagCommand(recoverEscapeKeywords(name), tags);
-			}
+			return tag(paras);
 		}
 	}
 
@@ -288,17 +270,24 @@ public class Parser {
 	}
 
 	private boolean isDeleteTag(String paras) {
-		return paras.contains(KEYWORD_DELETE_TAG);
+		return paras.contains(KEYWORD_DELETE_TAG)
+				&& !isTagRecurring(paras);
+	}
+
+	private boolean isDeleteRecurringTag(String paras) {
+		return paras.contains(KEYWORD_DELETE_TAG)
+				&& isTagRecurring(paras);
 	}
 
 	private boolean isDeleteAttribute(String paras) {
-		return paras.contains(KEYWORD_START_TIME)
-				|| paras.contains(KEYWORD_END_TIME)
-				|| paras.contains(KEYWORD_DEADLINE);
+		return (paras.contains(KEYWORD_START_TIME)
+				|| paras.contains(KEYWORD_END_TIME) || paras
+					.contains(KEYWORD_DEADLINE))
+				&& !isTagRecurring(paras);
 	}
 
 	private boolean isDeleteRecurring(String paras) {
-		return paras.contains(KEYWORD_DELETE_RECURRING);
+		return isTagRecurring(paras);
 	}
 
 	private boolean isDisplayWithEndTime(String paras) {
@@ -337,6 +326,10 @@ public class Parser {
 
 	private boolean isEditEndTime(String paras) {
 		return paras.contains(KEYWORD_EDIT_END_TIME);
+	}
+
+	private boolean isTagRecurring(String paras) {
+		return paras.contains(KEYWORD_DELETE_RECURRING);
 	}
 
 	private Command addTaskWithTime(String paras) {
@@ -521,64 +514,108 @@ public class Parser {
 
 	private Command deleteTask(String paras) {
 		if (isNumerical(paras)) {
-			return new DeleteCommand(Integer.parseInt(paras));
+			return new DeleteCommand(Integer.parseInt(paras),
+					BOOLEAN_NOT_RECURRING);
 		} else {
-			return new DeleteCommand(recoverEscapeKeywords(paras));
-		}
-	}
-
-	private Command deleteTag(String paras) {
-		String name = paras.split(KEYWORD_DELETE_TAG)[0];
-		String tag = CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG)[1];
-		if (isNumerical(name)) {
-			return new DeleteCommand(Integer.parseInt(name), tag);
-		} else {
-			return new DeleteCommand(recoverEscapeKeywords(name), tag);
-		}
-	}
-
-	private Command deleteAttribute(String paras) {
-		if (paras.toLowerCase().contains(KEYWORD_START_TIME)) {
-			String name = paras.split(CONSTANT_SPACE + KEYWORD_START_TIME)[0];
-			if (isNumerical(name)) {
-				return new DeleteCommand(Integer.parseInt(name),
-						KEYWORD_START_TIME);
-			} else {
-				return new DeleteCommand(recoverEscapeKeywords(name),
-						KEYWORD_START_TIME);
-			}
-		} else if (paras.toLowerCase().contains(KEYWORD_END_TIME)) {
-			String name = paras.split(CONSTANT_SPACE + KEYWORD_END_TIME)[0];
-			if (isNumerical(name)) {
-				return new DeleteCommand(Integer.parseInt(name),
-						KEYWORD_END_TIME);
-			} else {
-				return new DeleteCommand(recoverEscapeKeywords(name),
-						KEYWORD_END_TIME);
-			}
-		} else if (paras.toLowerCase().contains(KEYWORD_DEADLINE)) {
-			String name = paras.split(CONSTANT_SPACE + KEYWORD_DEADLINE)[0];
-			if (isNumerical(name)) {
-				return new DeleteCommand(Integer.parseInt(name),
-						KEYWORD_DEADLINE);
-			} else {
-				return new DeleteCommand(recoverEscapeKeywords(name),
-						KEYWORD_DEADLINE);
-			}
-		} else {
-			return null;
+			return new DeleteCommand(recoverEscapeKeywords(paras),
+					BOOLEAN_NOT_RECURRING);
 		}
 	}
 
 	private Command deleteRecurring(String paras) {
 		String name = paras.split(CONSTANT_SPACE + KEYWORD_RECURRING)[0];
 		if (isNumerical(name)) {
-			return new DeleteCommand(Integer.parseInt(name), KEYWORD_RECURRING);
+			return new DeleteCommand(Integer.parseInt(name), BOOLEAN_RECURRING);
 		} else {
-			return new DeleteCommand(recoverEscapeKeywords(name),
-					KEYWORD_RECURRING);
+			return null; // only receives id.
 		}
 
+	}
+
+	private Command deleteTag(String paras) {
+		String name = paras.split(KEYWORD_DELETE_TAG)[0];
+		String tag = CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG)[1];
+		if (isNumerical(name)) {
+			return new DeleteCommand(Integer.parseInt(name),
+					BOOLEAN_NOT_RECURRING, tag);
+		} else {
+			return new DeleteCommand(recoverEscapeKeywords(name),
+					BOOLEAN_NOT_RECURRING, tag);
+		}
+	}
+
+	private Command deleteRecurringTag(String paras) {
+		String parasWithoutLastWord = paras.substring(0,
+				paras.lastIndexOf(CONSTANT_SPACE));
+		String name = parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[0];
+		String tag = CONSTANT_HASHTAG + parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[1];
+		if (isNumerical(name)) {
+			return new DeleteCommand(Integer.parseInt(name),
+					BOOLEAN_RECURRING, tag);
+		} else {
+			return null; // only receives id.
+		}
+	}
+
+	private Command deleteAttribute(boolean recurring, String paras) {
+		if (paras.toLowerCase().contains(KEYWORD_START_TIME)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_START_TIME)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_START_TIME);
+			} else {
+				return new DeleteCommand(recoverEscapeKeywords(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_START_TIME);
+			}
+		} else if (paras.toLowerCase().contains(KEYWORD_END_TIME)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_END_TIME)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_END_TIME);
+			} else {
+				return new DeleteCommand(recoverEscapeKeywords(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_END_TIME);
+			}
+		} else if (paras.toLowerCase().contains(KEYWORD_DEADLINE)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_DEADLINE)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_DEADLINE);
+			} else {
+				return new DeleteCommand(recoverEscapeKeywords(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_DEADLINE);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Command tag(String paras) {
+		String name = paras.split(KEYWORD_DELETE_TAG)[0];
+		;
+		String[] tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG,
+				2)[1]).split(CONSTANT_SPACE);
+	
+		if (isNumerical(name)) {
+			return new TagCommand(Integer.parseInt(name), BOOLEAN_NOT_RECURRING, tags);
+		} else {
+			return new TagCommand(recoverEscapeKeywords(name), tags);
+		}
+	}
+
+	private Command tagRecurring(String paras) {
+		String parasWithoutLastWord = paras.substring(0,
+				paras.lastIndexOf(CONSTANT_SPACE));
+		String name = parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[0];
+		;
+		String[] tags = (CONSTANT_HASHTAG + parasWithoutLastWord.split(
+				KEYWORD_DELETE_TAG, 2)[1]).split(CONSTANT_SPACE);
+	
+		if (isNumerical(name)) {
+			return new TagCommand(Integer.parseInt(name), BOOLEAN_RECURRING, tags);
+		} else {
+			return null; // only receives id.
+		}
 	}
 
 	private void backupTaskList() {

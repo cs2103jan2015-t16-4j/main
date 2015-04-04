@@ -22,30 +22,14 @@ public class TagCommand extends Command {
 		}
 	}
 
-	public TagCommand(int id, String[] tags) {
+	public TagCommand(int id, boolean isTagRecurring, String[] tags) {
 		this.taskId = id;
+		this.isTagRecurring = isTagRecurring;
 		for (String tag : tags) {
 			tag = formatTag(tag);
 			this.tags.add(tag.toLowerCase());
 		}
-	}
-	
-	public TagCommand(String name, String recurring, String[] tags) {
-		this.name = name;
-		this.isTagRecurring = true;
-		for (String tag : tags) {
-			tag = formatTag(tag);
-			this.tags.add(tag.toLowerCase());
-		}
-	}
-
-	public TagCommand(int id, String recurring, String[] tags) {
-		this.taskId = id;
-		this.isTagRecurring = true;
-		for (String tag : tags) {
-			tag = formatTag(tag);
-			this.tags.add(tag.toLowerCase());
-		}
+		
 	}
 
 	private String formatTag(String tag) {
@@ -99,7 +83,7 @@ public class TagCommand extends Command {
 	private ArrayList<Task> tagRecurringWithId() {
 		searchWithId();
 		searchRecurring();
-		return addTagRecurring();
+		return withIdToWithName(addTagRecurring());
 	}
 
 	private void searchRecurring() {
@@ -114,17 +98,18 @@ public class TagCommand extends Command {
 				}
 			}
 			else {
-				resultTaskIndexes.clear();
+				throw new Error("Selected task is not recurring task.");
 			}
 		} else {
-			resultTaskIndexes.clear();
+			throw new Error("More than 1 result.");
 		}
 		
 	}
 
 	private ArrayList<Task> tagRecurringWithName() {
-		// TODO Auto-generated method stub
-		return null;
+		searchWithName();
+		searchRecurring();
+		return addTagRecurring();
 	}
 
 	private ArrayList<Task> addTag() {

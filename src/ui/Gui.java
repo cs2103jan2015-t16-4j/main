@@ -40,6 +40,7 @@ public class Gui {
 	private static Scanner sc = new Scanner(System.in);
 	private static JScrollPane taskScrollPane;
 	private static JTextArea textArea;
+	private static final String CONSTANT_SPACE = " ";
 
 	private static void displayResults(String command, ArrayList<Task> taskList) {
 		String commandType = Parser.getInstance().parseCommandType(command);
@@ -172,7 +173,8 @@ public class Gui {
 		table.getColumnModel().getColumn(2).setMaxWidth(110);
 		table.getColumnModel().getColumn(3).setMinWidth(110);
 		table.getColumnModel().getColumn(3).setMaxWidth(110);
-		;
+		table.getColumnModel().getColumn(5).setMinWidth(0);
+		table.getColumnModel().getColumn(5).setMaxWidth(0);
 		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(
 				model);
 		table.setRowSorter(sorter);
@@ -204,8 +206,22 @@ public class Gui {
 
 	private static void processCommand(String command) {
 		Parser p = Parser.getInstance();
-		try {
-			displayResults(command, p.parseInput(command));
+		try {			
+			if(isNumerical(p.getCommandInfo(command).split(CONSTANT_SPACE,2)[0])){
+				String paras[]=p.getCommandInfo(command).split(CONSTANT_SPACE,2);				
+				//create new command string using ID.
+				String newCommand=p.parseCommandType(command);
+				//col 5 holds unique ID of task. It is hidden in the gui.
+				newCommand+=" "+model.getValueAt((Integer.parseInt(paras[0])-1), 5)+" ";
+				if(paras.length == 2){
+					newCommand+=paras[1];
+				}	
+				setTextArea(newCommand);
+				displayResults(newCommand, p.parseInput(newCommand));
+				setTextArea(newCommand);
+			}else{
+				displayResults(command, p.parseInput(command));
+			}
 		} catch (Exception e) {
 			setTextArea(GeneralMessages.getMsgInvalid());
 		}
@@ -223,5 +239,15 @@ public class Gui {
 		initFrame();
 		initSystemTray();
 		setTextArea(GeneralMessages.getMsgWelcome());
+	}
+	
+	//Method copied from Parser
+	private static boolean isNumerical(String str) {
+		try {
+			Integer.parseInt(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
 	}
 }

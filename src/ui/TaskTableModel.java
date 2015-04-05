@@ -10,16 +10,16 @@ import common.Task;
 
 //@author A0112734N
 public class TaskTableModel extends AbstractTableModel {
-	public static final int END_COL = 3;
-	public static final int ID_COL = 0;
-	public static final int NAME_COL = 1;
-	private static final long serialVersionUID = 1L;
-
-	public static final int START_COL = 2;
-	public static final int TAGS_COL = 4;
-	private String[] columnNames = { "id", "Name", "Start", "End", "Tags" };
+	private static final int END_COL = 3;
+	private static final int ID_COL = 0;
+	private static final int NAME_COL = 1;
+	private static final long serialVersionUID = 1L;	
+	private static final int START_COL = 2;
+	private static final int TAGS_COL = 4;
+	private static final int UID_COL = 5;
+	private String[] columnNames = { "id", "Name", "Start", "End", "Tags","UID" };
 	private Class<?>[] columnTypes = { String.class, String.class,
-			Calendar.class, Calendar.class, ArrayList.class };
+			Calendar.class, Calendar.class, ArrayList.class,String.class };
 	private ArrayList<Task> data;
 
 	public TaskTableModel(ArrayList<Task> taskList) {
@@ -51,28 +51,23 @@ public class TaskTableModel extends AbstractTableModel {
 	public Object getValueAt(int row, int col) {
 		Task task = this.data.get(row);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		;
-
 		if (col == ID_COL) {
-			return task.getId();
-
+			return row+1;
+			//return task.getId();
 		} else if (col == NAME_COL) {
 			return task.getName();
-
 		} else if (col == START_COL) {
 			String day = "";
 			if (task.getStartTime() != null) {
 				day = format.format(task.getStartTime().getTime());
 			}
 			return day;
-
 		} else if (col == END_COL) {
 			String day = "";
 			if (task.getEndTime() != null) {
 				day = format.format(task.getEndTime().getTime());
 			}
 			return day;
-
 		} else if (col == TAGS_COL) {
 			ArrayList<String> tags = task.getTags();
 			String tagString = "";
@@ -82,6 +77,8 @@ public class TaskTableModel extends AbstractTableModel {
 				}
 			}
 			return tagString;
+		}if (col == UID_COL) {
+			return task.getId();
 		}
 		return "";
 	}

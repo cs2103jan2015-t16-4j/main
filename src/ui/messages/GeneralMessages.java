@@ -7,7 +7,7 @@ public class GeneralMessages {
 	private static final String MESSAGE_ADD = "Added %s \n";
 	private static final String MESSAGE_DELETE = "Deleted %s \n";
 	private static final String MESSAGE_DISPLAY_EMPTY = "No results\n";
-	private static final String MESSAGE_DISPLAY_SUCCESS = "Displaying all %s tasks\n";
+	private static final String MESSAGE_DISPLAY_SUCCESS = "Displaying %s tasks\n";
 	private static final String MESSAGE_DONE = "Task %s set to done\n";
 	private static final String MESSAGE_EDIT = "Edited %s \n";
 	private static final String MESSAGE_ERROR = "An Error has occured. Check the log file for more details \n";

@@ -49,6 +49,7 @@ display <Keyword>
 display <Tag>
 display from <Start Time> to <End Time>
 display before <End Time>
+display sort
 ```
 ###6. done
 ```

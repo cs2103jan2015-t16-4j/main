@@ -3,6 +3,7 @@ package logic;
 //import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 
 import common.Task;
 import database.Database;
@@ -15,6 +16,7 @@ public class DisplayCommand extends Command {
 	private static final String KEYWORD_ALL = "all";
 	private static final String KEYWORD_RECURRING = "recurring";
 	private static final String KEYWORD_DUE = "due";
+	private static final String KEYWORD_SORT= "sort";
 
 	private String keyword;
 	private Calendar startTimeCalendar, endTimeCalendar;
@@ -55,6 +57,8 @@ public class DisplayCommand extends Command {
 			return displayRecurring();
 		} else if (isDisplayDue()) {
 			return displayDue();
+		} else if (isDisplaySort()) {
+			return displaySort();
 		} else if (isDisplayWithTag()) {
 			return displayWithTag();
 		} else {
@@ -88,6 +92,10 @@ public class DisplayCommand extends Command {
 	
 	private boolean isDisplayDue() {
 		return keyword.equalsIgnoreCase(KEYWORD_DUE);
+	}
+	
+	private boolean isDisplaySort() {
+		return keyword.equalsIgnoreCase(KEYWORD_SORT);
 	}
 
 	private boolean isDisplayAll() {
@@ -156,6 +164,11 @@ public class DisplayCommand extends Command {
 			}
 		}
 		return resultTasklist;
+	}
+
+	private ArrayList<Task> displaySort() {
+		Collections.sort(taskList);
+		return taskList;
 	}
 
 	private ArrayList<Task> displayWithEndTime() {

@@ -6,7 +6,7 @@ import java.util.Calendar;
 import database.Database;
 
 //@author A0119384Y
-public class Task {
+public class Task implements Comparable<Task> {
 	private int id;
 	private String name;
 	private int recurringId = -1;
@@ -189,5 +189,24 @@ public class Task {
 
 	public void setStartTime(Calendar startTime) {
 		this.startTime = startTime;
+	}
+
+	@Override
+	public int compareTo(Task another) {
+		if (endTime == null && another.endTime == null){
+			return 0;
+		} else if (endTime != null && another.endTime == null){
+			return 1;
+		} else if (endTime == null && another.endTime != null){
+			return -1;
+		} else {
+			if (endTime.before(another.endTime)){
+				return -1;
+			} else if (endTime.after(another.endTime)){
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 	}
 }

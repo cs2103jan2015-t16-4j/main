@@ -42,7 +42,7 @@ public class Parser {
 	private static final String KEYWORD_WEEKLY = "weekly";
 	private static final String KEYWORD_MONTHLY = "monthly";
 	private static final String KEYWORD_ANNUALLY = "annually";
-	private static final String[] CONSTANT_ALL = { CONSTANT_HASHTAG,
+	private static final String[] CONSTANT_ALL = { //CONSTANT_HASHTAG,
 			KEYWORD_BY, KEYWORD_TO, KEYWORD_DEADLINE, KEYWORD_END_TIME,
 			KEYWORD_START_TIME, KEYWORD_BEFORE, KEYWORD_RECURRING,
 			KEYWORD_FROM, KEYWORD_DAILY, KEYWORD_WEEKLY, KEYWORD_MONTHLY,

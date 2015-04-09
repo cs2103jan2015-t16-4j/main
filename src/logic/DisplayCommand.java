@@ -11,12 +11,19 @@ import database.Database;
 //@author A0119384Y
 public class DisplayCommand extends Command {
 	private static final String CONSTANT_HASHTAG = "#";
+	private static final String CONSTANT_ESCAPE = "'";
+
 	private static final String KEYWORD_FLOATING = "floating";
 	private static final String KEYWORD_DONE = "done";
 	private static final String KEYWORD_ALL = "all";
 	private static final String KEYWORD_RECURRING = "recurring";
 	private static final String KEYWORD_DUE = "due";
 	private static final String KEYWORD_SORT= "sort";
+	
+	private static final String[] CONSTANT_ALL = { CONSTANT_HASHTAG,
+		KEYWORD_FLOATING, KEYWORD_DONE, KEYWORD_ALL, KEYWORD_RECURRING,
+		KEYWORD_DUE, KEYWORD_SORT};
+	
 
 	private String keyword;
 	private Calendar startTimeCalendar, endTimeCalendar;
@@ -111,6 +118,7 @@ public class DisplayCommand extends Command {
 	}
 
 	private ArrayList<Task> displayWithKeyword() {
+		keyword = recoverEscapeKeywords(keyword);
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getName().toLowerCase()
 					.contains(keyword.toLowerCase())) {
@@ -198,5 +206,13 @@ public class DisplayCommand extends Command {
 			}
 		}
 		return resultTasklist;
+	}
+	
+	private String recoverEscapeKeywords(String paras) {
+		String newParas = new String(paras);
+		for (String keyword : CONSTANT_ALL) {
+			newParas = newParas.replaceAll(CONSTANT_ESCAPE + keyword, keyword);
+		}
+		return newParas;
 	}
 }

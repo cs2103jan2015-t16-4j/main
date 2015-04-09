@@ -29,6 +29,7 @@ public class DisplayCommand extends Command {
 	private Calendar startTimeCalendar, endTimeCalendar;
 	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
 	private ArrayList<Task> resultTasklist = new ArrayList<Task>();
+	private boolean isDisplayWithTag = false;
 
 	public DisplayCommand() {
 
@@ -36,6 +37,11 @@ public class DisplayCommand extends Command {
 
 	public DisplayCommand(String keyword) {
 		this.keyword = keyword;
+	}
+	
+	public DisplayCommand(String tag, boolean isDisplayWithTag){
+		this.keyword = tag;
+		this.isDisplayWithTag = isDisplayWithTag;
 	}
 
 	public DisplayCommand(Calendar endTimeCalendar) {
@@ -78,7 +84,7 @@ public class DisplayCommand extends Command {
 	}
 
 	private boolean isDisplayWithTag() {
-		return keyword.startsWith(CONSTANT_HASHTAG);
+		return isDisplayWithTag;
 	}
 
 	private boolean isDisplayDone() {

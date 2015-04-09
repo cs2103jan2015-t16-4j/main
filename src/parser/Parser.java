@@ -42,7 +42,7 @@ public class Parser {
 	private static final String KEYWORD_WEEKLY = "weekly";
 	private static final String KEYWORD_MONTHLY = "monthly";
 	private static final String KEYWORD_ANNUALLY = "annually";
-	private static final String[] CONSTANT_ALL = { //CONSTANT_HASHTAG,
+	private static final String[] CONSTANT_ALL = { CONSTANT_HASHTAG,
 			KEYWORD_BY, KEYWORD_TO, KEYWORD_DEADLINE, KEYWORD_END_TIME,
 			KEYWORD_START_TIME, KEYWORD_BEFORE, KEYWORD_RECURRING,
 			KEYWORD_FROM, KEYWORD_DAILY, KEYWORD_WEEKLY, KEYWORD_MONTHLY,
@@ -180,6 +180,8 @@ public class Parser {
 			return displayWithEndTime(paras);
 		} else if (isDisplayWithTimePeriod(paras)) {
 			return displayWithTimePeriod(paras);
+		} else if (isDisplayWithTag(paras)){
+			return new DisplayCommand(paras, true);
 		} else {
 			return new DisplayCommand(recoverEscapeKeywords(paras));
 		}
@@ -297,6 +299,10 @@ public class Parser {
 	private boolean isDisplayWithTimePeriod(String paras) {
 		return paras.startsWith(KEYWORD_DISPLAY_FROM)
 				&& paras.contains(KEYWORD_ADD_SCHEDULED_2);
+	}
+
+	private boolean isDisplayWithTag(String paras) {
+		return paras.startsWith(CONSTANT_HASHTAG);
 	}
 
 	private boolean isNumerical(String str) {

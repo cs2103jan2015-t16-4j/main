@@ -42,6 +42,8 @@ public class Gui {
 	private static JTextArea textArea;
 	private static final String CONSTANT_SPACE = " ";
 
+	private static final int idCol = 5;
+	
 	private static void displayResults(String command, ArrayList<Task> taskList) {
 		String commandType = Parser.getInstance().parseCommandType(command);
 		switch (CommandType.fromString(commandType)) {
@@ -212,13 +214,11 @@ public class Gui {
 				//create new command string using ID.
 				String newCommand=p.parseCommandType(command);
 				//col 5 holds unique ID of task. It is hidden in the gui.
-				newCommand+=" "+model.getValueAt((Integer.parseInt(paras[0])-1), 5)+" ";
+				newCommand+=" "+model.getValueAt((Integer.parseInt(paras[0])-1), idCol)+" ";
 				if(paras.length == 2){
 					newCommand+=paras[1];
-				}	
-				setTextArea(newCommand);
+				}
 				displayResults(newCommand, p.parseInput(newCommand));
-				setTextArea(newCommand);
 			}else{
 				displayResults(command, p.parseInput(command));
 			}

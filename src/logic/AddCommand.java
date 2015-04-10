@@ -8,6 +8,10 @@ import database.Database;
 
 //@author A0119384Y
 public class AddCommand extends Command {
+	private static final String KEYWORD_ANNUALLY = "annually";
+	private static final String KEYWORD_MONTHLY = "monthly";
+	private static final String KEYWORD_WEEKLY = "weekly";
+	private static final String KEYWORD_DAILY = "daily";
 	private Task task;
 	private ArrayList<Task> tasks;
 
@@ -35,28 +39,28 @@ public class AddCommand extends Command {
 			t.setEndTime(endTime);
 			t.setRecurringId(recurringId.get(0));
 			tasks.add(t);
-			if (recurringCycle.equals("daily")) {
+			if (recurringCycle.equals(KEYWORD_DAILY)) {
 				if (startTime != null) {
 					startTime = (Calendar) endTime.clone();
 					startTime.add(Calendar.DATE, 1);
 				}
 				endTime = (Calendar) endTime.clone();
 				endTime.add(Calendar.DATE, 1);
-			} else if (recurringCycle.equals("weekly")) {
+			} else if (recurringCycle.equals(KEYWORD_WEEKLY)) {
 				if (startTime != null) {
 					startTime = (Calendar) endTime.clone();
 					startTime.add(Calendar.DATE, 7);
 				}
 				endTime = (Calendar) endTime.clone();
 				endTime.add(Calendar.DATE, 7);
-			} else if (recurringCycle.equals("monthly")) {
+			} else if (recurringCycle.equals(KEYWORD_MONTHLY)) {
 				if (startTime != null) {
 					startTime = (Calendar) endTime.clone();
 					startTime.add(Calendar.MONTH, 1);
 				}
 				endTime = (Calendar) endTime.clone();
 				endTime.add(Calendar.MONTH, 1);
-			} else if (recurringCycle.equals("annually")) {
+			} else if (recurringCycle.equals(KEYWORD_ANNUALLY)) {
 				if (startTime != null) {
 					startTime = (Calendar) endTime.clone();
 					startTime.add(Calendar.YEAR, 1);

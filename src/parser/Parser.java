@@ -282,9 +282,9 @@ public class Parser {
 	}
 
 	private boolean isDeleteAttribute(String paras) {
-		return (paras.contains(KEYWORD_START_TIME)
-				|| paras.contains(KEYWORD_END_TIME) || paras
-					.contains(KEYWORD_DEADLINE))
+		return (paras.startsWith(KEYWORD_START_TIME)
+				|| paras.startsWith(KEYWORD_END_TIME) || paras
+					.startsWith(KEYWORD_DEADLINE))
 				&& !isTagRecurring(paras);
 	}
 

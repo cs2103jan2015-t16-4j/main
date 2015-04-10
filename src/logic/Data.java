@@ -10,7 +10,7 @@ import database.Database;
 
 //@author A0112734N
 public class Data {
-	
+	//@author A0112734N
 	private static ArrayList<Task> taskList= new ArrayList<Task>();
 	final static Logger logger = LoggerFactory.getLogger(Database.class);
 	
@@ -31,17 +31,15 @@ public class Data {
 	public static void setTaskList(ArrayList<Task> newTaskList){
 		taskList=newTaskList;
 	}
-	
-	public static void addTask(Task newTask) {
-		taskList.add(newTask);
-	}
-	
+
+	//@author A0112734N-unused
 	public static void editTask(Task oldTask, Task newTask) {
 		int index= taskList.indexOf(oldTask);
 		taskList.set(index,newTask);
 		//sort();
 	}
 	
+	//@author A0112734N-unused
 	public static void editTask(int id, Task newTask) {
 //		for (int i = 0; i < taskList.size(); i++) {
 //			if (taskList.get(i).getId().equals(id)) {
@@ -50,7 +48,7 @@ public class Data {
 //		}
 		//sort();
 	}
-	
+	//@author A0112734N-unused
 	public static void deleteTask(Task task) {
 		taskList.remove(task);
 	}
@@ -62,23 +60,23 @@ public class Data {
 //			}
 //		}
 	}
-	
+	//@author A0112734N-unused
 	public static void deleteAllTask() {
 		taskList.clear();
 	}
-	
+	//@author A0112734N-unused
 	//for v0.1
 	public static void addTask(String newTask) {
 		taskList.add(new Task(newTask));
 		Display.displayMsgAdd(newTask);
 	}
-	
+	//@author A0112734N-unused
 	//for v0.1
 	public static void editTask(int taskID, String newName) {
 		taskList.remove(taskID-1);
 		taskList.add(taskID-1, new Task(newName));
 	}
-	
+	//@author A0112734N-unused
 	//for v0.1
 	public static void deleteTask(String name) {
 		for (int i = 0; i < taskList.size(); i++) {

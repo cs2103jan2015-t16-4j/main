@@ -30,20 +30,21 @@ import logic.Display;
 import parser.Parser;
 import ui.messages.GeneralMessages;
 import ui.messages.HelpMessages;
+
 import common.Task;
 
 //@author A0112734N
 public class Gui {
+	private static final String CONSTANT_SPACE = " ";
 	private static JFrame frame;
+	private static final int idCol = 5;
 	private static TaskTableModel model;
 	// kept here for testing from console
 	private static Scanner sc = new Scanner(System.in);
 	private static JScrollPane taskScrollPane;
-	private static JTextArea textArea;
-	private static final String CONSTANT_SPACE = " ";
 
-	private static final int idCol = 5;
-	
+	private static JTextArea textArea;
+
 	private static void displayResults(String command, ArrayList<Task> taskList) {
 		String commandType = Parser.getInstance().parseCommandType(command);
 		switch (CommandType.fromString(commandType)) {
@@ -100,7 +101,8 @@ public class Gui {
 			break;
 		case HELP:
 			// TODO: Help Command Display
-			setTextArea(HelpMessages.getMsgHelp((Parser.getInstance().getCommandInfo(command))));
+			setTextArea(HelpMessages.getMsgHelp((Parser.getInstance()
+					.getCommandInfo(command))));
 			break;
 		case SAVE:
 			setTextArea(GeneralMessages.getMsgSave());
@@ -192,6 +194,17 @@ public class Gui {
 		return scrollPane;
 	}
 
+	//@author A0119384Y-reused
+	private static boolean isNumerical(String str) {
+		try {
+			Integer.parseInt(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+	
+	//@author A0112734N
 	public static void main(String[] args) {
 		if (!Data.initTaskList()) {
 			Display.displayMsgError();
@@ -208,18 +221,21 @@ public class Gui {
 
 	private static void processCommand(String command) {
 		Parser p = Parser.getInstance();
-		try {			
-			if(isNumerical(p.getCommandInfo(command).split(CONSTANT_SPACE,2)[0])){
-				String paras[]=p.getCommandInfo(command).split(CONSTANT_SPACE,2);				
-				//create new command string using ID.
-				String newCommand=p.parseCommandType(command);
-				//col 5 holds unique ID of task. It is hidden in the gui.
-				newCommand+=" "+model.getValueAt((Integer.parseInt(paras[0])-1), idCol)+" ";
-				if(paras.length == 2){
-					newCommand+=paras[1];
+		try {
+			if (isNumerical(p.getCommandInfo(command).split(CONSTANT_SPACE, 2)[0])) {
+				String paras[] = p.getCommandInfo(command).split(
+						CONSTANT_SPACE, 2);
+				// create new command string using ID.
+				String newCommand = p.parseCommandType(command);
+				// col 5 holds unique ID of task. It is hidden in the gui.
+				newCommand += " "
+						+ model.getValueAt((Integer.parseInt(paras[0]) - 1),
+								idCol) + " ";
+				if (paras.length == 2) {
+					newCommand += paras[1];
 				}
 				displayResults(newCommand, p.parseInput(newCommand));
-			}else{
+			} else {
 				displayResults(command, p.parseInput(command));
 			}
 		} catch (Exception e) {
@@ -239,15 +255,5 @@ public class Gui {
 		initFrame();
 		initSystemTray();
 		setTextArea(GeneralMessages.getMsgWelcome());
-	}
-	
-	//Method copied from Parser
-	private static boolean isNumerical(String str) {
-		try {
-			Integer.parseInt(str);
-		} catch (NumberFormatException nfe) {
-			return false;
-		}
-		return true;
 	}
 }

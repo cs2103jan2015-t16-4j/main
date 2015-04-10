@@ -10,7 +10,7 @@ import database.Database;
 import common.Task;
 
 public class DatabaseTest {
-	
+	//@author A0112734N
 	private Database db = Database.getInstance();
 	//create a backup list so that we can put back the data in the file after the testing
 	private ArrayList<Task> backupList=new ArrayList<Task>();

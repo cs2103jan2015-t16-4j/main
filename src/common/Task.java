@@ -39,7 +39,7 @@ public class Task implements Comparable<Task> {
 		this.tags.addAll(newTags);
 	}
 
-	// @author A0112734N
+	//@author A0112734N generated 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -89,7 +89,7 @@ public class Task implements Comparable<Task> {
 		return true;
 	}
 
-	// @author A0119384Y
+	//@author A0119384Y
 	public Calendar getEndTime() {
 		return this.endTime;
 	}
@@ -114,7 +114,7 @@ public class Task implements Comparable<Task> {
 		return this.tags;
 	}
 
-	// @author A0112734N
+	//@author A0112734N generated 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -132,7 +132,7 @@ public class Task implements Comparable<Task> {
 		return result;
 	}
 
-	// @author A0119384Y
+	//@author A0119384Y
 	public boolean isContainedTag(String tag) {
 		return this.tags.contains(tag);
 	}

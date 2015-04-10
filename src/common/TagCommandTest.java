@@ -8,7 +8,10 @@ import java.util.Calendar;
 import logic.AddCommand;
 import logic.TagCommand;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import database.Database;
 
 public class TagCommandTest {
 	/*
@@ -17,6 +20,12 @@ public class TagCommandTest {
 	 * 
 	 * Recurring: TagCommand(int id, boolean isTagRecurring, String[] tags)
 	 */
+	
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
 	@Test
 	public void tagRecurringTest() {
 		Calendar startTime = Calendar.getInstance();

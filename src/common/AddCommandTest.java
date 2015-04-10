@@ -7,7 +7,10 @@ import java.util.Calendar;
 
 import logic.AddCommand;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import database.Database;
 
 //@author A0119384Y
 public class AddCommandTest {
@@ -19,6 +22,11 @@ public class AddCommandTest {
 	 * Recurring: AddCommand(String name, String recurringCycle, Calendar
 	 * startTime, Calendar endTime, Calendar endRecurringTimeCalendar)
 	 */
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
 	@Test
 	public void addFloatingTaskTest() {
 		AddCommand a = new AddCommand("update manual", null, null);

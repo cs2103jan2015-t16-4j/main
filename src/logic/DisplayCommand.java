@@ -58,7 +58,9 @@ public class DisplayCommand extends Command {
 	}
 
 	public ArrayList<Task> execute() {
-		if (isDisplayWithEndTime()) {
+		if(isDisplayWithKeyword()){
+			return displayWithKeyword();
+		} else if (isDisplayWithEndTime()) {
 			return displayWithEndTime();
 		} else if (isDisplayWithTimePeriod()) {
 			return displayWithTimePeriod();
@@ -79,12 +81,16 @@ public class DisplayCommand extends Command {
 		} else if (isDisplayWithTag()) {
 			return displayWithTag();
 		} else {
-			return displayWithKeyword();
+			return null;
 		}
 	}
 
 	private ArrayList<Task> displayAll() {
 		return taskList;
+	}
+
+	private boolean isDisplayWithKeyword() {
+		return keywords != null;
 	}
 
 	private boolean isDisplayWithTag() {
@@ -100,7 +106,7 @@ public class DisplayCommand extends Command {
 	}
 
 	private boolean isDisplayUndone() {
-		return keyword == null;
+		return keyword == null && keywords == null;
 	}
 
 	private boolean isDisplayRecurring() {
@@ -128,9 +134,9 @@ public class DisplayCommand extends Command {
 	}
 
 	private ArrayList<Task> displayWithKeyword() {
-		keyword = recoverEscapeKeywords(keyword);
 		for (int index = 0; index < taskList.size(); index++) {
 			for (String keyword: keywords){
+				keyword = recoverEscapeKeywords(keyword);
 				if (taskList.get(index).getName().toLowerCase()
 						.contains(keyword.toLowerCase())) {
 					resultTasklist.add(taskList.get(index));

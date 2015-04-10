@@ -9,6 +9,7 @@ import logic.AddCommand;
 import logic.DeleteCommand;
 import logic.TagCommand;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import database.Database;
@@ -21,6 +22,12 @@ public class DeleteCommandTest {
 	 * Delete others: DeleteCommand(String name/int id, boolean
 	 * isDeleteRecurring, String para)
 	 */
+	
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
 	@Test
 	public void deleteTaskIdTest() {
 		AddCommand a = new AddCommand("update manual 1", null, null);
@@ -80,7 +87,7 @@ public class DeleteCommandTest {
 		assertEquals(1, resultAdd.size());
 		assertEquals("update manual 4", resultAdd.get(0).getName());
 
-		String[] tags = { "done" };
+		String[] tags = { "#done" };
 		TagCommand t = new TagCommand(resultAdd.get(0).getId(), false, tags);
 		ArrayList<Task> resultTag = t.execute();
 		assertEquals(1, resultTag.get(0).getTags().size());
@@ -102,7 +109,7 @@ public class DeleteCommandTest {
 				startTime, endTime, endRecurringTime);
 		ArrayList<Task> resultAdd = a.execute();
 
-		String[] tags = { "done" };
+		String[] tags = { "#done" };
 		TagCommand t = new TagCommand(resultAdd.get(0).getId(), true, tags);
 		ArrayList<Task> resultTag = t.execute();
 		assertEquals(1, resultTag.get(0).getTags().size());

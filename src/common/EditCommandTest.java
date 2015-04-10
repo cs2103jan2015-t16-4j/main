@@ -9,7 +9,10 @@ import logic.AddCommand;
 import logic.EditCommand;
 import logic.TagCommand;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import database.Database;
 //@author A0119384Y
 public class EditCommandTest {
 	/* Edit name: EditCommand(String oldName/int id, String newName) */
@@ -22,6 +25,12 @@ public class EditCommandTest {
 	 * Edit one tag: EditCommand(String name/int id, String oldTag, String
 	 * newTag)
 	 */
+	
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
 	@Test
 	public void editNameTest() {
 		AddCommand a = new AddCommand("update manual 1", null, null);
@@ -85,7 +94,7 @@ public class EditCommandTest {
 		AddCommand a = new AddCommand("update manual 10", null, startTime);
 		ArrayList<Task> resultAdd = a.execute();
 
-		String[] tags = { "done" };
+		String[] tags = { "#done" };
 		TagCommand t = new TagCommand(resultAdd.get(0).getId(), false, tags);
 		ArrayList<Task> resultTag = t.execute();
 		assertEquals(1, resultTag.get(0).getTags().size());

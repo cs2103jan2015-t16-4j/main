@@ -26,6 +26,7 @@ public class DisplayCommand extends Command {
 	
 
 	private String keyword;
+	private String[] keywords;
 	private Calendar startTimeCalendar, endTimeCalendar;
 	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
 	private ArrayList<Task> resultTasklist = new ArrayList<Task>();
@@ -39,9 +40,12 @@ public class DisplayCommand extends Command {
 		this.keyword = keyword;
 	}
 	
+	public DisplayCommand(String[] keywords) {
+		this.keywords = keywords;
+	}
+	
 	public DisplayCommand(String tag, boolean isDisplayWithTag){
 		this.keyword = tag;
-		this.isDisplayWithTag = isDisplayWithTag;
 	}
 
 	public DisplayCommand(Calendar endTimeCalendar) {
@@ -126,9 +130,12 @@ public class DisplayCommand extends Command {
 	private ArrayList<Task> displayWithKeyword() {
 		keyword = recoverEscapeKeywords(keyword);
 		for (int index = 0; index < taskList.size(); index++) {
-			if (taskList.get(index).getName().toLowerCase()
-					.contains(keyword.toLowerCase())) {
-				resultTasklist.add(taskList.get(index));
+			for (String keyword: keywords){
+				if (taskList.get(index).getName().toLowerCase()
+						.contains(keyword.toLowerCase())) {
+					resultTasklist.add(taskList.get(index));
+					break;
+				}
 			}
 		}
 		return resultTasklist;

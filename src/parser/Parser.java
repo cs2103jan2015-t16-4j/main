@@ -183,7 +183,7 @@ public class Parser {
 		} else if (isDisplayWithTag(paras)){
 			return new DisplayCommand(paras, true);
 		} else {
-			return new DisplayCommand(recoverEscapeKeywords(paras));
+			return new DisplayCommand(recoverEscapeKeywords(paras).split(CONSTANT_SPACE));
 		}
 	}
 

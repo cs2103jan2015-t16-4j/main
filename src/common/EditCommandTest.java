@@ -12,14 +12,14 @@ import logic.TagCommand;
 import org.junit.Test;
 //@author A0119384Y
 public class EditCommandTest {
-	/* Edit name: EditCommand(String oldName/int Id, String newName) */
-	/* Edit deadline: EditCommand(String name/int Id, Calendar newDeadline) */
+	/* Edit name: EditCommand(String oldName/int id, String newName) */
+	/* Edit deadline: EditCommand(String name/int id, Calendar newDeadline) */
 	/*
-	 * Edit startTime/endTime: EditCommand(String name/int Id, Calendar
+	 * Edit startTime/endTime: EditCommand(String name/int id, Calendar
 	 * newStartTime, Calendar newEndTime)
 	 */
 	/*
-	 * Edit one tag: EditCommand(String name/int Id, String oldTag, String
+	 * Edit one tag: EditCommand(String name/int id, String oldTag, String
 	 * newTag)
 	 */
 	@Test

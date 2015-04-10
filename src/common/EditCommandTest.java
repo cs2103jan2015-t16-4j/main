@@ -10,7 +10,7 @@ import logic.EditCommand;
 import logic.TagCommand;
 
 import org.junit.Test;
-
+//@author A0119384Y
 public class EditCommandTest {
 	/* Edit name: EditCommand(String oldName/int Id, String newName) */
 	/* Edit deadline: EditCommand(String name/int Id, Calendar newDeadline) */

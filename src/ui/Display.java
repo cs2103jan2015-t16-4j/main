@@ -1,8 +1,10 @@
-package logic;
+package ui;
 import java.util.ArrayList;
 
+import logic.Data;
 import common.Task;
-
+//@author A0112734N-unused
+// for non GUI usage
 public class Display {
 
 	private static final String MESSAGE_WELCOME = "Welcome to AnyTask.\n";

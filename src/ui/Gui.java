@@ -26,11 +26,9 @@ import javax.swing.table.TableRowSorter;
 
 import logic.Command.CommandType;
 import logic.Data;
-import logic.Display;
 import parser.Parser;
 import ui.messages.GeneralMessages;
 import ui.messages.HelpMessages;
-
 import common.Task;
 
 //@author A0112734N

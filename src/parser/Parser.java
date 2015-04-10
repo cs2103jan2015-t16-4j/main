@@ -27,6 +27,9 @@ public class Parser {
 	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
 	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
 	private static final String KEYWORD_DELETE_RECURRING = " recurring";
+	private static final String KEYWORD_DELETE_DEADLINE = " deadline";
+	private static final String KEYWORD_DELETE_END_TIME = " end time";
+	private static final String KEYWORD_DELETE_START_TIME = " start time";	
 	private static final String KEYWORD_DISPLAY_BEFORE = "before ";
 	private static final String KEYWORD_DISPLAY_FROM = "from ";
 	private static final String CONSTANT_HASHTAG = "#";
@@ -282,9 +285,9 @@ public class Parser {
 	}
 
 	private boolean isDeleteAttribute(String paras) {
-		return (paras.startsWith(KEYWORD_START_TIME)
-				|| paras.startsWith(KEYWORD_END_TIME) || paras
-					.startsWith(KEYWORD_DEADLINE))
+		return (paras.contains(KEYWORD_DELETE_START_TIME)
+				|| paras.contains(KEYWORD_DELETE_END_TIME) || paras
+					.contains(KEYWORD_DELETE_DEADLINE))
 				&& !isTagRecurring(paras);
 	}
 

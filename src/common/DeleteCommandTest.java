@@ -14,9 +14,9 @@ import org.junit.Test;
 import database.Database;
 //@author A0119384Y
 public class DeleteCommandTest {
-	/* Delete task: DeleteCommand(String name, boolean isDeleteRecurring) */
+	/* Delete task: DeleteCommand(String name/int Id, boolean isDeleteRecurring) */
 	/*
-	 * Delete others: DeleteCommand(String name, boolean isDeleteRecurring,
+	 * Delete others: DeleteCommand(String name/int Id, boolean isDeleteRecurring,
 	 * String para)
 	 */
 	@Test
@@ -40,10 +40,20 @@ public class DeleteCommandTest {
 		assertEquals("update manual 2", resultAdd.get(0).getName());
 
 		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getName(), false);
-		System.out.println(Database.getInstance().getTaskList());
 		ArrayList<Task> resultDelete = d.execute();
 		assertEquals(1, resultDelete.size());
-		// assertTrue(resultDelete.get(0).equals(resultDelete.get(0)));
+		assertTrue(resultDelete.get(0).equals(resultDelete.get(0)));
+	}
+	
+	@Test
+	public void deleteTaskNameDupicateTest() {
+		AddCommand a = new AddCommand("update manual 0", null, null);
+		a.execute();
+		ArrayList<Task> resultAdd = a.execute();
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getName(), false);
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(null, resultDelete);
 	}
 
 	@Test
@@ -53,8 +63,6 @@ public class DeleteCommandTest {
 		ArrayList<Task> resultAdd = a.execute();
 		assertEquals(1, resultAdd.size());
 		assertEquals("update manual 3", resultAdd.get(0).getName());
-
-		System.out.println(resultAdd);
 
 		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getId(), false,
 				"end time");
@@ -107,10 +115,10 @@ public class DeleteCommandTest {
 	
 	@Test
 	public void deleteRecurringTaskTest() {
-		Calendar deadLine = Calendar.getInstance();
+		Calendar deadline = Calendar.getInstance();
 		Calendar endRecurringTime = Calendar.getInstance();
 		endRecurringTime.add(Calendar.DATE, 7); 
-		AddCommand a = new AddCommand("update manual recurring", "daily", null ,deadLine, endRecurringTime);
+		AddCommand a = new AddCommand("update manual recurring", "daily", null ,deadline, endRecurringTime);
 		ArrayList<Task> resultAdd = a.execute();
 
 		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getId(), true);

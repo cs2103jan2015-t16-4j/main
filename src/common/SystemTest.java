@@ -3,9 +3,11 @@ package common;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.junit.Test;
 
+import parser.DateParser;
 import parser.Parser;
 import database.Database;
 
@@ -51,6 +53,7 @@ public class SystemTest {
 		p.parseInput("Add new floating task name");
 		p.parseInput("tag new floating task name #tag");
 		id=taskList.get(taskList.size() - 1).getId();
+		assertTrue(taskList.get(taskList.size() - 1).isFloating());
 		
 		// test edit name using name (Includes keyword in name)
 		// checks the editing of a task name, using the same input as a user.
@@ -117,7 +120,7 @@ public class SystemTest {
 	}
 	
 	@Test
-	public void editDeadlineTaskTest() {
+	public void deadlineTaskTest() {
 		this.db.fetchTasksFromFile();
 		this.backupList.addAll(this.db.getTaskList());
 		ArrayList<Task> taskList = this.db.getTaskList();
@@ -128,11 +131,18 @@ public class SystemTest {
 		p.parseInput("Add new deadline task name by tomorrow");
 		p.parseInput("tag new deadline task name #tag");
 		id=taskList.get(taskList.size() - 1).getId();
+		assertTrue(taskList.get(taskList.size() - 1).isDeadline());
 		
 		// test edit name using name (Includes keyword in name)
 		// checks the editing of a task name, using the same input as a user.
 		p.parseInput("edit new deadline task name name to new deadline task1");
 		assertEquals("new deadline task1", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit deadline using name
+		// checks the editing of a task name, using the same input as a user.
+		Calendar deadline=parseDate("tuesday 12pm");
+		p.parseInput("edit new deadline task1 deadline to tuesday 12pm");
+		assertEquals(deadline, taskList.get(taskList.size() - 1).getEndTime());
 		
 		// test edit tag using name
 		// checks the editing of a new tag, using the same input as a user.
@@ -155,8 +165,14 @@ public class SystemTest {
 		
 		// test edit name using ID
 		// checks the editing of a task name, using the same input as a user.
-		p.parseInput("edit "+ Integer.toString(id)+" name to new deadline 2");
-		assertEquals("new deadline 2", taskList.get(taskList.size() - 1).getName());
+		p.parseInput("edit "+ Integer.toString(id)+" name to new task 2");
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit deadline using ID
+		// checks the editing of a task name, using the same input as a user.
+		Calendar deadline2=parseDate("31 may 7pm");
+		p.parseInput("edit "+ Integer.toString(id)+" deadline to 31 may 7pm");
+		assertEquals(deadline2, taskList.get(taskList.size() - 1).getEndTime());
 
 		// test edit tag using ID
 		// checks the editing of a new tag, using the same input as a user.
@@ -182,10 +198,10 @@ public class SystemTest {
 		//test undo
 		p.parseInput("undo");
 		assertEquals(undoList,taskList);
-		assertEquals("new deadline 2", taskList.get(taskList.size() - 1).getName());
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
 		
 		//test delete task using name
-		p.parseInput("delete new deadline 2");
+		p.parseInput("delete new task 2");
 		assertEquals(backupList,taskList);
 		assertNotEquals(undoList,taskList);
 		
@@ -193,6 +209,110 @@ public class SystemTest {
 		this.db.saveTasksToFile();
 	}
 	
-	
+	@Test
+	public void scheduledTaskTest() {
+		this.db.fetchTasksFromFile();
+		this.backupList.addAll(this.db.getTaskList());
+		ArrayList<Task> taskList = this.db.getTaskList();
+		int id;
+		
+		// add new task for checking of edits
+		Parser p = Parser.getInstance();
+		p.parseInput("Add new scheduled task name from tuesday 3pm to tuesday 5pm");
+		p.parseInput("tag new scheduled task name #tag");
+		id=taskList.get(taskList.size() - 1).getId();
+		assertTrue(taskList.get(taskList.size() - 1).isScheduled());
+		
+		// test edit name using name (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit new scheduled task name name to new scheduled task1");
+		assertEquals("new scheduled task1", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit start time using name
+		// checks the editing of a task name, using the same input as a user.
+		Calendar scheduled=parseDate("monday 12am");
+		p.parseInput("edit new scheduled task1 start time to monday 12am");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getStartTime());
+		
+		// test edit end time using name
+		// checks the editing of a task name, using the same input as a user.
+		scheduled=parseDate("tuesday 12pm");
+		p.parseInput("edit new scheduled task1 end time to tuesday 12pm");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getEndTime());
 
+		// test edit tag using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit new scheduled task1 #tag to #newtag");
+		assertEquals("#newtag", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done new scheduled task1");
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using name
+		p.parseInput("delete new scheduled task1 #done");
+		p.parseInput("delete new scheduled task1 #newtag");
+		assertEquals(new ArrayList<String>(),taskList.get(taskList.size() - 1).getTags());
+		
+		//test add tag using ID
+		p.parseInput("tag "+ Integer.toString(id)+" #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test edit name using ID
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" name to new task 2");
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit start time using ID
+		// checks the editing of a task name, using the same input as a user.
+		scheduled=parseDate("2:00pm");
+		p.parseInput("edit "+ Integer.toString(id)+" start time to 14:00");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getStartTime());
+		
+		// test edit end time using ID
+		// checks the editing of a task name, using the same input as a user.
+		scheduled=parseDate(" 2pm monday 2 weeks later");
+		p.parseInput("edit "+ Integer.toString(id)+" end time to Mon Apr 20 14:00:00 ");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getEndTime());
+
+		// test edit tag using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" #newtag to #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done "+ Integer.toString(id));
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using ID
+		p.parseInput("delete "+ Integer.toString(id)+" #done");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		//test delete task using ID
+		ArrayList<Task> undoList= new ArrayList<Task>();
+		undoList.addAll(this.db.getTaskList());
+		p.parseInput("delete "+ Integer.toString(id));
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		//test undo
+		p.parseInput("undo");
+		assertEquals(undoList,taskList);
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
+		
+		//test delete task using name
+		p.parseInput("delete new task 2");
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		this.db.setTaskList(this.backupList);
+		this.db.saveTasksToFile();
+	}
+	
+	private Calendar parseDate(String dateString) {
+		DateParser dateParser = new DateParser(dateString);
+		return dateParser.parseDate().get(0);
+	}
 }

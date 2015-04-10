@@ -73,12 +73,8 @@ public class DeleteCommand extends Command {
 			return deleteAttributeWithName();
 		} else if (isDeleteAttributeWithId()) {
 			return deleteAttributeWithId();
-		} else if (isDeleteRecurringWithName()) {
-			return deleteRecurringWithName();
 		} else if (isDeleteRecurringWithId()) {
 			return deleteRecurringWithId();
-		} else if (isDeleteRecurringTagWithName()) {
-			return deleteRecurringTagWithName();
 		} else if (isDeleteRecurringTagWithId()) {
 			return deleteRecurringTagWithId();
 		} else {
@@ -124,16 +120,8 @@ public class DeleteCommand extends Command {
 		return taskId >= 0 && name == null && tag == null && attribute != null && isDeleteRecurring==false;
 	}
 
-	private boolean isDeleteRecurringWithName() {
-		return taskId < 0 && name != null && tag == null && attribute == null&& isDeleteRecurring==true;
-	}
-
 	private boolean isDeleteRecurringWithId() {
 		return taskId >= 0 && name == null && tag == null && attribute == null && isDeleteRecurring==true;
-	}
-	
-	private boolean isDeleteRecurringTagWithName() {
-		return taskId < 0 && name != null && tag != null && attribute == null&& isDeleteRecurring==true;
 	}
 
 	private boolean isDeleteRecurringTagWithId() {
@@ -166,12 +154,6 @@ public class DeleteCommand extends Command {
 		return withIdToWithName(deleteRecurringTag());
 	}
 
-	private ArrayList<Task> deleteRecurringTagWithName() {
-		searchWithName();
-		searchRecurring();
-		return deleteRecurringTag();
-	}
-
 	private ArrayList<Task> deleteAttributeWithId() {
 		searchWithId();
 		return withIdToWithName(deleteAttribute());
@@ -185,11 +167,6 @@ public class DeleteCommand extends Command {
 	private ArrayList<Task> deleteRecurringWithId() {
 		searchWithId();
 		return withIdToWithName(deleteRecurring());
-	}
-
-	private ArrayList<Task> deleteRecurringWithName() {
-		searchWithName();
-		return deleteRecurring();
 	}
 
 	private void searchWithId() {

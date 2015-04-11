@@ -34,6 +34,7 @@ import common.Task;
 //@author A0112734N
 public class Gui {
 	private static final String CONSTANT_SPACE = " ";
+	private static final String CONSTANT_INIT_COMMAND = "display";
 	private static JFrame frame;
 	private static final int idCol = 5;
 	private static TaskTableModel model;
@@ -134,9 +135,10 @@ public class Gui {
 	}
 
 	private static void initFrame() {
+		ArrayList<Task> commandType = Parser.getInstance().parseInput(CONSTANT_INIT_COMMAND);
 		frame = new JFrame("AnyTask");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(initTablePane(Data.getTaskList()));
+		frame.add(initTablePane(commandType));
 		frame.add(initTextArea(), BorderLayout.BEFORE_FIRST_LINE);
 		frame.add(initCommandFieldPanel(), BorderLayout.SOUTH);
 		frame.setSize(800, 600);

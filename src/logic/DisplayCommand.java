@@ -10,7 +10,6 @@ import database.Database;
 
 //@author A0119384Y
 public class DisplayCommand extends Command {
-	private static final String CONSTANT_HASHTAG = "#";
 	private static final String CONSTANT_ESCAPE = "'";
 
 	private static final String KEYWORD_FLOATING = "floating";
@@ -20,7 +19,7 @@ public class DisplayCommand extends Command {
 	private static final String KEYWORD_DUE = "due";
 	private static final String KEYWORD_SORT= "sort";
 	
-	private static final String[] CONSTANT_ALL = { CONSTANT_HASHTAG,
+	private static final String[] CONSTANT_ALL = { 
 		KEYWORD_FLOATING, KEYWORD_DONE, KEYWORD_ALL, KEYWORD_RECURRING,
 		KEYWORD_DUE, KEYWORD_SORT};
 	

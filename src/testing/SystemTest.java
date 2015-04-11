@@ -1,4 +1,4 @@
-package common;
+package testing;
 
 import static org.junit.Assert.*;
 
@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.junit.Test;
+
+import common.Task;
 
 import parser.DateParser;
 import parser.Parser;

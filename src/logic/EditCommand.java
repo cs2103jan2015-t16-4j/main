@@ -59,7 +59,7 @@ public class EditCommand extends Command {
 	}
 
 	public ArrayList<Task> execute() {
-		assert (name != null);
+		assert (name != null||taskId!=-1);
 		if (isEditNameWithName()) {
 			return editNameWithName();
 		} else if (isEditDeadlineWithName()) {

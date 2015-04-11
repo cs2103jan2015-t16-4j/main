@@ -1,4 +1,4 @@
-package common;
+package testing;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,8 @@ import logic.DoneCommand;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import common.Task;
 
 import database.Database;
 //@author A0119384Y

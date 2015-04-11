@@ -29,6 +29,7 @@ public class Task implements Comparable<Task> {
 			this.endTime = (Calendar) another.endTime.clone();
 		}
 		this.tags = new ArrayList<String>(another.tags);
+		this.recurringId =another.recurringId;
 	}
 
 	public void addTag(String newTag) {

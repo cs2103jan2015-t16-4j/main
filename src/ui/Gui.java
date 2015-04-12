@@ -95,6 +95,7 @@ public class Gui {
 			setTextArea(GeneralMessages.getMsgUndo());
 			break;
 		case SETPATH:
+			model.setData(Data.getTaskList());
 			updateTable();
 			setTextArea(GeneralMessages.getMsgPath());
 			break;

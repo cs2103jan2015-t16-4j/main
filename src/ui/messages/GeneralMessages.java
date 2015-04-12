@@ -1,6 +1,7 @@
 package ui.messages;
 
 import common.Settings;
+import logic.Data;
 
 //@author A0112734N
 public class GeneralMessages {
@@ -48,7 +49,7 @@ public class GeneralMessages {
 	}
 
 	public static String getMsgError() {
-		return String.format(MESSAGE_ERROR, Settings.getFilePath());
+		return String.format(MESSAGE_ERROR, Data.getSettings().getFilepath());
 	}
 
 	public static String getMsgInvalid() {
@@ -56,7 +57,7 @@ public class GeneralMessages {
 	}
 
 	public static String getMsgPath() {
-		return String.format(MESSAGE_PATH, Settings.getFilePath());
+		return String.format(MESSAGE_PATH, Data.getSettings().getFilepath());
 	}
 
 	public static String getMsgPrompt() {
@@ -76,6 +77,6 @@ public class GeneralMessages {
 	}
 
 	public static String getMsgWelcome() {
-		return String.format(MESSAGE_WELCOME, Settings.getFilePath());
+		return String.format(MESSAGE_WELCOME, Data.getSettings().getFilepath());
 	}
 }

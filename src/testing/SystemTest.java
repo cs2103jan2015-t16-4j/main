@@ -125,6 +125,7 @@ public class SystemTest {
 	public void deadlineTaskTest() {
 		this.db.fetchTasksFromFile();
 		this.backupList.addAll(this.db.getTaskList());
+
 		ArrayList<Task> taskList = this.db.getTaskList();
 		int id;
 		
@@ -274,8 +275,8 @@ public class SystemTest {
 		
 		// test edit end time using ID
 		// checks the editing of a task name, using the same input as a user.
-		scheduled=parseDate(" 2pm monday 2 weeks later");
-		p.parseInput("edit "+ Integer.toString(id)+" end time to Mon Apr 20 14:00:00 ");
+		scheduled=parseDate("2pm monday 2 weeks later");
+		p.parseInput("edit "+ Integer.toString(id)+" end time to 14:00:00 monday 2 weeks later ");
 		assertEquals(scheduled, taskList.get(taskList.size() - 1).getEndTime());
 
 		// test edit tag using ID
@@ -309,6 +310,78 @@ public class SystemTest {
 		assertEquals(backupList,taskList);
 		assertNotEquals(undoList,taskList);
 		
+		this.db.setTaskList(this.backupList);
+		this.db.saveTasksToFile();
+	}
+	
+	@Test
+	public void recurDeadlineTaskTest() {
+		this.db.fetchTasksFromFile();
+		this.backupList.addAll(this.db.getTaskList());
+		this.db.clearFile();
+		this.db.fetchTasksFromFile();
+		ArrayList<Task> taskList = this.db.getTaskList();
+
+		// add new task for checking of edits
+		Parser p = Parser.getInstance();
+		p.parseInput("Add first day by 1 Jan 2015 before next year monthly");
+		p.parseInput("tag 1 #newmonth recurring");
+		assertTrue(taskList.get(taskList.size() - 1).isDeadline());
+		
+		// test edit name using ID (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit 1 name to first day of the month");
+		assertEquals("first day of the month", taskList.get(0).getName());
+		
+		// test edit name using ID (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit 12 name to first day of the last month");
+		assertEquals("first day of the last month", taskList.get(11).getName());
+		
+		// test edit deadline using ID
+		// checks the editing of a task name, using the same input as a user.
+		Calendar deadline=parseDate("2 Feb 2015 00:01");
+		p.parseInput("edit 2 deadline to 2 Feb 2015 00:01");
+		assertEquals(deadline, taskList.get(1).getEndTime());
+		
+		// test edit tag using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit 1 #newmonth to #firstNewMonth");
+		assertEquals("#firstNewMonth", taskList.get(0).getTags().get(0));
+		
+		// test done using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done 1");
+		assertEquals("#done", taskList.get(0).getTags().get(1));
+		
+		//test delete tag using ID
+		p.parseInput("delete 1 #done");
+		p.parseInput("delete 1 #firstNewMonth");
+		assertEquals(new ArrayList<String>(),taskList.get(0).getTags());
+
+		//test delete all recurr task using ID
+		ArrayList<Task> undoList= new ArrayList<Task>();
+		undoList.addAll(taskList);
+		p.parseInput("delete 1 recurring");
+		assertEquals(new ArrayList<Task>(),taskList);
+		assertNotEquals(undoList,taskList);
+		
+		//test undo
+		p.parseInput("undo");
+		assertEquals(undoList,taskList);
+		assertEquals("first day of the month", taskList.get(0).getName());
+		
+		//test delete task using ID
+		p.parseInput("delete 1");
+		assertNotEquals("first day of the month", taskList.get(0).getName());
+		assertEquals("first day", taskList.get(0).getName());
+		
+		//test delete task using ID
+		p.parseInput("delete 2 #newmonth recurring");
+		for(int i=0; i<taskList.size();i++){
+			assertEquals(new ArrayList<String>(),taskList.get(i).getTags());
+		}
+
 		this.db.setTaskList(this.backupList);
 		this.db.saveTasksToFile();
 	}

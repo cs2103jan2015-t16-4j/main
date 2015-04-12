@@ -86,35 +86,35 @@ public class Parser {
 	private Command parseInfo(CommandType commandType, String paras) {
 		switch (commandType) {
 		case ADD:
-			return addParser(paras);
+			return parseAdd(paras);
 		case DELETE:
-			return deleteParser(paras);
+			return parseDelete(paras);
 		case EDIT:
-			return editParser(paras);
+			return parseEdit(paras);
 		case DISPLAY:
-			return displayParser(paras);
+			return parseDisplay(paras);
 		case TAG:
-			return tagParser(paras);
+			return parseTag(paras);
 		case DONE:
-			return doneParser(paras);
+			return parseDone(paras);
 		case UNDO:
-			return undoParser(paras);
+			return parseUndo(paras);
 		case SETPATH:
-			return setpathParser(paras);
+			return parseSetpath(paras);
 		case HELP:
-			return helpParser(paras);
+			return parseHelp(paras);
 		case INVALID:
-			return invalidParser(paras);
+			return parseInvalid(paras);
 		case EXIT:
-			return exitParser(paras);
+			return parseExit(paras);
 		case SAVE:
-			return saveParser(paras);
+			return parseSave(paras);
 		default:
 			throw new Error("Unrecognized command type");
 		}
 	}
 
-	private Command addParser(String paras) {
+	private Command parseAdd(String paras) {
 		backupTaskList();
 		String lastWord = paras
 				.substring(paras.lastIndexOf(CONSTANT_SPACE) + 1).toLowerCase();
@@ -142,7 +142,7 @@ public class Parser {
 		}
 	}
 
-	private Command deleteParser(String paras) {
+	private Command parseDelete(String paras) {
 		backupTaskList();
 		if (isDeleteTag(paras)) {
 			return deleteTag(paras);
@@ -159,7 +159,7 @@ public class Parser {
 		}
 	}
 
-	private Command editParser(String paras) {
+	private Command parseEdit(String paras) {
 		backupTaskList();
 		if (isEditName(paras)) {
 			return editName(paras);
@@ -176,7 +176,7 @@ public class Parser {
 		}
 	}
 
-	private Command displayParser(String paras) {
+	private Command parseDisplay(String paras) {
 		if (paras.length() == 0) {
 			return new DisplayCommand();
 		} else if (isDisplayWithEndTime(paras)) {
@@ -190,7 +190,7 @@ public class Parser {
 		}
 	}
 
-	private Command tagParser(String paras) {
+	private Command parseTag(String paras) {
 		backupTaskList();
 		if (isTagRecurring(paras)) {
 			return tagRecurring(paras);
@@ -199,7 +199,7 @@ public class Parser {
 		}
 	}
 
-	private Command doneParser(String paras) {
+	private Command parseDone(String paras) {
 		backupTaskList();
 		if (isNumerical(paras)) {
 			return new DoneCommand(Integer.parseInt(paras));
@@ -208,27 +208,27 @@ public class Parser {
 		}
 	}
 
-	private Command undoParser(String paras) {
+	private Command parseUndo(String paras) {
 		return new UndoCommand(taskListBackup);
 	}
 
-	private Command setpathParser(String paras) {
+	private Command parseSetpath(String paras) {
 		return new SetpathCommand(paras);
 	}
 
-	private Command helpParser(String paras) {
+	private Command parseHelp(String paras) {
 		return new HelpCommand();
 	}
 
-	private Command invalidParser(String userCommand) {
+	private Command parseInvalid(String userCommand) {
 		return new InvalidCommand(commandString);
 	}
 
-	private Command exitParser(String paras) {
+	private Command parseExit(String paras) {
 		return new ExitCommand();
 	}
 
-	private Command saveParser(String paras) {
+	private Command parseSave(String paras) {
 		return new SaveCommand();
 	}
 

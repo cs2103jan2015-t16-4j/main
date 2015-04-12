@@ -325,9 +325,12 @@ public class SystemTest {
 		// add new task for checking of edits
 		Parser p = Parser.getInstance();
 		p.parseInput("Add first day by 1 Jan 2015 before next year monthly");
-		p.parseInput("tag 1 #newmonth recurring");
-		assertTrue(taskList.get(taskList.size() - 1).isDeadline());
-		
+		p.parseInput("tag 1 #newmonth recurring");	
+		for(int i=0; i<taskList.size();i++){
+			assertTrue(taskList.get(i).isDeadline());
+			assertEquals("#newmonth",taskList.get(i).getTags().get(0));
+		}
+
 		// test edit name using ID (Includes keyword in name)
 		// checks the editing of a task name, using the same input as a user.
 		p.parseInput("edit 1 name to first day of the month");

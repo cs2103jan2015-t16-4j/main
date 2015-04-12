@@ -25,12 +25,14 @@ public class Settings {
 	
 	public void setFilepath(String path) {
 		if (path.endsWith(FILE_TYPE)) {
-            if (path.contains(File.separator)) {
-            	this.filename = directory.substring(path.lastIndexOf(File.separator));
-            	this.directory = path.substring(0,directory.lastIndexOf(File.separator));
+            if (path.contains("\\")||path.contains("/")) {
+            	File filepath = new File(path);
+            	this.filename = filepath.getName();
+            	this.directory = "/"+filepath.getParent();
             } else {
-            	this.filename = path;
-            	this.directory = "";
+            	File filepath = new File(path);
+            	this.filename = filepath.getName();
+            	this.directory = "/";
             }
         } else{
 			this.filename=DEFAULT_FILENAME; 

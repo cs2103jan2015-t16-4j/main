@@ -139,9 +139,9 @@ public class Database {
 		this.saveTasksToFile();
 		setting.setFilepath(userText);
 		taskList.clear();
-		new File(setting.getDirectory()).mkdirs();		
 		filepath=setting.getFilepath();
 		initFilePath();
+		saveSettingsToFile();
 		if (this.fetchTasksFromFile()&&this.saveTasksToFile()) {
 			saveSettingsToFile();
 		} else {

@@ -213,6 +213,7 @@ public class Database {
 			return false;
 		}
 	}
+	
 	private void setIdFromList() {
 		int taskid;
 		id = 0;
@@ -228,5 +229,4 @@ public class Database {
 		this.saveTasksToFile();
 		taskList = newTaskList;
 	}
-
 }

@@ -1,6 +1,5 @@
 package ui.messages;
 
-import common.Settings;
 import logic.Data;
 
 //@author A0112734N

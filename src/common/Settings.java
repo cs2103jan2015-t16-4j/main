@@ -1,7 +1,7 @@
 package common;
 
 import java.io.File;
-
+//@author A0112734N
 public class Settings {
 	private String filename;
 	private String directory;
@@ -60,8 +60,4 @@ public class Settings {
 	public void setDirectory(String userText) {
 		directory = userText;
 	}
-	
-	
-	
-	
 }

@@ -2,6 +2,8 @@ package ui;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -19,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -42,7 +44,7 @@ public class Gui {
 	private static Scanner sc = new Scanner(System.in);
 	private static JScrollPane taskScrollPane;
 
-	private static JTextArea textArea;
+	private static JTextPane textArea;
 
 	private static void displayResults(String command, ArrayList<Task> taskList) {
 		String commandType = Parser.getInstance().parseCommandType(command);
@@ -101,8 +103,7 @@ public class Gui {
 			break;
 		case HELP:
 			// TODO: Help Command Display
-			setTextArea(HelpMessages.getMsgHelp((Parser.getInstance()
-					.getCommandInfo(command))));
+			setTextArea(HelpMessages.getMsgHelp((Parser.getInstance().getCommandInfo(command))));
 			break;
 		case SAVE:
 			setTextArea(GeneralMessages.getMsgSave());
@@ -115,6 +116,7 @@ public class Gui {
 		default:
 			throw new Error("Unrecognized command type");
 		}
+		
 	}
 
 	private static JPanel initCommandFieldPanel() {
@@ -188,13 +190,16 @@ public class Gui {
 	}
 
 	private static JScrollPane initTextArea() {
-		textArea = new JTextArea("", 2, 1);
-		textArea.setLineWrap(true);
+		textArea = new JTextPane();
 		textArea.setEditable(false);
+		
+		textArea.setContentType("text/html");
+		textArea.setText(" ");
+		textArea.setPreferredSize( new Dimension(800,60) );
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		return scrollPane;
 	}
-
+	
 	//@author A0119384Y-reused
 	private static boolean isNumerical(String str) {
 		try {

@@ -51,6 +51,16 @@ public class Parser {
 			KEYWORD_FROM, KEYWORD_DAILY, KEYWORD_WEEKLY, KEYWORD_MONTHLY,
 			KEYWORD_ANNUALLY };
 	
+	private static final String KEYWORD_FLOATING = "floating";
+	private static final String KEYWORD_DONE = "done";
+	private static final String KEYWORD_ALL = "all";
+	private static final String KEYWORD_DUE = "due";
+	private static final String KEYWORD_SORT= "sort";
+	
+	private static final String[] CONSTANT_ALL_DISPLAY = { 
+		KEYWORD_FLOATING, KEYWORD_DONE, KEYWORD_ALL, KEYWORD_RECURRING,
+		KEYWORD_DUE, KEYWORD_SORT};
+	
 	private static final boolean BOOLEAN_NOT_RECURRING = false;
 	private static final boolean BOOLEAN_RECURRING = true;
 
@@ -186,6 +196,8 @@ public class Parser {
 			return displayWithTimePeriod(paras);
 		} else if (isDisplayWithTag(paras)) {
 			return new DisplayCommand(paras, true);
+		} else if (isDisplayWithKeywords(paras)){
+			return new DisplayCommand(paras);
 		} else {
 			return new DisplayCommand(recoverEscapeKeywords(paras).split(
 					CONSTANT_SPACE));
@@ -310,6 +322,15 @@ public class Parser {
 
 	private boolean isDisplayWithTag(String paras) {
 		return paras.startsWith(CONSTANT_HASHTAG);
+	}
+
+	private boolean isDisplayWithKeywords(String paras) {
+		for(String s: CONSTANT_ALL_DISPLAY){
+			if(paras.equals(s)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean isNumerical(String str) {

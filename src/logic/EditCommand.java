@@ -59,7 +59,7 @@ public class EditCommand extends Command {
 	}
 
 	public ArrayList<Task> execute() {
-		assert (name != null||taskId!=-1);
+		assert (name != null || taskId != -1);
 		if (isEditNameWithName()) {
 			return editNameWithName();
 		} else if (isEditDeadlineWithName()) {
@@ -236,26 +236,22 @@ public class EditCommand extends Command {
 
 	private ArrayList<Task> editEndTime() {
 		if (resultTaskIndexes.size() == 1) {
-			// TODO: return successful edit message;
 			taskList.get(resultTaskIndexes.get(0)).setEndTime(newEndTime);
 			ArrayList<Task> r = new ArrayList<Task>();
 			r.add(taskList.get(resultTaskIndexes.get(0)));
 			return r;
 		} else {
-			// TODO: return unsuccessful edit message
 			return null;
 		}
 	}
 
 	private ArrayList<Task> editStartTime() {
 		if (resultTaskIndexes.size() == 1) {
-			// TODO: return successful edit message;
 			taskList.get(resultTaskIndexes.get(0)).setStartTime(newStartTime);
 			ArrayList<Task> r = new ArrayList<Task>();
 			r.add(taskList.get(resultTaskIndexes.get(0)));
 			return r;
 		} else {
-			// TODO: return unsuccessful edit message
 			return null;
 		}
 	}
@@ -267,7 +263,7 @@ public class EditCommand extends Command {
 			}
 		}
 	}
-	
+
 	private void searchWithId() {
 		for (int index = 0; index < taskList.size(); index++) {
 			if (taskList.get(index).getId() == taskId) {
@@ -276,8 +272,14 @@ public class EditCommand extends Command {
 			}
 		}
 	}
+
+	/*
+	 * Input number may be not a task id but a task name. After failure of
+	 * executing with id, this class will execute again treating input number as
+	 * a task name.
+	 */
 	private ArrayList<Task> withIdToWithName(ArrayList<Task> result) {
-		if(result==null){
+		if (result == null) {
 			name = String.valueOf(taskId);
 			taskId = -1;
 			return execute();

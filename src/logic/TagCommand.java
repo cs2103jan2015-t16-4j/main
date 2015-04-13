@@ -146,6 +146,11 @@ public class TagCommand extends Command {
 		}
 	}
 	
+	/*
+	 * Input number may be not a task id but a task name. After failure of
+	 * executing with id, this class will execute again treating input number as
+	 * a task name.
+	 */
 	private ArrayList<Task> withIdToWithName(ArrayList<Task> result) {
 		if(result==null){
 			name = String.valueOf(taskId);

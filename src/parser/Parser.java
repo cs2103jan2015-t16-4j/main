@@ -1,7 +1,5 @@
 package parser;
 
-//import java.text.ParseException;
-//import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -14,8 +12,8 @@ import logic.Command.CommandType;
 public class Parser {
 	private static final String CONSTANT_EMPTY_STRING = "";
 	private static final String CONSTANT_ESCAPE = "'";
-
 	private static final String CONSTANT_SPACE = " ";
+	
 	private static final String KEYWORD_ADD_DEADLINE = " by ";
 	private static final String KEYWORD_ADD_SCHEDULED = " from ";
 	private static final String KEYWORD_ADD_SCHEDULED_2 = " to ";
@@ -29,9 +27,10 @@ public class Parser {
 	private static final String KEYWORD_DELETE_RECURRING = " recurring";
 	private static final String KEYWORD_DELETE_DEADLINE = " deadline";
 	private static final String KEYWORD_DELETE_END_TIME = " end time";
-	private static final String KEYWORD_DELETE_START_TIME = " start time";	
+	private static final String KEYWORD_DELETE_START_TIME = " start time";
 	private static final String KEYWORD_DISPLAY_BEFORE = "before ";
 	private static final String KEYWORD_DISPLAY_FROM = "from ";
+	
 	private static final String CONSTANT_HASHTAG = "#";
 	private static final String KEYWORD_BY = "by";
 	private static final String KEYWORD_TO = "to";
@@ -45,11 +44,13 @@ public class Parser {
 	private static final String KEYWORD_WEEKLY = "weekly";
 	private static final String KEYWORD_MONTHLY = "monthly";
 	private static final String KEYWORD_ANNUALLY = "annually";
+	/*CONSTANT_ALL consists of all keywords for parser which is used for recovering escaped words. */
 	private static final String[] CONSTANT_ALL = { CONSTANT_HASHTAG,
 			KEYWORD_BY, KEYWORD_TO, KEYWORD_DEADLINE, KEYWORD_END_TIME,
 			KEYWORD_START_TIME, KEYWORD_BEFORE, KEYWORD_RECURRING,
 			KEYWORD_FROM, KEYWORD_DAILY, KEYWORD_WEEKLY, KEYWORD_MONTHLY,
 			KEYWORD_ANNUALLY };
+	
 	private static final boolean BOOLEAN_NOT_RECURRING = false;
 	private static final boolean BOOLEAN_RECURRING = true;
 
@@ -183,10 +184,11 @@ public class Parser {
 			return displayWithEndTime(paras);
 		} else if (isDisplayWithTimePeriod(paras)) {
 			return displayWithTimePeriod(paras);
-		} else if (isDisplayWithTag(paras)){
+		} else if (isDisplayWithTag(paras)) {
 			return new DisplayCommand(paras, true);
 		} else {
-			return new DisplayCommand(recoverEscapeKeywords(paras).split(CONSTANT_SPACE));
+			return new DisplayCommand(recoverEscapeKeywords(paras).split(
+					CONSTANT_SPACE));
 		}
 	}
 
@@ -217,7 +219,11 @@ public class Parser {
 	}
 
 	private Command parseHelp(String paras) {
-		return new HelpCommand();
+		if (paras.equals(CONSTANT_EMPTY_STRING)) {
+			return new HelpCommand();
+		} else {
+			return new HelpCommand(paras);
+		}
 	}
 
 	private Command parseInvalid(String userCommand) {
@@ -258,7 +264,7 @@ public class Parser {
 	}
 
 	private boolean isAddFloatingTask(String paras) {
-		return paras != CONSTANT_EMPTY_STRING;
+		return !paras.equals(CONSTANT_EMPTY_STRING);
 	}
 
 	private boolean isAddTaskWithTime(String paras) {
@@ -271,17 +277,15 @@ public class Parser {
 	}
 
 	private boolean isDeleteTask(String paras) {
-		return paras != CONSTANT_EMPTY_STRING;
+		return !paras.equals(CONSTANT_EMPTY_STRING);
 	}
 
 	private boolean isDeleteTag(String paras) {
-		return paras.contains(KEYWORD_DELETE_TAG)
-				&& !isTagRecurring(paras);
+		return paras.contains(KEYWORD_DELETE_TAG) && !isTagRecurring(paras);
 	}
 
 	private boolean isDeleteRecurringTag(String paras) {
-		return paras.contains(KEYWORD_DELETE_TAG)
-				&& isTagRecurring(paras);
+		return paras.contains(KEYWORD_DELETE_TAG) && isTagRecurring(paras);
 	}
 
 	private boolean isDeleteAttribute(String paras) {
@@ -536,7 +540,8 @@ public class Parser {
 		if (isNumerical(name)) {
 			return new DeleteCommand(Integer.parseInt(name), BOOLEAN_RECURRING);
 		} else {
-			return null; // only receives id.
+			// Delete recurring can only receive id as reference of a task.
+			return null;
 		}
 
 	}
@@ -557,12 +562,14 @@ public class Parser {
 		String parasWithoutLastWord = paras.substring(0,
 				paras.lastIndexOf(CONSTANT_SPACE));
 		String name = parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[0];
-		String tag = CONSTANT_HASHTAG + parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[1];
+		String tag = CONSTANT_HASHTAG
+				+ parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[1];
 		if (isNumerical(name)) {
-			return new DeleteCommand(Integer.parseInt(name),
-					BOOLEAN_RECURRING, tag);
+			return new DeleteCommand(Integer.parseInt(name), BOOLEAN_RECURRING,
+					tag);
 		} else {
-			return null; // only receives id.
+			// Delete recurring can only receive id as reference of a task.
+			return null;
 		}
 	}
 
@@ -602,11 +609,12 @@ public class Parser {
 	private Command tag(String paras) {
 		String name = paras.split(KEYWORD_DELETE_TAG)[0];
 		;
-		String[] tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG,
-				2)[1]).split(CONSTANT_SPACE);
-	
+		String[] tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG, 2)[1])
+				.split(CONSTANT_SPACE);
+
 		if (isNumerical(name)) {
-			return new TagCommand(Integer.parseInt(name), BOOLEAN_NOT_RECURRING, tags);
+			return new TagCommand(Integer.parseInt(name),
+					BOOLEAN_NOT_RECURRING, tags);
 		} else {
 			return new TagCommand(recoverEscapeKeywords(name), tags);
 		}
@@ -619,14 +627,21 @@ public class Parser {
 		;
 		String[] tags = (CONSTANT_HASHTAG + parasWithoutLastWord.split(
 				KEYWORD_DELETE_TAG, 2)[1]).split(CONSTANT_SPACE);
-	
+
 		if (isNumerical(name)) {
-			return new TagCommand(Integer.parseInt(name), BOOLEAN_RECURRING, tags);
+			return new TagCommand(Integer.parseInt(name), BOOLEAN_RECURRING,
+					tags);
 		} else {
-			return null; // only receives id.
+			// Tag recurring can only receive id as reference of a task.
+			return null;
 		}
 	}
 
+	/*
+	 * Task list is backed up for each time a modification is about to be
+	 * executed. It is a deep clone which will not affect the original task
+	 * objects.
+	 */
 	private void backupTaskList() {
 		taskListBackup.clear();
 		for (Task t : Database.getInstance().getTaskList()) {

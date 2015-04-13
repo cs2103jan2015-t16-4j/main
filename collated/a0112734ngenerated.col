@@ -1,0 +1,90 @@
+//@author: a0112734ngenerated
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+	 */
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		Task other = (Task) obj;
+		if (this.endTime == null) {
+			if (other.endTime != null) {
+				return false;
+			}
+		} else if (!this.endTime.equals(other.endTime)) {
+			return false;
+		}
+		if (this.id != other.id) {
+			return false;
+		}
+		if (this.name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		if (this.recurringId != other.recurringId) {
+			return false;
+		}
+		if (this.startTime == null) {
+			if (other.startTime != null) {
+				return false;
+			}
+		} else if (!this.startTime.equals(other.startTime)) {
+			return false;
+		}
+		if (this.tags == null) {
+			if (other.tags != null) {
+				return false;
+			}
+		} else if (!this.tags.equals(other.tags)) {
+			return false;
+		}
+		return true;
+	}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+	 */
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result)
+				+ ((this.endTime == null) ? 0 : this.endTime.hashCode());
+		result = (prime * result) + this.id;
+		result = (prime * result)
+				+ ((this.name == null) ? 0 : this.name.hashCode());
+		result = (prime * result) + this.recurringId;
+		result = (prime * result)
+				+ ((this.startTime == null) ? 0 : this.startTime.hashCode());
+		result = (prime * result)
+				+ ((this.tags == null) ? 0 : this.tags.hashCode());
+		return result;
+	}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+
+
+
+
+

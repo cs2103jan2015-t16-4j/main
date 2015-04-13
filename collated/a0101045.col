@@ -1,0 +1,46 @@
+//@author: a0101045
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\SaveCommand.java
+	 */
+
+public class SaveCommand extends Command{
+	public SaveCommand(){
+		
+	}
+	
+	public ArrayList<Task> execute(){
+		Database.getInstance().saveTasksToFile();
+		return null;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\SaveCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\messages\HelpMessages.java
+	 */
+
+public class HelpMessages {
+	/*private static final String MESSAGE_HELP ="	1. display : Displays the title and deadline of all tasks, sorted by deadline.\m"
+			+ "	2. add  : add tasks (floating, deadline task, recurring task) <br>"
+			+ "	3. edit : edit tasks that have already been added<br>"
+			+ "	4. delete : delete tasks that have been added<br>"
+			+ "	5. tag : tag tasks with description<br>"
+			+ "	6. done : to tag tasks with done <br>"
+			+ "	7. undo : undo the previous execution<br>"
+			+ "	8. help : display the commands and their functionality<br>"
+			+ "	9. setpath : to specify a folder other than default one to store data from AnyTask <br>";*/
+	
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\messages\HelpMessages.java
+
+
+
+
+

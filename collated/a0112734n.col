@@ -1,0 +1,1299 @@
+//@author: a0112734n
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Settings.java
+	 */
+
+public class Settings {
+	private String filename;
+	private String directory;
+	private static final String FILE_TYPE = ".txt";
+	private static final String DEFAULT_FILENAME = "anytasklist.txt";
+
+	public Settings() {	
+		this.setDefault();
+	}
+	
+	public void setDefault() {
+		this.filename=DEFAULT_FILENAME;
+		this.directory=System.getProperty("user.dir");
+		
+	}
+	
+	public String getFilepath() {
+		File filepath = new File(directory,filename);
+		return(filepath.getAbsolutePath());
+	}
+	
+	public void setFilepath(String path) {
+		if (path.endsWith(FILE_TYPE)) {
+            if (path.contains("\\")||path.contains("/")) {
+            	File filepath = new File(path);
+            	this.filename = filepath.getName();
+            	this.directory = "/"+filepath.getParent();
+            } else {
+            	File filepath = new File(path);
+            	this.filename = filepath.getName();
+            	this.directory = "/";
+            }
+        } else{
+			this.filename=DEFAULT_FILENAME; 
+			if (path.startsWith(File.separator)) {
+				this.directory=path;
+			} else {
+				this.directory = "/"+path;
+			}
+			this.filename=DEFAULT_FILENAME;
+        }
+	}
+	
+	public String getFilename() {
+		return filename;
+	}
+	
+	public void setFilename(String userText) {
+		filename = userText;
+	}
+	
+	public String getDirectory() {
+		return directory;
+	}	
+	
+	public void setDirectory(String userText) {
+		directory = userText;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Settings.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+	 */
+
+public class Database {
+	private static class DatabaseLoader {
+		private static final Database INSTANCE = new Database();
+	}
+	
+	private static final String CONFIG_FILE = "config.txt";
+	private static int id = -1;
+	
+	final static Logger logger = LoggerFactory.getLogger(Database.class);
+
+	private static ArrayList<Task> taskList = new ArrayList<Task>();
+	private static Settings setting=new Settings();
+	private static String filepath;
+	
+	public static Database getInstance() {
+		return DatabaseLoader.INSTANCE;
+	}
+
+	private Database() {		
+		if (DatabaseLoader.INSTANCE != null) {
+			throw new IllegalStateException("Already instantiated");
+		}
+		if(this.fetchSettingsFromFile()){
+			filepath=setting.getFilepath();
+			initFilePath();
+		}
+	}
+	
+	public Settings getSetting() {
+		return setting;
+	}
+
+	public boolean clearFile() {
+		try {
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(filepath,false));
+			bWrite.write(" ");
+			bWrite.close();
+			return true;
+		} catch (IOException e) {
+			logger.error("Error writing to {}", filepath, e);
+			return false;
+		}
+	}
+
+	public boolean fetchTasksFromFile() {
+		boolean isFileRead = false;
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filepath));
+			if (br.ready()) {
+				isFileRead = this.readJsonFile(br);
+				br.close();
+				return isFileRead;
+			} else {
+				br.close();
+				return true;
+			}
+		} catch (IOException e) {
+			logger.info("Error reading {}", filepath, e);
+			return true;
+		}
+	}
+
+	public int getId() {
+		id++;
+		return id;
+	}
+
+	public ArrayList<Task> getTaskList() {
+		assert (taskList != null);
+		return taskList;
+	}
+
+	private boolean readJsonFile(BufferedReader br) {
+		try {
+			Gson gson = new Gson();
+			taskList = gson.fromJson(br, new TypeToken<ArrayList<Task>>() {
+			}.getType());
+			if (taskList == null) {
+				taskList = new ArrayList<Task>();
+			}
+			this.setIdFromList();
+			return true;
+		} catch (JsonParseException e) {
+			logger.error(
+					"Error reading {}: file exists but is not in json format",
+					filepath, e);
+			return false;
+		}
+	}
+
+	public boolean saveTasksToFile() {
+		try {
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(filepath,
+					false));
+			Gson gson = new Gson();
+			String jsonTask = gson.toJson(taskList);
+			bWrite.write(jsonTask);
+			bWrite.close();
+			return true;
+		} catch (IOException e) {
+			logger.error("Error writing {}", filepath, e);
+			return false;
+		}
+	}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+	 */
+
+	public void setFilePath(String userText) {
+		this.saveTasksToFile();
+		setting.setFilepath(userText);
+		taskList.clear();
+		filepath=setting.getFilepath();
+		initFilePath();
+		saveSettingsToFile();
+		if (this.fetchTasksFromFile()&&this.saveTasksToFile()) {
+			saveSettingsToFile();
+		} else {
+			logger.error("Error changing filepath");
+		}
+	}
+	
+	private void initFilePath() {
+		new File(setting.getDirectory()).mkdirs();
+		File file=new File(setting.getFilepath());
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			logger.info("file already exists");
+		}
+		
+	}
+	
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+	 */
+
+	public boolean fetchSettingsFromFile() {
+		boolean isFileRead = false;
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(CONFIG_FILE));
+			if (br.ready()) {
+				isFileRead = this.readSettingsFile(br);
+				br.close();
+				return isFileRead;
+			} else {
+				br.close();
+				setting.setDefault();
+				return true;
+			}
+		} catch (IOException e) {
+			logger.info("Error reading {}. Settings set to default", CONFIG_FILE, e);
+			setting.setDefault();
+			return true;
+		}
+	}
+	
+	private boolean readSettingsFile(BufferedReader br) {
+		try {
+			Gson gson = new Gson();
+			 setting = gson.fromJson(br, new TypeToken<Settings>() {
+			}.getType());
+			if (setting == null) {
+				setting.setDefault();
+			}
+			return true;
+		} catch (JsonParseException e) {
+			logger.warn(
+					"Error reading {}: file exists but is not in json format. Settings set to default",
+					CONFIG_FILE, e);
+			setting.setDefault();			
+			return true;
+		}
+	}
+
+	public boolean saveSettingsToFile() {
+		try {
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(CONFIG_FILE,
+					false));
+			Gson gson = new Gson();
+			String jsonSetting = gson.toJson(setting);
+			bWrite.write(jsonSetting);
+			bWrite.close();
+			return true;
+		} catch (IOException e) {
+			logger.error("Error writing to {}", CONFIG_FILE, e);
+			return false;
+		}
+	}
+	
+	private void setIdFromList() {
+		int taskid;
+		id = 0;
+		for (int i = 0; i < taskList.size(); i++) {
+			taskid = taskList.get(i).getId();
+			if (id < taskList.get(i).getId()) {
+				id = taskid;
+			}
+		}
+	}
+
+	public void setTaskList(ArrayList<Task> newTaskList) {
+		this.saveTasksToFile();
+		taskList = newTaskList;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\Data.java
+	 */
+
+public class Data {
+	private static ArrayList<Task> taskList= new ArrayList<Task>();
+	final static Logger logger = LoggerFactory.getLogger(Database.class);
+	
+	public static boolean initTaskList(){
+		Database db = Database.getInstance();
+		if(db.fetchTasksFromFile()){
+			taskList=db.getTaskList();
+			return true;
+		}
+		return false;
+	}
+	
+	public static ArrayList<Task> getTaskList(){
+		Database db = Database.getInstance();
+		return db.getTaskList();
+	}
+	
+	public static void setTaskList(ArrayList<Task> newTaskList){
+		taskList=newTaskList;
+	}
+	
+	public static Settings getSettings(){
+		Settings setting = Database.getInstance().getSetting();
+		return setting;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\Data.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\DatabaseTest.java
+	 */
+
+	private Database db = Database.getInstance();
+	//create a backup list so that we can put back the data in the file after the testing
+	private ArrayList<Task> backupList=new ArrayList<Task>();
+	@Test
+	public void testClearSaveFile() {
+		db.fetchTasksFromFile();
+		backupList.addAll(db.getTaskList());
+		
+		ArrayList<Task> taskList=db.getTaskList();
+		
+		//Empty list to check against the taskList
+		ArrayList<Task> checkList=new ArrayList<Task>();
+		
+		//Make sure there is at least one task in task list.
+		Task task = new Task("task name 1");
+		taskList.add(task);
+		task = new Task("task name 2");
+		taskList.add(task);
+		db.saveTasksToFile();
+		//Clear the saved file.
+		db.clearFile();
+		
+		//Refetch the task list from saved file
+		db.fetchTasksFromFile();
+		taskList=db.getTaskList();
+		
+		db.setTaskList(backupList);
+		db.saveTasksToFile();
+		
+
+		assertEquals(checkList,taskList);
+	}
+	
+	@Test
+	public void testSaveAndFetch() {
+		db.fetchTasksFromFile();
+		backupList.addAll(db.getTaskList());
+		
+		db.clearFile();		
+		db.fetchTasksFromFile();
+		ArrayList<Task> taskList=db.getTaskList();
+		
+		ArrayList<Task> checkList=new ArrayList<Task>();
+		
+		//add tasks to both lists
+		Task task = new Task("Task name 1");
+		db.getTaskList().add(task);
+		checkList.add(task);
+		
+		task = new Task("Task name 2");
+		db.getTaskList().add(task);
+		checkList.add(task);
+		
+		db.saveTasksToFile();
+		db.fetchTasksFromFile();
+		
+		//rewrite tasklist with tasks that were saved to file
+		taskList=db.getTaskList();
+		
+		db.setTaskList(backupList);
+		db.saveTasksToFile();
+		
+		assertEquals(checkList,taskList);
+	}
+	
+}
+
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\DatabaseTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\SystemTest.java
+	 */
+
+	
+	// create a backup list so that we can put back the data in the file after
+	// the testing
+	private ArrayList<Task> backupList = new ArrayList<Task>();
+	private Database db = Database.getInstance();
+
+	@Test
+	public void addFloatingTaskTest() {
+		this.db.fetchTasksFromFile();
+		this.backupList.addAll(this.db.getTaskList());
+		ArrayList<Task> taskList = this.db.getTaskList();
+
+		// checks the adding of a new floating task, using the same input as a
+		// user.
+		Parser p = Parser.getInstance();
+		p.parseInput("Add new floating task");
+		// checks the adding of a new tag, using the same input as a user.
+		p.parseInput("tag new floating task #tag");
+
+		// test task name
+		assertEquals("new floating task", taskList.get(taskList.size() - 1)
+				.getName());
+
+		// test tag
+		assertEquals("#tag", taskList.get(taskList.size() - 1).getTags().get(0));
+
+	}
+
+	@Test
+	public void editFloatingTaskTest() {
+		this.db.fetchTasksFromFile();
+		this.backupList.addAll(this.db.getTaskList());
+		ArrayList<Task> taskList = this.db.getTaskList();
+		int id;
+		
+		// add new task for checking of edits
+		Parser p = Parser.getInstance();
+		p.parseInput("Add new floating task name");
+		p.parseInput("tag new floating task name #tag");
+		id=taskList.get(taskList.size() - 1).getId();
+		assertTrue(taskList.get(taskList.size() - 1).isFloating());
+		
+		// test edit name using name (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit new floating task name name to new floating task1");
+		assertEquals("new floating task1", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit tag using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit new floating task1 #tag to #newtag");
+		assertEquals("#newtag", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done new floating task1");
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using name
+		p.parseInput("delete new floating task1 #done");
+		p.parseInput("delete new floating task1 #newtag");
+		assertEquals(new ArrayList<String>(),taskList.get(taskList.size() - 1).getTags());
+		
+		//test add tag using ID
+		p.parseInput("tag "+ Integer.toString(id)+" #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test edit name using ID
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" name to new floating 2");
+		assertEquals("new floating 2", taskList.get(taskList.size() - 1).getName());
+
+		// test edit tag using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" #newtag to #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done "+ Integer.toString(id));
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using ID
+		p.parseInput("delete "+ Integer.toString(id)+" #done");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		//test delete task using ID
+		ArrayList<Task> undoList= new ArrayList<Task>();
+		undoList.addAll(this.db.getTaskList());
+		p.parseInput("delete "+ Integer.toString(id));
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		//test undo
+		p.parseInput("undo");
+		assertEquals(undoList,taskList);
+		assertEquals("new floating 2", taskList.get(taskList.size() - 1).getName());
+		
+		//test delete task using name
+		p.parseInput("delete new floating 2");
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		this.db.setTaskList(this.backupList);
+		this.db.saveTasksToFile();
+	}
+	
+	@Test
+	public void deadlineTaskTest() {
+		this.db.fetchTasksFromFile();
+		this.backupList.addAll(this.db.getTaskList());
+
+		ArrayList<Task> taskList = this.db.getTaskList();
+		int id;
+		
+		// add new task for checking of edits
+		Parser p = Parser.getInstance();
+		p.parseInput("Add new deadline task name by tomorrow");
+		p.parseInput("tag new deadline task name #tag");
+		id=taskList.get(taskList.size() - 1).getId();
+		assertTrue(taskList.get(taskList.size() - 1).isDeadline());
+		
+		// test edit name using name (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit new deadline task name name to new deadline task1");
+		assertEquals("new deadline task1", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit deadline using name
+		// checks the editing of a task name, using the same input as a user.
+		Calendar deadline=parseDate("tuesday 12pm");
+		p.parseInput("edit new deadline task1 deadline to tuesday 12pm");
+		assertEquals(deadline, taskList.get(taskList.size() - 1).getEndTime());
+		
+		// test edit tag using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit new deadline task1 #tag to #newtag");
+		assertEquals("#newtag", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done new deadline task1");
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using name
+		p.parseInput("delete new deadline task1 #done");
+		p.parseInput("delete new deadline task1 #newtag");
+		assertEquals(new ArrayList<String>(),taskList.get(taskList.size() - 1).getTags());
+		
+		//test add tag using ID
+		p.parseInput("tag "+ Integer.toString(id)+" #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test edit name using ID
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" name to new task 2");
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit deadline using ID
+		// checks the editing of a task name, using the same input as a user.
+		Calendar deadline2=parseDate("31 may 7pm");
+		p.parseInput("edit "+ Integer.toString(id)+" deadline to 31 may 7pm");
+		assertEquals(deadline2, taskList.get(taskList.size() - 1).getEndTime());
+
+		// test edit tag using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" #newtag to #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done "+ Integer.toString(id));
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using ID
+		p.parseInput("delete "+ Integer.toString(id)+" #done");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		//test delete task using ID
+		ArrayList<Task> undoList= new ArrayList<Task>();
+		undoList.addAll(this.db.getTaskList());
+		p.parseInput("delete "+ Integer.toString(id));
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		//test undo
+		p.parseInput("undo");
+		assertEquals(undoList,taskList);
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
+		
+		//test delete task using name
+		p.parseInput("delete new task 2");
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		this.db.setTaskList(this.backupList);
+		this.db.saveTasksToFile();
+	}
+	
+	@Test
+	public void scheduledTaskTest() {
+		this.db.fetchTasksFromFile();
+		this.backupList.addAll(this.db.getTaskList());
+		ArrayList<Task> taskList = this.db.getTaskList();
+		int id;
+		
+		// add new task for checking of edits
+		Parser p = Parser.getInstance();
+		p.parseInput("Add new scheduled task name from tuesday 3pm to tuesday 5pm");
+		p.parseInput("tag new scheduled task name #tag");
+		id=taskList.get(taskList.size() - 1).getId();
+		assertTrue(taskList.get(taskList.size() - 1).isScheduled());
+		
+		// test edit name using name (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit new scheduled task name name to new scheduled task1");
+		assertEquals("new scheduled task1", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit start time using name
+		// checks the editing of a task name, using the same input as a user.
+		Calendar scheduled=parseDate("monday 12am");
+		p.parseInput("edit new scheduled task1 start time to monday 12am");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getStartTime());
+		
+		// test edit end time using name
+		// checks the editing of a task name, using the same input as a user.
+		scheduled=parseDate("tuesday 12pm");
+		p.parseInput("edit new scheduled task1 end time to tuesday 12pm");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getEndTime());
+
+		// test edit tag using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit new scheduled task1 #tag to #newtag");
+		assertEquals("#newtag", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using name
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done new scheduled task1");
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using name
+		p.parseInput("delete new scheduled task1 #done");
+		p.parseInput("delete new scheduled task1 #newtag");
+		assertEquals(new ArrayList<String>(),taskList.get(taskList.size() - 1).getTags());
+		
+		//test add tag using ID
+		p.parseInput("tag "+ Integer.toString(id)+" #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test edit name using ID
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" name to new task 2");
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
+		
+		// test edit start time using ID
+		// checks the editing of a task name, using the same input as a user.
+		scheduled=parseDate("2:00pm");
+		p.parseInput("edit "+ Integer.toString(id)+" start time to 14:00");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getStartTime());
+		
+		// test edit end time using ID
+		// checks the editing of a task name, using the same input as a user.
+		scheduled=parseDate("2pm monday 2 weeks later");
+		p.parseInput("edit "+ Integer.toString(id)+" end time to 14:00:00 monday 2 weeks later ");
+		assertEquals(scheduled, taskList.get(taskList.size() - 1).getEndTime());
+
+		// test edit tag using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit "+ Integer.toString(id)+" #newtag to #newtagagain");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		// test done using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done "+ Integer.toString(id));
+		assertEquals("#done", taskList.get(taskList.size() - 1).getTags().get(1));
+		
+		//test delete tag using ID
+		p.parseInput("delete "+ Integer.toString(id)+" #done");
+		assertEquals("#newtagagain", taskList.get(taskList.size() - 1).getTags().get(0));
+		
+		//test delete task using ID
+		ArrayList<Task> undoList= new ArrayList<Task>();
+		undoList.addAll(this.db.getTaskList());
+		p.parseInput("delete "+ Integer.toString(id));
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		//test undo
+		p.parseInput("undo");
+		assertEquals(undoList,taskList);
+		assertEquals("new task 2", taskList.get(taskList.size() - 1).getName());
+		
+		//test delete task using name
+		p.parseInput("delete new task 2");
+		assertEquals(backupList,taskList);
+		assertNotEquals(undoList,taskList);
+		
+		this.db.setTaskList(this.backupList);
+		this.db.saveTasksToFile();
+	}
+	
+	@Test
+	public void recurDeadlineTaskTest() {
+		this.db.fetchTasksFromFile();
+		this.backupList.addAll(this.db.getTaskList());
+		this.db.clearFile();
+		this.db.fetchTasksFromFile();
+		ArrayList<Task> taskList = this.db.getTaskList();
+
+		// add new task for checking of edits
+		Parser p = Parser.getInstance();
+		p.parseInput("Add first day by 1 Jan 2015 before next year monthly");
+		p.parseInput("tag 1 #newmonth recurring");	
+		for(int i=0; i<taskList.size();i++){
+			assertTrue(taskList.get(i).isDeadline());
+			assertEquals("#newmonth",taskList.get(i).getTags().get(0));
+		}
+
+		// test edit name using ID (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit 1 name to first day of the month");
+		assertEquals("first day of the month", taskList.get(0).getName());
+		
+		// test edit name using ID (Includes keyword in name)
+		// checks the editing of a task name, using the same input as a user.
+		p.parseInput("edit 12 name to first day of the last month");
+		assertEquals("first day of the last month", taskList.get(11).getName());
+		
+		// test edit deadline using ID
+		// checks the editing of a task name, using the same input as a user.
+		Calendar deadline=parseDate("2 Feb 2015 00:01");
+		p.parseInput("edit 2 deadline to 2 Feb 2015 00:01");
+		assertEquals(deadline, taskList.get(1).getEndTime());
+		
+		// test edit tag using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("edit 1 #newmonth to #firstNewMonth");
+		assertEquals("#firstNewMonth", taskList.get(0).getTags().get(0));
+		
+		// test done using ID
+		// checks the editing of a new tag, using the same input as a user.
+		p.parseInput("done 1");
+		assertEquals("#done", taskList.get(0).getTags().get(1));
+		
+		//test delete tag using ID
+		p.parseInput("delete 1 #done");
+		p.parseInput("delete 1 #firstNewMonth");
+		assertEquals(new ArrayList<String>(),taskList.get(0).getTags());
+
+		//test delete all recurr task using ID
+		ArrayList<Task> undoList= new ArrayList<Task>();
+		undoList.addAll(taskList);
+		p.parseInput("delete 1 recurring");
+		assertEquals(new ArrayList<Task>(),taskList);
+		assertNotEquals(undoList,taskList);
+		
+		//test undo
+		p.parseInput("undo");
+		assertEquals(undoList,taskList);
+		assertEquals("first day of the month", taskList.get(0).getName());
+		
+		//test delete task using ID
+		p.parseInput("delete 1");
+		assertNotEquals("first day of the month", taskList.get(0).getName());
+		assertEquals("first day", taskList.get(0).getName());
+		
+		//test delete task using ID
+		p.parseInput("delete 2 #newmonth recurring");
+		for(int i=0; i<taskList.size();i++){
+			assertEquals(new ArrayList<String>(),taskList.get(i).getTags());
+		}
+
+		this.db.setTaskList(this.backupList);
+		this.db.saveTasksToFile();
+	}
+	
+	private Calendar parseDate(String dateString) {
+		DateParser dateParser = new DateParser(dateString);
+		return dateParser.parseDate().get(0);
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\SystemTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Gui.java
+	 */
+
+public class Gui {
+	private static final String CONSTANT_SPACE = " ";
+	private static final String CONSTANT_INIT_COMMAND = "display";
+	private static JFrame frame;
+	private static final int idCol = 5;
+	private static TaskTableModel model;
+	// kept here for testing from console
+	private static Scanner sc = new Scanner(System.in);
+	private static JScrollPane taskScrollPane;
+
+	private static JTextPane textArea;
+
+	private static void displayResults(String command, ArrayList<Task> taskList) {
+		String commandType = Parser.getInstance().parseCommandType(command);
+		switch (CommandType.fromString(commandType)) {
+		case ADD:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgAdd(taskList.get(0).getName()));
+			break;
+		case DELETE:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgDelete(taskList.get(0).getName()));
+			break;
+		case EDIT:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgEdit(taskList.get(0).getName()));
+			break;
+		case DISPLAY:
+			if (taskList == null) {
+			} else if (taskList.size() > 0) {
+				model.setData(taskList);
+				updateTable();
+				setTextArea(GeneralMessages.getMsgDisplay(Parser.getInstance()
+						.getCommandInfo(command)));
+			} else if (taskList.size() == 0) {
+				model.setData(taskList);
+				updateTable();
+				setTextArea(GeneralMessages.getMsgDisplayEmpty());
+			} else {
+				model.setData(Data.getTaskList());
+				updateTable();
+				setTextArea(GeneralMessages.getMsgInvalid());
+			}
+			break;
+		case TAG:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgTag(taskList.get(0).getName()));
+			break;
+		case DONE:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgDone(taskList.get(0).getName()));
+			break;
+		case UNDO:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgUndo());
+			break;
+		case SETPATH:
+			model.setData(Data.getTaskList());
+			updateTable();
+			setTextArea(GeneralMessages.getMsgPath());
+			break;
+		case HELP:
+			// TODO: Help Command Display
+			setTextArea(HelpMessages.getMsgHelp((Parser.getInstance().getCommandInfo(command))));
+			break;
+		case SAVE:
+			setTextArea(GeneralMessages.getMsgSave());
+			break;
+		case INVALID:
+			setTextArea(GeneralMessages.getMsgInvalid());
+			break;
+		case EXIT:
+			break;
+		default:
+			throw new Error("Unrecognized command type");
+		}
+		
+	}
+
+	private static JPanel initCommandFieldPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		JLabel label = new JLabel("Command: ");
+		JTextField textField = new JTextField();
+		label.setLabelFor(textField);
+		panel.add(label, BorderLayout.WEST);
+		panel.add(textField, BorderLayout.CENTER);
+		textField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				processCommand(((JTextField) e.getSource()).getText());
+				((JTextField) e.getSource()).setText("");
+			}
+		});
+		label.setDisplayedMnemonic(KeyEvent.VK_N);
+		return panel;
+	}
+
+	private static void initFrame() {
+		ArrayList<Task> commandType = Parser.getInstance().parseInput(CONSTANT_INIT_COMMAND);
+		frame = new JFrame("AnyTask");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(initTablePane(commandType));
+		frame.add(initTextArea(), BorderLayout.BEFORE_FIRST_LINE);
+		frame.add(initCommandFieldPanel(), BorderLayout.SOUTH);
+		frame.setSize(800, 600);
+		frame.setVisible(true);
+	}
+
+	public static void initSystemTray() {
+		if (!SystemTray.isSupported()) {
+			return;
+		}
+		Image image = Toolkit.getDefaultToolkit().getImage("src/ui/icon.jpg");
+		PopupMenu trayPopupMenu = new PopupMenu();
+		MenuItem exit = new MenuItem("Exit");
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		trayPopupMenu.add(exit);
+
+		TrayIcon trayIcon = new TrayIcon(image, "AnyTask", trayPopupMenu);
+		SystemTray systemTray = SystemTray.getSystemTray();
+		try {
+			systemTray.add(trayIcon);
+		} catch (AWTException awtException) {
+			awtException.printStackTrace();
+		}
+	}
+
+	private static JScrollPane initTablePane(ArrayList<Task> list) {
+		model = new TaskTableModel(list);
+		JTable table = new JTable(model);
+		table.getColumnModel().getColumn(0).setMaxWidth(50);
+		table.getColumnModel().getColumn(2).setMinWidth(110);
+		table.getColumnModel().getColumn(2).setMaxWidth(110);
+		table.getColumnModel().getColumn(3).setMinWidth(110);
+		table.getColumnModel().getColumn(3).setMaxWidth(110);
+		table.getColumnModel().getColumn(5).setMinWidth(0);
+		table.getColumnModel().getColumn(5).setMaxWidth(0);
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(
+				model);
+		table.setRowSorter(sorter);
+		taskScrollPane = new JScrollPane(table);
+		return taskScrollPane;
+	}
+
+	private static JScrollPane initTextArea() {
+		textArea = new JTextPane();
+		textArea.setEditable(false);
+		
+		textArea.setContentType("text/html");
+		textArea.setText(" ");
+		textArea.setPreferredSize( new Dimension(800,60) );
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		return scrollPane;
+	}
+	
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Gui.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Gui.java
+	 */
+
+	public static void main(String[] args) {
+		if (!Data.initTaskList()) {
+			Display.displayMsgError();
+			System.exit(0);
+		}
+		new Gui();
+		while (true) {
+			Display.displayMsgPrompt();
+			String command = sc.nextLine();
+			AnyTask.processCommand(command);
+			updateTable();
+		}
+	}
+
+	private static void processCommand(String command) {
+		Parser p = Parser.getInstance();
+		try {
+			if (isNumerical(p.getCommandInfo(command).split(CONSTANT_SPACE, 2)[0])) {
+				String paras[] = p.getCommandInfo(command).split(
+						CONSTANT_SPACE, 2);
+				// create new command string using ID.
+				String newCommand = p.parseCommandType(command);
+				// col 5 holds unique ID of task. It is hidden in the gui.
+				newCommand += " "
+						+ model.getValueAt((Integer.parseInt(paras[0]) - 1),
+								idCol) + " ";
+				if (paras.length == 2) {
+					newCommand += paras[1];
+				}
+				displayResults(newCommand, p.parseInput(newCommand));
+			} else {
+				displayResults(command, p.parseInput(command));
+			}
+		} catch (Exception e) {
+			setTextArea(GeneralMessages.getMsgInvalid());
+		}
+	}
+
+	public static void setTextArea(String toDisplay) {
+		textArea.setText(toDisplay);
+	}
+
+	public static void updateTable() {
+		model.fireTableDataChanged();
+	}
+
+	public Gui() {
+		initFrame();
+		initSystemTray();
+		setTextArea(GeneralMessages.getMsgWelcome());
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Gui.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\messages\GeneralMessages.java
+	 */
+
+public class GeneralMessages {
+	private static final String MESSAGE_ADD = "Added %s \n";
+	private static final String MESSAGE_DELETE = "Deleted %s \n";
+	private static final String MESSAGE_DISPLAY_EMPTY = "No results\n";
+	private static final String MESSAGE_DISPLAY_SUCCESS = "Displaying %s tasks\n";
+	private static final String MESSAGE_DONE = "Task %s set to done\n";
+	private static final String MESSAGE_EDIT = "Edited %s \n";
+	private static final String MESSAGE_ERROR = "An Error has occured. Check the log file for more details \n";
+	private static final String MESSAGE_INVALID = "Invalid command\n";
+	private static final String MESSAGE_PATH = "%s is ready for use\n";
+	private static final String MESSAGE_PROMPT = "Command:";
+	private static final String MESSAGE_SAVE = "Saved successfully\n";
+	private static final String MESSAGE_TAG = "Added tag to %s \n";
+	private static final String MESSAGE_UNDO = "Previous command undo success";
+	private static final String MESSAGE_WELCOME = "Welcome to AnyTask. %s is ready for use\n";
+
+	public static String getMsgAdd(String userText) {
+		return String.format(MESSAGE_ADD, userText);
+	}
+
+	public static String getMsgDelete(String line) {
+		return String.format(MESSAGE_DELETE, line);
+	}
+
+	public static String getMsgDisplay(String line) {
+		return String.format(MESSAGE_DISPLAY_SUCCESS, line);
+	}
+
+	public static String getMsgDisplayEmpty() {
+		return String.format(MESSAGE_DISPLAY_EMPTY);
+	}
+
+	public static String getMsgDone(String line) {
+		return String.format(MESSAGE_DONE, line);
+	}
+
+	public static String getMsgEdit(String line) {
+		return String.format(MESSAGE_EDIT, line);
+	}
+
+	public static String getMsgEmpty() {
+		return String.format(MESSAGE_DISPLAY_EMPTY);
+	}
+
+	public static String getMsgError() {
+		return String.format(MESSAGE_ERROR, Data.getSettings().getFilepath());
+	}
+
+	public static String getMsgInvalid() {
+		return String.format(MESSAGE_INVALID);
+	}
+
+	public static String getMsgPath() {
+		return String.format(MESSAGE_PATH, Data.getSettings().getFilepath());
+	}
+
+	public static String getMsgPrompt() {
+		return String.format(MESSAGE_PROMPT);
+	}
+
+	public static String getMsgSave() {
+		return String.format(MESSAGE_SAVE);
+	}
+
+	public static String getMsgTag(String line) {
+		return String.format(MESSAGE_TAG, line);
+	}
+
+	public static String getMsgUndo() {
+		return String.format(MESSAGE_UNDO);
+	}
+
+	public static String getMsgWelcome() {
+		return String.format(MESSAGE_WELCOME, Data.getSettings().getFilepath());
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\messages\GeneralMessages.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\messages\HelpMessages.java
+	 */
+
+	private static final String MESSAGE_HELP ="The following commands are available: add, edit, delete, tag, done, undo, setpath. <br> "+
+	"Type \"Help &lt;command&gt;\" for more infomation regarding the command. use \' \' if you want to include keywords in your task names.";
+	private static final String MESSAGE_ADD ="<b>Floating Task:</b> add &lt;name&gt; <br> "
+			+ "<b>Timed Task:</b> add &lt;name&gt; from &lt;start&gt; to &lt;end&gt; <br> <b>Deadline Task:</b> add &lt;name&gt; by &lt;deadline&gt;<br> "
+			+ "<b>Recurring Task:</b> add ... before &lt;end recurring time&gt; [daily|weekly|monthly|annually]";
+	private static final String MESSAGE_DELETE ="<b>Delete name:</b> delete &lt;id|name&gt;<br> "
+			+"<b>Delete respective attribute:</b> delete &lt;id|name&gt; [start time|end time|deadline] <br>"
+			+"<b>Delete tag:</b> delete &lt;id|name&gt; &lt;tag&gt; <br>"
+			+"<b>Delete all recurring task:</b> delete &lt;id&gt; recurring<br> "
+			+"<b>Delete all recurring tag:</b> delete &lt;id&gt; &lt;tag&gt; recurring";
+	private static final String MESSAGE_EDIT ="<b>Edit respective attributes:</b>  edit &lt;id|name&gt; [start time|end time|deadline|name] to &lt;new value&gt; <br> "
+			+ "<b>Edit Tag:</b>  edit &lt;id|name&gt; &lt;old tag&gt; to &lt;new tag&gt;";
+	private static final String MESSAGE_DISPLAY ="<b>Display uncompleted:</b> display<br> "
+			+ "<b>Display both completed and uncompleted:</b> display all<br> "
+			+ "<b>Display uncompleted, sorted by date:</b> display sort<br> "
+			+ "<b>Display done tasks only:</b> display done<br> "
+			+ "<b>Display by tag:</b> display &lt;tag&gt;<br> "
+			+ "<b>Display by keywords:</b> display &lt;keyword(s)&gt;<br> "
+			+ "<b>Display within time period:</b> display from &lt;start&gt; to &lt;end&gt; <br> "
+			+ "<b>Display tasks before certain time:</b> display before &lt;end&gt;<br> "
+			+ "<b>Display overdue tasks:</b> display due<br> "
+			+ "<b>Displays all recurring tasks:</b> display recurring<br> "
+			+ "<b>Displays all floating tasks:</b> display floating";
+	private static final String MESSAGE_TAG ="<b>Tag Task:</b> tag &lt;id|name&gt; &lt;tag(s)&gt;<br> "
+			+ "<b>Tag recurring tasks:</b> tag &lt;id|name&gt; &lt;tag(s)&gt; recurring";
+	private static final String MESSAGE_DONE ="<b>Mark task as done:</b> done &lt;id|name&gt;";
+	private static final String MESSAGE_UNDO ="<b>Undo the last command (only once):</b> undo";
+	private static final String MESSAGE_SETPATH ="<b>Specify new file location to store tasks:</b> setpath &lt;new path&gt;";
+	private static final String MESSAGE_SAVE ="<b>Save the tasks into specified filed location:</b> save";
+	private static final String MESSAGE_EXIT ="<b>Save and quit the program :</b> exit";
+
+
+	public static String getMsgHelp(String line) {		
+		switch (CommandType.fromString(line)) {
+			case ADD:
+				return String.format(MESSAGE_ADD);
+			case DELETE:
+				return String.format(MESSAGE_DELETE);
+			case EDIT:
+				return String.format(MESSAGE_EDIT);
+			case DISPLAY:
+				return String.format(MESSAGE_DISPLAY);
+			case TAG:
+				return String.format(MESSAGE_TAG);
+			case DONE:
+				return String.format(MESSAGE_DONE);
+			case UNDO:
+				return String.format(MESSAGE_UNDO);
+			case SETPATH:
+				return String.format(MESSAGE_SETPATH);
+			case HELP:
+				return String.format(MESSAGE_HELP);
+			case SAVE:
+				return String.format(MESSAGE_SAVE);
+			case INVALID:
+				return String.format(MESSAGE_HELP);
+			case EXIT:
+				return String.format(MESSAGE_EXIT);
+			default:
+				return String.format(MESSAGE_HELP);
+		}
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\messages\HelpMessages.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\TaskTableModel.java
+	 */
+
+public class TaskTableModel extends AbstractTableModel {
+	private static final int END_COL = 3;
+	private static final int ID_COL = 0;
+	private static final int NAME_COL = 1;
+	private static final long serialVersionUID = 1L;	
+	private static final int START_COL = 2;
+	private static final int TAGS_COL = 4;
+	private static final int UID_COL = 5;
+	private String[] columnNames = { "id", "Name", "Start", "End", "Tags","UID" };
+	private Class<?>[] columnTypes = { String.class, String.class,
+			Calendar.class, Calendar.class, ArrayList.class,String.class };
+	private ArrayList<Task> data;
+
+	public TaskTableModel(ArrayList<Task> taskList) {
+		super();
+		this.data = taskList;
+	}
+
+	@Override
+	public Class<?> getColumnClass(int col) {
+		return this.columnTypes[col];
+	}
+
+	@Override
+	public int getColumnCount() {
+		return this.columnNames.length;
+	}
+
+	@Override
+	public String getColumnName(int col) {
+		return this.columnNames[col];
+	}
+
+	@Override
+	public int getRowCount() {
+		return this.data.size();
+	}
+
+	@Override
+	public Object getValueAt(int row, int col) {
+		Task task = this.data.get(row);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		if (col == ID_COL) {
+			return row+1;
+			//return task.getId();
+		} else if (col == NAME_COL) {
+			return task.getName();
+		} else if (col == START_COL) {
+			String day = "";
+			if (task.getStartTime() != null) {
+				day = format.format(task.getStartTime().getTime());
+			}
+			return day;
+		} else if (col == END_COL) {
+			String day = "";
+			if (task.getEndTime() != null) {
+				day = format.format(task.getEndTime().getTime());
+			}
+			return day;
+		} else if (col == TAGS_COL) {
+			ArrayList<String> tags = task.getTags();
+			String tagString = "";
+			if ((tags != null) && !tags.isEmpty()) {
+				for (int i = 0; i < tags.size(); i++) {
+					tagString += tags.get(i);
+				}
+			}
+			return tagString;
+		}if (col == UID_COL) {
+			return task.getId();
+		}
+		return "";
+	}
+
+	public void setData(ArrayList<Task> data) {
+		this.data = data;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\TaskTableModel.java
+
+
+
+
+

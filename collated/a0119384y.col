@@ -1,0 +1,2766 @@
+//@author: a0119384y
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+	 */
+
+public class Task implements Comparable<Task> {
+	private int id;
+	private String name;
+	private int recurringId = -1;
+	private Calendar startTime, endTime;
+	private ArrayList<String> tags = new ArrayList<String>();
+
+	public Task(String name) {
+		this.name = name;
+		Database db = Database.getInstance();
+		this.id = db.getId();
+	}
+
+	public Task(Task another) {
+		this.name = another.name;
+		this.id = another.id;
+		if (another.startTime != null) {
+			this.startTime = (Calendar) another.startTime.clone();
+		}
+		if (another.endTime != null) {
+			this.endTime = (Calendar) another.endTime.clone();
+		}
+		this.tags = new ArrayList<String>(another.tags);
+		this.recurringId =another.recurringId;
+	}
+
+	public void addTag(String newTag) {
+		this.tags.add(newTag);
+	}
+
+	public void addTags(ArrayList<String> newTags) {
+		this.tags.addAll(newTags);
+	}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+	 */
+
+	public Calendar getEndTime() {
+		return this.endTime;
+	}
+
+	public int getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public int getRecurringId() {
+		return this.recurringId;
+	}
+
+	public Calendar getStartTime() {
+		return this.startTime;
+	}
+
+	public ArrayList<String> getTags() {
+		return this.tags;
+	}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+	 */
+
+	public boolean isContainedTag(String tag) {
+		return this.tags.contains(tag);
+	}
+
+	public boolean isDeadline() {
+		return (this.startTime == null) && (this.endTime != null);
+	}
+
+	public boolean isDone() {
+		return this.tags.contains("#done");
+	}
+
+	public boolean isDue() {
+		Calendar now = Calendar.getInstance();
+		return now.before(this.endTime);
+	}
+
+	public boolean isFloating() {
+		return (this.startTime == null) && (this.endTime == null);
+	}
+
+	public boolean isRecurring() {
+		return this.recurringId >= 0;
+	}
+
+	public boolean isScheduled() {
+		return (this.startTime != null) && (this.endTime != null);
+	}
+
+	public void removeTag(String tag) {
+		if (this.tags.contains(tag)) {
+			this.tags.remove(tag);
+		}
+	}
+
+	public void replaceTag(String oldTag, String newTag) {
+		if (this.tags.contains(oldTag)) {
+			this.tags.remove(oldTag);
+			this.tags.add(newTag);
+		}
+	}
+
+	public void setEndTime(Calendar endTime) {
+		this.endTime = endTime;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setRecurringId(int precId) {
+		this.recurringId = precId;
+	}
+
+	public void setStartTime(Calendar startTime) {
+		this.startTime = startTime;
+	}
+
+	@Override
+	public int compareTo(Task another) {
+		if (endTime == null && another.endTime == null){
+			return 0;
+		} else if (endTime != null && another.endTime == null){
+			return 1;
+		} else if (endTime == null && another.endTime != null){
+			return -1;
+		} else {
+			if (endTime.before(another.endTime)){
+				return -1;
+			} else if (endTime.after(another.endTime)){
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\common\Task.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+	 */
+
+	//public void setFilePath(String userText) {
+	//	this.saveTasksToFile();
+	//	filepath = userText;
+	//	taskList.clear();
+	//	if (this.fetchTasksFromFile()) {
+	//		Settings.setFilePath(filepath);
+	//	}
+	//}
+	
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\database\Database.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\AddCommand.java
+	 */
+
+public class AddCommand extends Command {
+	private static final String KEYWORD_ANNUALLY = "annually";
+	private static final String KEYWORD_MONTHLY = "monthly";
+	private static final String KEYWORD_WEEKLY = "weekly";
+	private static final String KEYWORD_DAILY = "daily";
+	private Task task;
+	private ArrayList<Task> tasks;
+
+	public AddCommand(String name, Calendar startTime, Calendar endTime) {
+		assert name != null && name != "";
+		this.task = new Task(name);
+		if (startTime != null) {
+			task.setStartTime(startTime);
+		}
+		if (endTime != null) {
+			task.setEndTime(endTime);
+		}
+	}
+
+	public AddCommand(String name, String recurringCycle, Calendar startTime,
+			Calendar endTime, Calendar endRecurringTimeCalendar) {
+		tasks = new ArrayList<Task>();
+		ArrayList<Integer> recurringId = new ArrayList<Integer>();
+		while (!endTime.after(endRecurringTimeCalendar)) {
+			Task t = new Task(name);
+			if (startTime != null) {
+				t.setStartTime(startTime);
+			}
+			recurringId.add(t.getId());
+			t.setEndTime(endTime);
+			t.setRecurringId(recurringId.get(0));
+			tasks.add(t);
+			if (recurringCycle.equals(KEYWORD_DAILY)) {
+				if (startTime != null) {
+					startTime = (Calendar) endTime.clone();
+					startTime.add(Calendar.DATE, 1);
+				}
+				endTime = (Calendar) endTime.clone();
+				endTime.add(Calendar.DATE, 1);
+			} else if (recurringCycle.equals(KEYWORD_WEEKLY)) {
+				if (startTime != null) {
+					startTime = (Calendar) endTime.clone();
+					startTime.add(Calendar.DATE, 7);
+				}
+				endTime = (Calendar) endTime.clone();
+				endTime.add(Calendar.DATE, 7);
+			} else if (recurringCycle.equals(KEYWORD_MONTHLY)) {
+				if (startTime != null) {
+					startTime = (Calendar) endTime.clone();
+					startTime.add(Calendar.MONTH, 1);
+				}
+				endTime = (Calendar) endTime.clone();
+				endTime.add(Calendar.MONTH, 1);
+			} else if (recurringCycle.equals(KEYWORD_ANNUALLY)) {
+				if (startTime != null) {
+					startTime = (Calendar) endTime.clone();
+					startTime.add(Calendar.YEAR, 1);
+				}
+				endTime = (Calendar) endTime.clone();
+				endTime.add(Calendar.YEAR, 1);
+			} else {
+				break;
+			}
+		}
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public ArrayList<Task> execute() {
+		if (task != null) {
+			Database db = Database.getInstance();
+			db.getTaskList().add(task);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(task);
+			return r;
+		} else if (tasks != null) {
+			Database db = Database.getInstance();
+			db.getTaskList().addAll(tasks);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.addAll(tasks);
+			return r;
+		} else {
+			return null;
+		}
+	}
+
+}
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\AddCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\Command.java
+	 */
+
+public abstract class Command {
+	private static final String[] KEYWORD_SAVE = { "save" };
+	private static final String[] KEYWORD_ADD = { "add","create" };
+	private static final String[] KEYWORD_DELETE = { "delete","remove" };
+	private static final String[] KEYWORD_EDIT = { "edit","update" };
+	private static final String[] KEYWORD_DISPLAY = { "display","search" };
+	private static final String[] KEYWORD_TAG = { "tag","mark" };
+	private static final String[] KEYWORD_DONE = { "done" };
+	private static final String[] KEYWORD_UNDO = { "undo" };
+	private static final String[] KEYWORD_SETPATH = { "setpath","path" };
+	private static final String[] KEYWORD_INVALID = { "invalid" };
+	private static final String[] KEYWORD_EXIT = { "exit" };
+	private static final String[] KEYWORD_HELP = { "help" };
+
+	public static enum CommandType {
+		SAVE(KEYWORD_SAVE), ADD(KEYWORD_ADD), DELETE(KEYWORD_DELETE), EDIT(
+				KEYWORD_EDIT), DISPLAY(KEYWORD_DISPLAY), TAG(KEYWORD_TAG), DONE(
+				KEYWORD_DONE), UNDO(KEYWORD_UNDO), SETPATH(KEYWORD_SETPATH), INVALID(
+				KEYWORD_INVALID), EXIT(KEYWORD_EXIT), HELP(KEYWORD_HELP);
+
+		private String[] commandTypeDescs;
+
+		CommandType(String[] commandType) {
+			this.commandTypeDescs = commandType;
+		}
+
+		public String getText() {
+			return this.commandTypeDescs[0];
+		}
+
+		public static CommandType fromString(String text) {
+			if (text != null) {
+				for (CommandType b : CommandType.values()) {
+					for (String desc : b.commandTypeDescs) {
+						if (text.equalsIgnoreCase(desc)) {
+							return b;
+						}
+					}
+				}
+			}
+			return INVALID;
+		}
+	}
+
+	public abstract ArrayList<Task> execute();
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\Command.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\DeleteCommand.java
+	 */
+
+public class DeleteCommand extends Command {
+	private static final String KEYWORD_DEADLINE = "deadline";
+	private static final String KEYWORD_END_TIME = "end time";
+	private static final String KEYWORD_START_TIME = "start time";
+	private static final String KEYWORD_HASHTAG = "#";
+	private static final String[] KEYWORD_ATTRIBUTES = { KEYWORD_START_TIME,
+			KEYWORD_END_TIME, KEYWORD_DEADLINE };
+
+	private String name, tag, attribute;
+	private int taskId = -1;
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
+	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
+	private boolean isDeleteRecurring = false;
+
+	public DeleteCommand(String name, boolean isDeleteRecurring) {
+		assert name != null;
+		assert name != "";
+		this.name = name;
+		this.isDeleteRecurring = isDeleteRecurring;
+	}
+
+	public DeleteCommand(int taskId, boolean isDeleteRecurring) {
+		assert taskId >= 0;
+		this.taskId = taskId;
+		this.isDeleteRecurring = isDeleteRecurring;
+	}
+
+	public DeleteCommand(String name, boolean isDeleteRecurring, String para) {
+		if (isTag(para)) {
+			this.name = name;
+			this.tag = para;
+			this.isDeleteRecurring = isDeleteRecurring;
+		} else if (isAttribute(para)) {
+			this.name = name;
+			this.attribute = para.toLowerCase();
+		} else {
+
+		}
+	}
+
+	public DeleteCommand(int taskId, boolean isDeleteRecurring, String para) {
+		if (isTag(para)) {
+			this.taskId = taskId;
+			this.tag = para;
+			this.isDeleteRecurring = isDeleteRecurring;
+		} else if (isAttribute(para)) {
+			this.taskId = taskId;
+			this.attribute = para.toLowerCase();
+		} else {
+
+		}
+	}
+
+	public ArrayList<Task> execute() {
+
+		if (isDeleteTaskWithId()) {
+			return deleteTaskWithId();
+		} else if (isDeleteTaskWithName()) {
+			return deleteTaskWithName();
+		} else if (isDeleteTagWithName()) {
+			return deleteTagWithName();
+		} else if (isDeleteTagWithId()) {
+			return deleteTagWithId();
+		} else if (isDeleteAttributeWithName()) {
+			return deleteAttributeWithName();
+		} else if (isDeleteAttributeWithId()) {
+			return deleteAttributeWithId();
+		} else if (isDeleteRecurringWithId()) {
+			return deleteRecurringWithId();
+		} else if (isDeleteRecurringTagWithId()) {
+			return deleteRecurringTagWithId();
+		} else {
+			// return invalid
+			return null;
+		}
+	}
+
+	private boolean isAttribute(String para) {
+		for (String i : KEYWORD_ATTRIBUTES) {
+			if (para.toLowerCase().equals(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isTag(String para) {
+		return para.startsWith(KEYWORD_HASHTAG);
+	}
+
+	private boolean isDeleteTagWithName() {
+		return taskId < 0 && name != null && tag != null && attribute == null && isDeleteRecurring==false;
+	}
+
+	private boolean isDeleteTagWithId() {
+		return taskId >= 0 && name == null && tag != null && attribute == null && isDeleteRecurring==false;
+	}
+
+	private boolean isDeleteTaskWithName() {
+		return taskId < 0 && name != null && tag == null && attribute == null && isDeleteRecurring==false;
+	}
+
+	private boolean isDeleteTaskWithId() {
+		return taskId >= 0 && name == null && tag == null && attribute == null && isDeleteRecurring==false;
+	}
+
+	private boolean isDeleteAttributeWithName() {
+		return taskId < 0 && name != null && tag == null && attribute != null && isDeleteRecurring==false;
+	}
+
+	private boolean isDeleteAttributeWithId() {
+		return taskId >= 0 && name == null && tag == null && attribute != null && isDeleteRecurring==false;
+	}
+
+	private boolean isDeleteRecurringWithId() {
+		return taskId >= 0 && name == null && tag == null && attribute == null && isDeleteRecurring==true;
+	}
+
+	private boolean isDeleteRecurringTagWithId() {
+		return taskId >= 0 && name == null && tag != null && attribute == null && isDeleteRecurring==true;
+	}
+
+	private ArrayList<Task> deleteTaskWithId() {
+		searchWithId();
+		return withIdToWithName(deleteTask());
+	}
+
+	private ArrayList<Task> deleteTaskWithName() {
+		searchWithName();
+		return deleteTask();
+	}
+
+	private ArrayList<Task> deleteTagWithId() {
+		searchWithId();
+		return withIdToWithName(deleteTag());
+	}
+
+	private ArrayList<Task> deleteTagWithName() {
+		searchWithName();
+		return deleteTag();
+	}
+
+	private ArrayList<Task> deleteRecurringTagWithId() {
+		searchWithId();
+		searchRecurring();
+		return withIdToWithName(deleteRecurringTag());
+	}
+
+	private ArrayList<Task> deleteAttributeWithId() {
+		searchWithId();
+		return withIdToWithName(deleteAttribute());
+	}
+
+	private ArrayList<Task> deleteAttributeWithName() {
+		searchWithName();
+		return deleteAttribute();
+	}
+
+	private ArrayList<Task> deleteRecurringWithId() {
+		searchWithId();
+		return withIdToWithName(deleteRecurring());
+	}
+
+	private void searchWithId() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getId() == taskId) {
+				resultTaskIndexes.add(index);
+				break;
+			}
+		}
+	}
+
+	private void searchWithName() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
+				resultTaskIndexes.add(index);
+			}
+		}
+	}
+
+	private ArrayList<Task> deleteTask() {
+		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			taskList.remove(taskList.get(resultTaskIndexes.get(0)));
+			return r;
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> deleteTag() {
+		if (resultTaskIndexes.size() == 1) {
+			return deleteRecurringTag();
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> deleteRecurringTag() {
+		ArrayList<Task> r = new ArrayList<Task>();
+		for(int index = 0; index < resultTaskIndexes.size(); index++){
+			r.add(taskList.get(resultTaskIndexes.get(index)));
+			taskList.get(resultTaskIndexes.get(index)).removeTag(tag);
+		}
+		return r;
+	}
+
+	private ArrayList<Task> deleteAttribute() {
+		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			if (attribute == KEYWORD_START_TIME) {
+				taskList.get(resultTaskIndexes.get(0)).setStartTime(null);
+			} else if (attribute == KEYWORD_END_TIME) {
+				taskList.get(resultTaskIndexes.get(0)).setEndTime(null);
+			} else if (attribute == KEYWORD_DEADLINE) {
+				taskList.get(resultTaskIndexes.get(0)).setEndTime(null);
+			} else {
+				return null;
+			}
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> deleteRecurring() {
+		if (resultTaskIndexes.size() == 1) {
+			ArrayList<Task> r = new ArrayList<Task>();
+			int index = 0;
+			if (taskList.get(resultTaskIndexes.get(0)).isRecurring()) {
+				int recurringId = taskList.get(resultTaskIndexes.get(0)).getRecurringId();
+				while(index < taskList.size()){
+					if (taskList.get(index).getRecurringId() == recurringId){
+						r.add(taskList.get(index));
+						taskList.remove(index);
+					}
+					else{
+						index += 1;
+					}
+				}
+			} else {
+				return null;
+			}
+			return r;
+		} else {
+			return null;
+		}
+	}
+	
+	private void searchRecurring() {
+		if (resultTaskIndexes.size() == 1) {
+			if(taskList.get(resultTaskIndexes.get(0)).isRecurring()){
+				int recurringId = taskList.get(resultTaskIndexes.get(0)).getRecurringId();
+				resultTaskIndexes.clear();
+				for (int index = 0; index < taskList.size(); index++) {
+					if (taskList.get(index).getRecurringId() == recurringId) {
+						resultTaskIndexes.add(index);
+					}
+				}
+			}
+			else {
+				throw new Error("Selected task is not recurring task.");
+			}
+		} else {
+			throw new Error("More than 1 result.");
+		}
+		
+	}
+
+	private ArrayList<Task> withIdToWithName(ArrayList<Task> result) {
+		if (result == null) {
+			name = String.valueOf(taskId);
+			taskId = -1;
+			return execute();
+		} else {
+			return result;
+		}
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\DeleteCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\DisplayCommand.java
+	 */
+
+public class DisplayCommand extends Command {
+	private static final String CONSTANT_ESCAPE = "'";
+
+	private static final String KEYWORD_FLOATING = "floating";
+	private static final String KEYWORD_DONE = "done";
+	private static final String KEYWORD_ALL = "all";
+	private static final String KEYWORD_RECURRING = "recurring";
+	private static final String KEYWORD_DUE = "due";
+	private static final String KEYWORD_SORT= "sort";
+	
+	private static final String[] CONSTANT_ALL = { 
+		KEYWORD_FLOATING, KEYWORD_DONE, KEYWORD_ALL, KEYWORD_RECURRING,
+		KEYWORD_DUE, KEYWORD_SORT};
+	
+
+	private String keyword;
+	private String[] keywords;
+	private Calendar startTimeCalendar, endTimeCalendar;
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
+	private ArrayList<Task> resultTasklist = new ArrayList<Task>();
+	private boolean isDisplayWithTag = false;
+
+	public DisplayCommand() {
+
+	}
+
+	public DisplayCommand(String keyword) {
+		this.keyword = keyword;
+	}
+	
+	public DisplayCommand(String[] keywords) {
+		this.keywords = keywords;
+	}
+	
+	public DisplayCommand(String tag, boolean isDisplayWithTag){
+		this.keyword = tag;
+	}
+
+	public DisplayCommand(Calendar endTimeCalendar) {
+		this.endTimeCalendar = endTimeCalendar;
+	}
+
+	public DisplayCommand(Calendar startTimeCalendar, Calendar endTimeCalendar) {
+		this.startTimeCalendar = startTimeCalendar;
+		this.endTimeCalendar = endTimeCalendar;
+	}
+
+	public ArrayList<Task> execute() {
+		if(isDisplayWithKeyword()){
+			return displayWithKeyword();
+		} else if (isDisplayWithEndTime()) {
+			return displayWithEndTime();
+		} else if (isDisplayWithTimePeriod()) {
+			return displayWithTimePeriod();
+		}else if (isDisplayUndone()) {
+			return displayUndone();
+		} else if (isDisplayAll()) {
+			return displayAll();
+		} else if (isDisplayFloating()) {
+			return displayFloating();
+		} else if (isDisplayDone()) {
+			return displayDone();
+		} else if (isDisplayRecurring()) {
+			return displayRecurring();
+		} else if (isDisplayDue()) {
+			return displayDue();
+		} else if (isDisplaySort()) {
+			return displaySort();
+		} else if (isDisplayWithTag()) {
+			return displayWithTag();
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> displayAll() {
+		return taskList;
+	}
+
+	private boolean isDisplayWithKeyword() {
+		return keywords != null;
+	}
+
+	private boolean isDisplayWithTag() {
+		return isDisplayWithTag;
+	}
+
+	private boolean isDisplayDone() {
+		return keyword.equalsIgnoreCase(KEYWORD_DONE);
+	}
+
+	private boolean isDisplayFloating() {
+		return keyword.equalsIgnoreCase(KEYWORD_FLOATING);
+	}
+
+	private boolean isDisplayUndone() {
+		return keyword == null && keywords == null;
+	}
+
+	private boolean isDisplayRecurring() {
+		return keyword.equalsIgnoreCase(KEYWORD_RECURRING);
+	}
+	
+	private boolean isDisplayDue() {
+		return keyword.equalsIgnoreCase(KEYWORD_DUE);
+	}
+	
+	private boolean isDisplaySort() {
+		return keyword.equalsIgnoreCase(KEYWORD_SORT);
+	}
+
+	private boolean isDisplayAll() {
+		return keyword.equalsIgnoreCase(KEYWORD_ALL);
+	}
+
+	private boolean isDisplayWithEndTime() {
+		return startTimeCalendar == null && endTimeCalendar != null;
+	}
+
+	private boolean isDisplayWithTimePeriod() {
+		return startTimeCalendar != null && endTimeCalendar != null;
+	}
+
+	private ArrayList<Task> displayWithKeyword() {
+		for (int index = 0; index < taskList.size(); index++) {
+			for (String keyword: keywords){
+				keyword = recoverEscapeKeywords(keyword);
+				if (taskList.get(index).getName().toLowerCase()
+						.contains(keyword.toLowerCase())) {
+					resultTasklist.add(taskList.get(index));
+					break;
+				}
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayWithTag() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getTags().contains(keyword.toLowerCase())) {
+				resultTasklist.add(taskList.get(index));
+			}
+		}
+
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayFloating() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).isFloating()) {
+				resultTasklist.add(taskList.get(index));
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayDone() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).isDone()) {
+				resultTasklist.add(taskList.get(index));
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayUndone() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (!taskList.get(index).isDone()) {
+				resultTasklist.add(taskList.get(index));
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayRecurring() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).isRecurring()) {
+				resultTasklist.add(taskList.get(index));
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displaySort() {
+		Collections.sort(taskList);
+		return taskList;
+	}
+
+	private ArrayList<Task> displayWithEndTime() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getEndTime() != null) {
+				if (!endTimeCalendar.before(taskList.get(index).getEndTime())) {
+					resultTasklist.add(taskList.get(index));
+				}
+			}
+		}
+		return resultTasklist;
+	}
+
+	private ArrayList<Task> displayDue() {
+		endTimeCalendar = Calendar.getInstance();
+		return displayWithEndTime();
+	}
+
+	private ArrayList<Task> displayWithTimePeriod() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getEndTime() != null) {
+				if (!startTimeCalendar.after(taskList.get(index).getEndTime())
+						&& !endTimeCalendar.before(taskList.get(index)
+								.getEndTime())) {
+					resultTasklist.add(taskList.get(index));
+				}
+			}
+		}
+		return resultTasklist;
+	}
+	
+	private String recoverEscapeKeywords(String paras) {
+		String newParas = new String(paras);
+		for (String keyword : CONSTANT_ALL) {
+			newParas = newParas.replaceAll(CONSTANT_ESCAPE + keyword, keyword);
+		}
+		return newParas;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\DisplayCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\DoneCommand.java
+	 */
+
+public class DoneCommand extends Command {
+	private final static String TAG_DONE = "#done";
+	private static final boolean BOOLEAN_NOT_RECURRING = false;
+	private String name;
+	int taskId  =-1;
+
+	public DoneCommand(String name) {
+		this.name = name;
+	}
+	
+	public DoneCommand(int taskId) {
+		this.taskId = taskId;
+	}
+
+	public ArrayList<Task> execute() {
+		String[] s = {TAG_DONE};
+		if(isDoneWithId()){
+			Command c = new TagCommand(taskId, BOOLEAN_NOT_RECURRING, s);
+			return c.execute();
+		}else if(isDoneWithName()){
+			Command c = new TagCommand(name, s);
+			return c.execute();
+		}else{
+			return null;
+		}
+
+	}
+	
+	private boolean isDoneWithName() {
+		return name!=null && taskId<0;
+	}
+
+	private boolean isDoneWithId() {
+		return name==null && taskId>=0;
+	}
+
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\DoneCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\EditCommand.java
+	 */
+
+public class EditCommand extends Command {
+	private String name, newName, oldTag, newTag;
+	int taskId = -1;
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
+	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
+	private Calendar newDeadline, newStartTime, newEndTime;
+
+	public EditCommand(String oldName, String newName) {
+		this.name = oldName;
+		this.newName = newName;
+	}
+
+	public EditCommand(String name, Calendar newDeadline) {
+		this.name = name;
+		this.newDeadline = newDeadline;
+	}
+
+	public EditCommand(String name, Calendar newStartTime, Calendar newEndTime) {
+		this.name = name;
+		this.newStartTime = newStartTime;
+		this.newEndTime = newEndTime;
+	}
+
+	public EditCommand(String name, String oldTag, String newTag) {
+		this.name = name;
+		this.oldTag = oldTag;
+		this.newTag = newTag;
+	}
+
+	public EditCommand(int taskId, String newName) {
+		this.taskId = taskId;
+		this.newName = newName;
+	}
+
+	public EditCommand(int taskId, Calendar newDeadline) {
+		this.taskId = taskId;
+		this.newDeadline = newDeadline;
+	}
+
+	public EditCommand(int taskId, Calendar newStartTime, Calendar newEndTime) {
+		this.taskId = taskId;
+		this.newStartTime = newStartTime;
+		this.newEndTime = newEndTime;
+	}
+
+	public EditCommand(int taskId, String oldTag, String newTag) {
+		this.taskId = taskId;
+		this.oldTag = oldTag;
+		this.newTag = newTag;
+	}
+
+	public ArrayList<Task> execute() {
+		assert (name != null || taskId != -1);
+		if (isEditNameWithName()) {
+			return editNameWithName();
+		} else if (isEditDeadlineWithName()) {
+			return editDeadlineWithName();
+		} else if (isEditTagWithName()) {
+			return editTagWithName();
+		} else if (isEditStartTimeWithName()) {
+			return editStartTimeWithName();
+		} else if (isEditEndTimeWithName()) {
+			return editEndTimeWithName();
+		} else if (isEditNameWithId()) {
+			return editNameWithId();
+		} else if (isEditDeadlineWithId()) {
+			return editDeadlineWithId();
+		} else if (isEditTagWithId()) {
+			return editTagWithId();
+		} else if (isEditStartTimeWithId()) {
+			return editStartTimeWithId();
+		} else if (isEditEndTimeWithId()) {
+			return editEndTimeWithId();
+		} else {
+			return null;
+		}
+
+	}
+
+	private boolean isEditEndTimeWithName() {
+		return name != null && taskId < 0 && newName == null && oldTag == null
+				&& newTag == null && newDeadline == null
+				&& newStartTime == null && newEndTime != null;
+	}
+
+	private boolean isEditStartTimeWithName() {
+		return name != null && taskId < 0 && newName == null && oldTag == null
+				&& newTag == null && newDeadline == null
+				&& newStartTime != null && newEndTime == null;
+	}
+
+	private boolean isEditTagWithName() {
+		return name != null && taskId < 0 && newName == null && oldTag != null
+				&& newTag != null && newDeadline == null
+				&& newStartTime == null && newEndTime == null;
+	}
+
+	private boolean isEditDeadlineWithName() {
+		return name != null && taskId < 0 && newName == null && oldTag == null
+				&& newTag == null && newDeadline != null
+				&& newStartTime == null && newEndTime == null;
+	}
+
+	private boolean isEditNameWithName() {
+		return name != null && taskId < 0 && newName != null && oldTag == null
+				&& newTag == null && newDeadline == null
+				&& newStartTime == null && newEndTime == null;
+	}
+
+	private boolean isEditEndTimeWithId() {
+		return name == null && taskId >= 0 && newName == null && oldTag == null
+				&& newTag == null && newDeadline == null
+				&& newStartTime == null && newEndTime != null;
+	}
+
+	private boolean isEditStartTimeWithId() {
+		return name == null && taskId >= 0 && newName == null && oldTag == null
+				&& newTag == null && newDeadline == null
+				&& newStartTime != null && newEndTime == null;
+	}
+
+	private boolean isEditTagWithId() {
+		return name == null && taskId >= 0 && newName == null && oldTag != null
+				&& newTag != null && newDeadline == null
+				&& newStartTime == null && newEndTime == null;
+	}
+
+	private boolean isEditDeadlineWithId() {
+		return name == null && taskId >= 0 && newName == null && oldTag == null
+				&& newTag == null && newDeadline != null
+				&& newStartTime == null && newEndTime == null;
+	}
+
+	private boolean isEditNameWithId() {
+		return name == null && taskId >= 0 && newName != null && oldTag == null
+				&& newTag == null && newDeadline == null
+				&& newStartTime == null && newEndTime == null;
+	}
+
+	private ArrayList<Task> editEndTimeWithId() {
+		searchWithId();
+		return withIdToWithName(editEndTime());
+	}
+
+	private ArrayList<Task> editStartTimeWithId() {
+		searchWithId();
+		return withIdToWithName(editStartTime());
+	}
+
+	private ArrayList<Task> editTagWithId() {
+		searchWithId();
+		return withIdToWithName(editTag());
+	}
+
+	private ArrayList<Task> editDeadlineWithId() {
+		searchWithId();
+		return withIdToWithName(editDeadline());
+	}
+
+	private ArrayList<Task> editNameWithId() {
+		searchWithId();
+		return withIdToWithName(editName());
+	}
+
+	private ArrayList<Task> editEndTimeWithName() {
+		searchWithName();
+		return editEndTime();
+	}
+
+	private ArrayList<Task> editStartTimeWithName() {
+		searchWithName();
+		return editStartTime();
+	}
+
+	private ArrayList<Task> editTagWithName() {
+		searchWithName();
+		return editTag();
+	}
+
+	private ArrayList<Task> editDeadlineWithName() {
+		searchWithName();
+		return editDeadline();
+	}
+
+	private ArrayList<Task> editNameWithName() {
+		searchWithName();
+		return editName();
+	}
+
+	private ArrayList<Task> editDeadline() {
+		if (resultTaskIndexes.size() == 1) {
+			taskList.get(resultTaskIndexes.get(0)).setEndTime(newDeadline);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> editName() {
+		if (resultTaskIndexes.size() == 1) {
+			taskList.get(resultTaskIndexes.get(0)).setName(newName);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> editTag() {
+		if (resultTaskIndexes.size() == 1) {
+			if (taskList.get(resultTaskIndexes.get(0)).isContainedTag(oldTag)) {
+				taskList.get(resultTaskIndexes.get(0)).replaceTag(oldTag,
+						newTag);
+				ArrayList<Task> r = new ArrayList<Task>();
+				r.add(taskList.get(resultTaskIndexes.get(0)));
+				return r;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> editEndTime() {
+		if (resultTaskIndexes.size() == 1) {
+			taskList.get(resultTaskIndexes.get(0)).setEndTime(newEndTime);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> editStartTime() {
+		if (resultTaskIndexes.size() == 1) {
+			taskList.get(resultTaskIndexes.get(0)).setStartTime(newStartTime);
+			ArrayList<Task> r = new ArrayList<Task>();
+			r.add(taskList.get(resultTaskIndexes.get(0)));
+			return r;
+		} else {
+			return null;
+		}
+	}
+
+	private void searchWithName() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
+				resultTaskIndexes.add(index);
+			}
+		}
+	}
+
+	private void searchWithId() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getId() == taskId) {
+				resultTaskIndexes.add(index);
+				break;
+			}
+		}
+	}
+
+	/*
+	 * Input number may be not a task id but a task name. After failure of
+	 * executing with id, this class will execute again treating input number as
+	 * a task name.
+	 */
+	private ArrayList<Task> withIdToWithName(ArrayList<Task> result) {
+		if (result == null) {
+			name = String.valueOf(taskId);
+			taskId = -1;
+			return execute();
+		} else {
+			return result;
+		}
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\EditCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\ExitCommand.java
+	 */
+
+public class ExitCommand extends Command{
+	public ExitCommand(){
+		
+	}
+	
+	public ArrayList<Task> execute(){
+		Database.getInstance().saveTasksToFile();
+		System.exit(0);
+		return null;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\ExitCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\InvalidCommand.java
+	 */
+
+public class InvalidCommand extends Command{
+	private String userCommand;
+	public InvalidCommand(String userCommand){
+		this.userCommand = userCommand;
+	}
+	
+	public ArrayList<Task> execute(){
+		System.out.println("Command invalid: "+userCommand);
+		return null;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\InvalidCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\SetpathCommand.java
+	 */
+
+public class SetpathCommand extends Command{
+	private String path;
+	public SetpathCommand(String path){
+		this.path = path;
+	}
+	
+	public ArrayList<Task> execute(){
+		Database.getInstance().setFilePath(path);
+		return null;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\SetpathCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\TagCommand.java
+	 */
+
+public class TagCommand extends Command {
+	private String name;
+	private int taskId = -1;
+	private boolean isTagRecurring = false;
+	private ArrayList<String> tags = new ArrayList<String>();
+	private ArrayList<Task> taskList = Database.getInstance().getTaskList();
+	private ArrayList<Integer> resultTaskIndexes = new ArrayList<Integer>();
+
+	public TagCommand(String name, String[] tags) {
+		this.name = name;
+		for (String tag : tags) {
+			tag = formatTag(tag);
+			this.tags.add(tag.toLowerCase());
+		}
+	}
+
+	public TagCommand(int id, boolean isTagRecurring, String[] tags) {
+		this.taskId = id;
+		this.isTagRecurring = isTagRecurring;
+		for (String tag : tags) {
+			tag = formatTag(tag);
+			this.tags.add(tag.toLowerCase());
+		}
+		
+	}
+
+	private String formatTag(String tag) {
+		if (!tag.startsWith("#")) {
+			tag = "#" + tag;
+		}
+		return tag;
+	}
+
+	public ArrayList<Task> execute() {
+		if (isTagRecurringWithName()) {
+			return tagRecurringWithName();
+		} else if (isTagRecurringWithId()) {
+			return tagRecurringWithId();
+		} else if (isTagWithName()) {
+			return tagWithName();
+		} else if (isTagWithId()) {
+			return tagWithId();
+		} else {
+			return null;
+		}
+
+	}
+
+	private boolean isTagRecurringWithId() {
+		return taskId >= 0 && isTagRecurring == true;
+	}
+
+	private boolean isTagRecurringWithName() {
+		return name != null && isTagRecurring == true;
+	}
+
+	private boolean isTagWithId() {
+		return taskId >= 0 && isTagRecurring == false;
+	}
+
+	private boolean isTagWithName() {
+		return name != null && isTagRecurring == false;
+	}
+
+	private ArrayList<Task> tagWithName() {
+		searchWithName();
+		return addTag();
+	}
+
+	private ArrayList<Task> tagWithId() {
+		searchWithId();
+		return withIdToWithName(addTag());
+	}
+
+	private ArrayList<Task> tagRecurringWithId() {
+		searchWithId();
+		searchRecurring();
+		return withIdToWithName(addTagRecurring());
+	}
+
+	private void searchRecurring() {
+		if (resultTaskIndexes.size() == 1) {
+			if(taskList.get(resultTaskIndexes.get(0)).isRecurring()){
+				int recurringId = taskList.get(resultTaskIndexes.get(0)).getRecurringId();
+				resultTaskIndexes.clear();
+				for (int index = 0; index < taskList.size(); index++) {
+					if (taskList.get(index).getRecurringId() == recurringId) {
+						resultTaskIndexes.add(index);
+					}
+				}
+			}
+			else {
+				throw new Error("Selected task is not recurring task.");
+			}
+		} else {
+			throw new Error("More than 1 result.");
+		}
+		
+	}
+
+	private ArrayList<Task> tagRecurringWithName() {
+		searchWithName();
+		searchRecurring();
+		return addTagRecurring();
+	}
+
+	private ArrayList<Task> addTag() {
+		if (resultTaskIndexes.size() == 1) {
+			return addTagRecurring();
+		} else {
+			return null;
+		}
+	}
+
+	private ArrayList<Task> addTagRecurring() {
+		ArrayList<Task> r = new ArrayList<Task>();
+		for(int index = 0; index < resultTaskIndexes.size(); index++){
+			taskList.get(resultTaskIndexes.get(index)).addTags(tags);
+			r.add(taskList.get(resultTaskIndexes.get(index)));
+		}
+		return r;
+	}
+
+	private void searchWithId() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getId() == taskId) {
+				resultTaskIndexes.add(index);
+				break;
+			}
+		}
+	}
+
+	private void searchWithName() {
+		for (int index = 0; index < taskList.size(); index++) {
+			if (taskList.get(index).getName().equalsIgnoreCase(name)) {
+				resultTaskIndexes.add(index);
+			}
+		}
+	}
+	
+	/*
+	 * Input number may be not a task id but a task name. After failure of
+	 * executing with id, this class will execute again treating input number as
+	 * a task name.
+	 */
+	private ArrayList<Task> withIdToWithName(ArrayList<Task> result) {
+		if(result==null){
+			name = String.valueOf(taskId);
+			taskId = -1;
+			return execute();
+		} else {
+			return result;
+		}
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\logic\TagCommand.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\parser\DateParser.java
+	 */
+
+public class DateParser {
+	private String args;
+	public DateParser(String args){
+		this.args = args;
+	}
+	
+	public ArrayList<Calendar> parseDate() {
+		List<Date> dates;
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser();
+		List<DateGroup> groups = parser.parse(args);
+		try {
+			dates = groups.get(0).getDates();
+		} catch (Exception e) {
+			return null;
+		}
+		return dateToCalendar(dates);
+	}
+	private ArrayList<Calendar> dateToCalendar(List<Date> dates){ 
+		ArrayList<Calendar> cals = new ArrayList<Calendar>();
+		for(Date date: dates){
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			cals.add(cal);
+		}
+		return cals;
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\parser\DateParser.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\parser\Parser.java
+	 */
+
+public class Parser {
+	private static final String CONSTANT_EMPTY_STRING = "";
+	private static final String CONSTANT_ESCAPE = "'";
+	private static final String CONSTANT_SPACE = " ";
+	
+	private static final String KEYWORD_ADD_DEADLINE = " by ";
+	private static final String KEYWORD_ADD_SCHEDULED = " from ";
+	private static final String KEYWORD_ADD_SCHEDULED_2 = " to ";
+	private static final String KEYWORD_ADD_RECURRING_BEFORE = " before ";
+	private static final String KEYWORD_EDIT_NAME = " name to ";
+	private static final String KEYWORD_EDIT_DEADLINE = " deadline to ";
+	private static final String KEYWORD_EDIT_TAG = " to #";
+	private static final String KEYWORD_DELETE_TAG = " #";
+	private static final String KEYWORD_EDIT_START_TIME = " start time to ";
+	private static final String KEYWORD_EDIT_END_TIME = " end time to ";
+	private static final String KEYWORD_DELETE_RECURRING = " recurring";
+	private static final String KEYWORD_DELETE_DEADLINE = " deadline";
+	private static final String KEYWORD_DELETE_END_TIME = " end time";
+	private static final String KEYWORD_DELETE_START_TIME = " start time";
+	private static final String KEYWORD_DISPLAY_BEFORE = "before ";
+	private static final String KEYWORD_DISPLAY_FROM = "from ";
+	
+	private static final String CONSTANT_HASHTAG = "#";
+	private static final String KEYWORD_BY = "by";
+	private static final String KEYWORD_TO = "to";
+	private static final String KEYWORD_DEADLINE = "deadline";
+	private static final String KEYWORD_END_TIME = "end time";
+	private static final String KEYWORD_START_TIME = "start time";
+	private static final String KEYWORD_BEFORE = "before";
+	private static final String KEYWORD_RECURRING = "recurring";
+	private static final String KEYWORD_FROM = "from";
+	private static final String KEYWORD_DAILY = "daily";
+	private static final String KEYWORD_WEEKLY = "weekly";
+	private static final String KEYWORD_MONTHLY = "monthly";
+	private static final String KEYWORD_ANNUALLY = "annually";
+	/*CONSTANT_ALL consists of all keywords for parser which is used for recovering escaped words. */
+	private static final String[] CONSTANT_ALL = { CONSTANT_HASHTAG,
+			KEYWORD_BY, KEYWORD_TO, KEYWORD_DEADLINE, KEYWORD_END_TIME,
+			KEYWORD_START_TIME, KEYWORD_BEFORE, KEYWORD_RECURRING,
+			KEYWORD_FROM, KEYWORD_DAILY, KEYWORD_WEEKLY, KEYWORD_MONTHLY,
+			KEYWORD_ANNUALLY };
+	
+	private static final String KEYWORD_FLOATING = "floating";
+	private static final String KEYWORD_DONE = "done";
+	private static final String KEYWORD_ALL = "all";
+	private static final String KEYWORD_DUE = "due";
+	private static final String KEYWORD_SORT= "sort";
+	
+	private static final String[] CONSTANT_ALL_DISPLAY = { 
+		KEYWORD_FLOATING, KEYWORD_DONE, KEYWORD_ALL, KEYWORD_RECURRING,
+		KEYWORD_DUE, KEYWORD_SORT};
+	
+	private static final boolean BOOLEAN_NOT_RECURRING = false;
+	private static final boolean BOOLEAN_RECURRING = true;
+
+	private ArrayList<Task> taskListBackup = new ArrayList<Task>();
+
+	private static Parser parserInstance = new Parser();
+
+	private String commandString;
+
+	private Parser() {
+
+	}
+
+	public static Parser getInstance() {
+		return parserInstance;
+	}
+
+	public ArrayList<Task> parseInput(String commandString) {
+		this.commandString = commandString;
+		Command cmd = parseInfo(
+				CommandType.fromString(parseCommandType(commandString)),
+				getCommandInfo(commandString));
+		return cmd.execute();
+	}
+
+	public String getCommandInfo(String commandString) {
+		return removeFirstWord(commandString);
+	}
+
+	public String parseCommandType(String commandString) {
+		return getFirstWord(commandString);
+	}
+
+	private Command parseInfo(CommandType commandType, String paras) {
+		switch (commandType) {
+		case ADD:
+			return parseAdd(paras);
+		case DELETE:
+			return parseDelete(paras);
+		case EDIT:
+			return parseEdit(paras);
+		case DISPLAY:
+			return parseDisplay(paras);
+		case TAG:
+			return parseTag(paras);
+		case DONE:
+			return parseDone(paras);
+		case UNDO:
+			return parseUndo(paras);
+		case SETPATH:
+			return parseSetpath(paras);
+		case HELP:
+			return parseHelp(paras);
+		case INVALID:
+			return parseInvalid(paras);
+		case EXIT:
+			return parseExit(paras);
+		case SAVE:
+			return parseSave(paras);
+		default:
+			throw new Error("Unrecognized command type");
+		}
+	}
+
+	private Command parseAdd(String paras) {
+		backupTaskList();
+		String lastWord = paras
+				.substring(paras.lastIndexOf(CONSTANT_SPACE) + 1).toLowerCase();
+		if (isAddRecurringTask(lastWord)) {
+			String parasWithoutLastWord = paras.substring(0,
+					paras.lastIndexOf(CONSTANT_SPACE));
+			if (isAddTaskWithDeadline(parasWithoutLastWord)) {
+				return addRecurringTaskWithDeadline(lastWord,
+						parasWithoutLastWord);
+			} else if (isAddTaskWithTime(parasWithoutLastWord)) {
+				return addRecurringTaskWithTime(lastWord, parasWithoutLastWord);
+			} else {
+				return null;
+			}
+		} else {
+			if (isAddTaskWithDeadline(paras)) {
+				return addTaskWithDeadline(paras);
+			} else if (isAddTaskWithTime(paras)) {
+				return addTaskWithTime(paras);
+			} else if (isAddFloatingTask(paras)) {
+				return new AddCommand(recoverEscapeKeywords(paras), null, null);
+			} else {
+				return null;
+			}
+		}
+	}
+
+	private Command parseDelete(String paras) {
+		backupTaskList();
+		if (isDeleteTag(paras)) {
+			return deleteTag(paras);
+		} else if (isDeleteRecurringTag(paras)) {
+			return deleteRecurringTag(paras);
+		} else if (isDeleteAttribute(paras)) {
+			return deleteAttribute(false, paras);
+		} else if (isDeleteRecurring(paras)) {
+			return deleteRecurring(paras);
+		} else if (isDeleteTask(paras)) {
+			return deleteTask(paras);
+		} else {
+			return null;
+		}
+	}
+
+	private Command parseEdit(String paras) {
+		backupTaskList();
+		if (isEditName(paras)) {
+			return editName(paras);
+		} else if (isEditDeadline(paras)) {
+			return editDeadline(paras);
+		} else if (isEditStartTime(paras)) {
+			return editStartTime(paras);
+		} else if (isEditEndTime(paras)) {
+			return editEndTime(paras);
+		} else if (isEditTag(paras)) {
+			return editTag(paras);
+		} else {
+			return null;
+		}
+	}
+
+	private Command parseDisplay(String paras) {
+		if (paras.length() == 0) {
+			return new DisplayCommand();
+		} else if (isDisplayWithEndTime(paras)) {
+			return displayWithEndTime(paras);
+		} else if (isDisplayWithTimePeriod(paras)) {
+			return displayWithTimePeriod(paras);
+		} else if (isDisplayWithTag(paras)) {
+			return new DisplayCommand(paras, true);
+		} else if (isDisplayWithKeywords(paras)){
+			return new DisplayCommand(paras);
+		} else {
+			return new DisplayCommand(recoverEscapeKeywords(paras).split(
+					CONSTANT_SPACE));
+		}
+	}
+
+	private Command parseTag(String paras) {
+		backupTaskList();
+		if (isTagRecurring(paras)) {
+			return tagRecurring(paras);
+		} else {
+			return tag(paras);
+		}
+	}
+
+	private Command parseDone(String paras) {
+		backupTaskList();
+		if (isNumerical(paras)) {
+			return new DoneCommand(Integer.parseInt(paras));
+		} else {
+			return new DoneCommand(recoverEscapeKeywords(paras));
+		}
+	}
+
+	private Command parseUndo(String paras) {
+		return new UndoCommand(taskListBackup);
+	}
+
+	private Command parseSetpath(String paras) {
+		return new SetpathCommand(paras);
+	}
+
+	private Command parseHelp(String paras) {
+		if (paras.equals(CONSTANT_EMPTY_STRING)) {
+			return new HelpCommand();
+		} else {
+			return new HelpCommand(paras);
+		}
+	}
+
+	private Command parseInvalid(String userCommand) {
+		return new InvalidCommand(commandString);
+	}
+
+	private Command parseExit(String paras) {
+		return new ExitCommand();
+	}
+
+	private Command parseSave(String paras) {
+		return new SaveCommand();
+	}
+
+	private Calendar parseDate(String dateString) {
+		DateParser dateParser = new DateParser(dateString);
+		return dateParser.parseDate().get(0);
+	}
+
+	private ArrayList<Calendar> parseDates(String dateString) {
+		DateParser dateParser = new DateParser(dateString);
+		return dateParser.parseDate();
+	}
+
+	private String recoverEscapeKeywords(String paras) {
+		String newParas = new String(paras);
+		for (String keyword : CONSTANT_ALL) {
+			newParas = newParas.replaceAll(CONSTANT_ESCAPE + keyword, keyword);
+		}
+		return newParas;
+	}
+
+	private boolean isAddRecurringTask(String lastWord) {
+		return lastWord.equals(KEYWORD_DAILY)
+				|| lastWord.equals(KEYWORD_WEEKLY)
+				|| lastWord.equals(KEYWORD_MONTHLY)
+				|| lastWord.equals(KEYWORD_ANNUALLY);
+	}
+
+	private boolean isAddFloatingTask(String paras) {
+		return !paras.equals(CONSTANT_EMPTY_STRING);
+	}
+
+	private boolean isAddTaskWithTime(String paras) {
+		return paras.contains(KEYWORD_ADD_SCHEDULED)
+				&& paras.contains(KEYWORD_ADD_SCHEDULED_2);
+	}
+
+	private boolean isAddTaskWithDeadline(String paras) {
+		return paras.contains(KEYWORD_ADD_DEADLINE);
+	}
+
+	private boolean isDeleteTask(String paras) {
+		return !paras.equals(CONSTANT_EMPTY_STRING);
+	}
+
+	private boolean isDeleteTag(String paras) {
+		return paras.contains(KEYWORD_DELETE_TAG) && !isTagRecurring(paras);
+	}
+
+	private boolean isDeleteRecurringTag(String paras) {
+		return paras.contains(KEYWORD_DELETE_TAG) && isTagRecurring(paras);
+	}
+
+	private boolean isDeleteAttribute(String paras) {
+		return (paras.contains(KEYWORD_DELETE_START_TIME)
+				|| paras.contains(KEYWORD_DELETE_END_TIME) || paras
+					.contains(KEYWORD_DELETE_DEADLINE))
+				&& !isTagRecurring(paras);
+	}
+
+	private boolean isDeleteRecurring(String paras) {
+		return isTagRecurring(paras);
+	}
+
+	private boolean isDisplayWithEndTime(String paras) {
+		return paras.startsWith(KEYWORD_DISPLAY_BEFORE);
+	}
+
+	private boolean isDisplayWithTimePeriod(String paras) {
+		return paras.startsWith(KEYWORD_DISPLAY_FROM)
+				&& paras.contains(KEYWORD_ADD_SCHEDULED_2);
+	}
+
+	private boolean isDisplayWithTag(String paras) {
+		return paras.startsWith(CONSTANT_HASHTAG);
+	}
+
+	private boolean isDisplayWithKeywords(String paras) {
+		for(String s: CONSTANT_ALL_DISPLAY){
+			if(paras.equals(s)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isNumerical(String str) {
+		try {
+			Integer.parseInt(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean isEditTag(String paras) {
+		return paras.contains(KEYWORD_EDIT_TAG);
+	}
+
+	private boolean isEditDeadline(String paras) {
+		return paras.contains(KEYWORD_EDIT_DEADLINE);
+	}
+
+	private boolean isEditName(String paras) {
+		return paras.contains(KEYWORD_EDIT_NAME);
+	}
+
+	private boolean isEditStartTime(String paras) {
+		return paras.contains(KEYWORD_EDIT_START_TIME);
+	}
+
+	private boolean isEditEndTime(String paras) {
+		return paras.contains(KEYWORD_EDIT_END_TIME);
+	}
+
+	private boolean isTagRecurring(String paras) {
+		return paras.contains(KEYWORD_DELETE_RECURRING);
+	}
+
+	private Command addTaskWithTime(String paras) {
+		String name = paras.split(KEYWORD_ADD_SCHEDULED)[0];
+		String timeString = paras.split(KEYWORD_ADD_SCHEDULED)[1];
+		ArrayList<Calendar> timeCalendarList = parseDates(timeString);
+		Calendar beginTimeCalendar = timeCalendarList.get(0);
+		Calendar endTimeCalendar = timeCalendarList.get(1);
+
+		if (beginTimeCalendar != null && endTimeCalendar != null
+				&& beginTimeCalendar.before(endTimeCalendar)) {
+			return new AddCommand(recoverEscapeKeywords(name),
+					beginTimeCalendar, endTimeCalendar);
+		} else {
+			return null;
+		}
+	}
+
+	private Command addTaskWithDeadline(String paras) {
+		String name;
+		String deadlineString;
+
+		name = paras.split(KEYWORD_ADD_DEADLINE)[0];
+		deadlineString = paras.split(KEYWORD_ADD_DEADLINE)[1];
+
+		Calendar deadlineCalendar = parseDate(deadlineString);
+		if (deadlineCalendar != null) {
+			return new AddCommand(recoverEscapeKeywords(name), null,
+					deadlineCalendar);
+		} else {
+			return null;
+		}
+	}
+
+	private Command addRecurringTaskWithTime(String lastWord,
+			String parasWithoutLastWord) {
+		String name = parasWithoutLastWord.split(KEYWORD_ADD_SCHEDULED)[0];
+		String timeString = parasWithoutLastWord.split(KEYWORD_ADD_SCHEDULED)[1]
+				.split(KEYWORD_ADD_RECURRING_BEFORE)[0];
+		String endRecurringTimeString = parasWithoutLastWord
+				.split(KEYWORD_ADD_RECURRING_BEFORE)[1];
+
+		ArrayList<Calendar> timeCalendarList = parseDates(timeString);
+		Calendar beginTimeCalendar = timeCalendarList.get(0);
+		Calendar endTimeCalendar = timeCalendarList.get(1);
+		Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
+
+		if (beginTimeCalendar != null && endTimeCalendar != null
+				&& endRecurringTimeCalendar != null) {
+			return new AddCommand(recoverEscapeKeywords(name), lastWord,
+					beginTimeCalendar, endTimeCalendar,
+					endRecurringTimeCalendar);
+		} else {
+			return null;
+		}
+	}
+
+	private Command addRecurringTaskWithDeadline(String lastWord,
+			String parasWithoutLastWord) {
+		String name = parasWithoutLastWord.split(KEYWORD_ADD_DEADLINE)[0];
+		String deadlineString = parasWithoutLastWord
+				.split(KEYWORD_ADD_DEADLINE)[1]
+				.split(KEYWORD_ADD_RECURRING_BEFORE)[0];
+		String endRecurringTimeString = parasWithoutLastWord
+				.split(KEYWORD_ADD_DEADLINE)[1]
+				.split(KEYWORD_ADD_RECURRING_BEFORE)[1];
+
+		Calendar deadlineCalendar = parseDate(deadlineString);
+		Calendar endRecurringTimeCalendar = parseDate(endRecurringTimeString);
+
+		if (deadlineCalendar != null && endRecurringTimeCalendar != null) {
+			return new AddCommand(recoverEscapeKeywords(name), lastWord, null,
+					deadlineCalendar, endRecurringTimeCalendar);
+		} else {
+			return null;
+		}
+	}
+
+	private Command displayWithEndTime(String paras) {
+		String endTimeString = paras.split(KEYWORD_BEFORE + CONSTANT_SPACE)[1];
+		Calendar endTimeCalendar = parseDate(endTimeString);
+		if (endTimeCalendar != null) {
+			return new DisplayCommand(endTimeCalendar);
+		} else {
+			return null;
+		}
+	}
+
+	private Command displayWithTimePeriod(String paras) {
+		String timeString = paras.split(KEYWORD_FROM + CONSTANT_SPACE)[1];
+
+		ArrayList<Calendar> timeCalendarList = parseDates(timeString);
+		Calendar startTimeCalendar = timeCalendarList.get(0);
+		Calendar endTimeCalendar = timeCalendarList.get(1);
+
+		if (startTimeCalendar != null && endTimeCalendar != null) {
+			return new DisplayCommand(startTimeCalendar, endTimeCalendar);
+		} else {
+			return null;
+		}
+	}
+
+	private Command editEndTime(String paras) {
+		String name = paras.split(KEYWORD_EDIT_END_TIME)[0];
+		String newEndTimeString = paras.split(KEYWORD_EDIT_END_TIME)[1];
+
+		Calendar newEndTimeCalendar = parseDate(newEndTimeString);
+		if (newEndTimeCalendar != null) {
+			if (isNumerical(name)) {
+				return new EditCommand(Integer.parseInt(name), null,
+						newEndTimeCalendar);
+			} else {
+				return new EditCommand(recoverEscapeKeywords(name), null,
+						newEndTimeCalendar);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Command editStartTime(String paras) {
+		String name = paras.split(KEYWORD_EDIT_START_TIME)[0];
+		String newStartTimeString = paras.split(KEYWORD_EDIT_START_TIME)[1];
+
+		Calendar newStartTimeCalendar = parseDate(newStartTimeString);
+		if (newStartTimeCalendar != null) {
+			if (isNumerical(name)) {
+				return new EditCommand(Integer.parseInt(name),
+						newStartTimeCalendar, null);
+			} else {
+				return new EditCommand(recoverEscapeKeywords(name),
+						newStartTimeCalendar, null);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Command editDeadline(String paras) {
+		String name = paras.split(KEYWORD_EDIT_DEADLINE)[0];
+		String newDeadlineString = paras.split(KEYWORD_EDIT_DEADLINE)[1];
+
+		Calendar newDeadlineCalendar = parseDate(newDeadlineString);
+		if (newDeadlineCalendar != null) {
+			if (isNumerical(name)) {
+				return new EditCommand(Integer.parseInt(name), null,
+						newDeadlineCalendar);
+			} else {
+				return new EditCommand(recoverEscapeKeywords(name), null,
+						newDeadlineCalendar);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Command editName(String paras) {
+		String oldName = paras.split(KEYWORD_EDIT_NAME)[0];
+		String newName = paras.split(KEYWORD_EDIT_NAME)[1];
+		if (isNumerical(oldName)) {
+			return new EditCommand(Integer.parseInt(oldName),
+					recoverEscapeKeywords(newName));
+		} else {
+			return new EditCommand(recoverEscapeKeywords(oldName),
+					recoverEscapeKeywords(newName));
+		}
+	}
+
+	private Command editTag(String paras) {
+		String name = paras.split(KEYWORD_DELETE_TAG, 2)[0];
+		String oldTag = CONSTANT_HASHTAG
+				+ paras.split(KEYWORD_DELETE_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[0];
+		String newTag = CONSTANT_HASHTAG
+				+ paras.split(KEYWORD_DELETE_TAG, 2)[1].split(KEYWORD_EDIT_TAG)[1];
+
+		if (isNumerical(name)) {
+			return new EditCommand(Integer.parseInt(name), oldTag, newTag);
+		} else {
+			return new EditCommand(recoverEscapeKeywords(name), oldTag, newTag);
+		}
+	}
+
+	private Command deleteTask(String paras) {
+		if (isNumerical(paras)) {
+			return new DeleteCommand(Integer.parseInt(paras),
+					BOOLEAN_NOT_RECURRING);
+		} else {
+			return new DeleteCommand(recoverEscapeKeywords(paras),
+					BOOLEAN_NOT_RECURRING);
+		}
+	}
+
+	private Command deleteRecurring(String paras) {
+		String name = paras.split(CONSTANT_SPACE + KEYWORD_RECURRING)[0];
+		if (isNumerical(name)) {
+			return new DeleteCommand(Integer.parseInt(name), BOOLEAN_RECURRING);
+		} else {
+			// Delete recurring can only receive id as reference of a task.
+			return null;
+		}
+
+	}
+
+	private Command deleteTag(String paras) {
+		String name = paras.split(KEYWORD_DELETE_TAG)[0];
+		String tag = CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG)[1];
+		if (isNumerical(name)) {
+			return new DeleteCommand(Integer.parseInt(name),
+					BOOLEAN_NOT_RECURRING, tag);
+		} else {
+			return new DeleteCommand(recoverEscapeKeywords(name),
+					BOOLEAN_NOT_RECURRING, tag);
+		}
+	}
+
+	private Command deleteRecurringTag(String paras) {
+		String parasWithoutLastWord = paras.substring(0,
+				paras.lastIndexOf(CONSTANT_SPACE));
+		String name = parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[0];
+		String tag = CONSTANT_HASHTAG
+				+ parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[1];
+		if (isNumerical(name)) {
+			return new DeleteCommand(Integer.parseInt(name), BOOLEAN_RECURRING,
+					tag);
+		} else {
+			// Delete recurring can only receive id as reference of a task.
+			return null;
+		}
+	}
+
+	private Command deleteAttribute(boolean recurring, String paras) {
+		if (paras.toLowerCase().contains(KEYWORD_START_TIME)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_START_TIME)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_START_TIME);
+			} else {
+				return new DeleteCommand(recoverEscapeKeywords(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_START_TIME);
+			}
+		} else if (paras.toLowerCase().contains(KEYWORD_END_TIME)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_END_TIME)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_END_TIME);
+			} else {
+				return new DeleteCommand(recoverEscapeKeywords(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_END_TIME);
+			}
+		} else if (paras.toLowerCase().contains(KEYWORD_DEADLINE)) {
+			String name = paras.split(CONSTANT_SPACE + KEYWORD_DEADLINE)[0];
+			if (isNumerical(name)) {
+				return new DeleteCommand(Integer.parseInt(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_DEADLINE);
+			} else {
+				return new DeleteCommand(recoverEscapeKeywords(name),
+						BOOLEAN_NOT_RECURRING, KEYWORD_DEADLINE);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Command tag(String paras) {
+		String name = paras.split(KEYWORD_DELETE_TAG)[0];
+		;
+		String[] tags = (CONSTANT_HASHTAG + paras.split(KEYWORD_DELETE_TAG, 2)[1])
+				.split(CONSTANT_SPACE);
+
+		if (isNumerical(name)) {
+			return new TagCommand(Integer.parseInt(name),
+					BOOLEAN_NOT_RECURRING, tags);
+		} else {
+			return new TagCommand(recoverEscapeKeywords(name), tags);
+		}
+	}
+
+	private Command tagRecurring(String paras) {
+		String parasWithoutLastWord = paras.substring(0,
+				paras.lastIndexOf(CONSTANT_SPACE));
+		String name = parasWithoutLastWord.split(KEYWORD_DELETE_TAG)[0];
+		;
+		String[] tags = (CONSTANT_HASHTAG + parasWithoutLastWord.split(
+				KEYWORD_DELETE_TAG, 2)[1]).split(CONSTANT_SPACE);
+
+		if (isNumerical(name)) {
+			return new TagCommand(Integer.parseInt(name), BOOLEAN_RECURRING,
+					tags);
+		} else {
+			// Tag recurring can only receive id as reference of a task.
+			return null;
+		}
+	}
+
+	/*
+	 * Task list is backed up for each time a modification is about to be
+	 * executed. It is a deep clone which will not affect the original task
+	 * objects.
+	 */
+	private void backupTaskList() {
+		taskListBackup.clear();
+		for (Task t : Database.getInstance().getTaskList()) {
+			taskListBackup.add(new Task(t));
+		}
+	}
+
+	private static String getFirstWord(String userCommand) {
+		String commandTypeString = userCommand.trim().split(CONSTANT_SPACE)[0];
+		return commandTypeString;
+	}
+
+	private static String removeFirstWord(String userCommand) {
+		String[] userCommandString = userCommand.trim()
+				.split(CONSTANT_SPACE, 2);
+		if (userCommandString.length == 1) {
+			return CONSTANT_EMPTY_STRING;
+		} else {
+			return userCommandString[1];
+		}
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\parser\Parser.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\AddCommandTest.java
+	 */
+
+public class AddCommandTest {
+
+	/*
+	 * Non recurring: AddCommand(String name, Calendar startTime, Calendar
+	 * endTime)
+	 * 
+	 * Recurring: AddCommand(String name, String recurringCycle, Calendar
+	 * startTime, Calendar endTime, Calendar endRecurringTimeCalendar)
+	 */
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
+	@Test
+	public void addFloatingTaskTest() {
+		AddCommand a = new AddCommand("update manual", null, null);
+		ArrayList<Task> result = a.execute();
+		assertEquals(1, result.size());
+		assertEquals("update manual", result.get(0).getName());
+		assertEquals(null, result.get(0).getStartTime());
+		assertEquals(null, result.get(0).getEndTime());
+		assertEquals(-1, result.get(0).getRecurringId());
+	}
+
+	@Test
+	public void addTimeTaskTest() {
+		Calendar startTime = Calendar.getInstance();
+		Calendar endTime = Calendar.getInstance();
+		AddCommand a = new AddCommand("update manual", startTime, endTime);
+		ArrayList<Task> result = a.execute();
+		assertEquals(1, result.size());
+		assertEquals("update manual", result.get(0).getName());
+		assertEquals(startTime, result.get(0).getStartTime());
+		assertEquals(endTime, result.get(0).getEndTime());
+		assertEquals(-1, result.get(0).getRecurringId());
+	}
+
+	@Test
+	public void addDeadlineTaskTest() {
+		Calendar deadline = Calendar.getInstance();
+		AddCommand a = new AddCommand("update manual", null, deadline);
+		ArrayList<Task> result = a.execute();
+		assertEquals(1, result.size());
+		assertEquals("update manual", result.get(0).getName());
+		assertEquals(null, result.get(0).getStartTime());
+		assertEquals(deadline, result.get(0).getEndTime());
+		assertEquals(-1, result.get(0).getRecurringId());
+	}
+
+	@Test
+	public void addRecurringTimeTaskTest() {
+		Calendar startTime = Calendar.getInstance();
+		Calendar endTime = Calendar.getInstance();
+		Calendar endRecurringTime = Calendar.getInstance();
+		AddCommand a = new AddCommand("update manual", "weekly", startTime,
+				endTime, endRecurringTime);
+		ArrayList<Task> result = a.execute();
+		assertEquals(1, result.size());
+		assertEquals("update manual", result.get(0).getName());
+		assertEquals(startTime, result.get(0).getStartTime());
+		assertEquals(endTime, result.get(0).getEndTime());
+		assertTrue(result.get(0).getRecurringId() > 0);
+	}
+
+	@Test
+	public void addRecurringDeadlineTaskTest() {
+		Calendar deadLine = Calendar.getInstance();
+		Calendar endRecurringTime = Calendar.getInstance();
+		endRecurringTime.add(Calendar.DATE, 7);
+		AddCommand a = new AddCommand("update manual", "daily", null, deadLine,
+				endRecurringTime);
+		ArrayList<Task> result = a.execute();
+		assertEquals(8, result.size());
+		assertEquals("update manual", result.get(0).getName());
+		assertEquals(null, result.get(0).getStartTime());
+		assertEquals(deadLine, result.get(0).getEndTime());
+		assertTrue(result.get(0).getRecurringId() > 0);
+	}
+
+	@Test
+	public void addNullTest() {
+		/* This is a boundary case for the null value task name */
+		AddCommand a = new AddCommand(null, null, null);
+		ArrayList<Task> result = a.execute();
+		assertEquals(null, result.get(0).getName());
+	}
+
+	@Test
+	public void addEmptyNameTest() {
+		/* This is a boundary case for the empty name task name */
+		AddCommand a = new AddCommand("", null, null);
+		ArrayList<Task> result = a.execute();
+		assertEquals(1, result.size());
+		assertEquals("", result.get(0).getName());
+		assertEquals(null, result.get(0).getStartTime());
+		assertEquals(null, result.get(0).getEndTime());
+		assertEquals(-1, result.get(0).getRecurringId());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void addNullRecurringTest() {
+		/* This is a boundary case for the null value task name */
+		AddCommand a = new AddCommand(null, null, null, null, null);
+		a.execute();
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\AddCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\DeleteCommandTest.java
+	 */
+
+public class DeleteCommandTest {
+	/*
+	 * Delete task: DeleteCommand(String name/int id, boolean isDeleteRecurring)
+	 * 
+	 * Delete others: DeleteCommand(String name/int id, boolean
+	 * isDeleteRecurring, String para)
+	 */
+	
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
+	@Test
+	public void deleteTaskIdTest() {
+		AddCommand a = new AddCommand("update manual 1", null, null);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+		assertEquals("update manual 1", resultAdd.get(0).getName());
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getId(), false);
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(1, resultDelete.size());
+		assertTrue(resultDelete.get(0).equals(resultDelete.get(0)));
+	}
+
+	@Test
+	public void deleteTaskNameTest() {
+		AddCommand a = new AddCommand("update manual 2", null, null);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+		assertEquals("update manual 2", resultAdd.get(0).getName());
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getName(), false);
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(1, resultDelete.size());
+		assertTrue(resultDelete.get(0).equals(resultDelete.get(0)));
+	}
+
+	@Test
+	public void deleteTaskNameDupicateTest() {
+		AddCommand a = new AddCommand("update manual 0", null, null);
+		a.execute();
+		ArrayList<Task> resultAdd = a.execute();
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getName(), false);
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(null, resultDelete);
+	}
+
+	@Test
+	public void deleteAttributeIdTest() {
+		Calendar endTime = Calendar.getInstance();
+		AddCommand a = new AddCommand("update manual 3", null, endTime);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+		assertEquals("update manual 3", resultAdd.get(0).getName());
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getId(), false,
+				"end time");
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(1, resultDelete.size());
+		assertEquals(null, resultDelete.get(0).getEndTime());
+	}
+
+	@Test
+	public void deleteAttributeNameTest() {
+		AddCommand a = new AddCommand("update manual 4", null, null);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+		assertEquals("update manual 4", resultAdd.get(0).getName());
+
+		String[] tags = { "#done" };
+		TagCommand t = new TagCommand(resultAdd.get(0).getId(), false, tags);
+		ArrayList<Task> resultTag = t.execute();
+		assertEquals(1, resultTag.get(0).getTags().size());
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getName(), false,
+				"#done");
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(1, resultDelete.size());
+		assertEquals(0, resultDelete.get(0).getTags().size());
+	}
+
+	@Test
+	public void deleteRecurringTagTest() {
+		Calendar startTime = Calendar.getInstance();
+		Calendar endTime = Calendar.getInstance();
+		Calendar endRecurringTime = Calendar.getInstance();
+		endRecurringTime.add(Calendar.DATE, 7);
+		AddCommand a = new AddCommand("update manual recurring", "daily",
+				startTime, endTime, endRecurringTime);
+		ArrayList<Task> resultAdd = a.execute();
+
+		String[] tags = { "#done" };
+		TagCommand t = new TagCommand(resultAdd.get(0).getId(), true, tags);
+		ArrayList<Task> resultTag = t.execute();
+		assertEquals(1, resultTag.get(0).getTags().size());
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getId(), true,
+				"#done");
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(8, resultDelete.size());
+		for (Task task : resultDelete) {
+			assertEquals(0, task.getTags().size());
+		}
+	}
+
+	@Test
+	public void deleteRecurringTaskTest() {
+		Calendar deadline = Calendar.getInstance();
+		Calendar endRecurringTime = Calendar.getInstance();
+		endRecurringTime.add(Calendar.DATE, 7);
+		AddCommand a = new AddCommand("update manual recurring", "daily", null,
+				deadline, endRecurringTime);
+		ArrayList<Task> resultAdd = a.execute();
+
+		DeleteCommand d = new DeleteCommand(resultAdd.get(0).getId(), true);
+		ArrayList<Task> resultDelete = d.execute();
+		assertEquals(8, resultDelete.size());
+		assertEquals(0, Database.getInstance().getTaskList().size());
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\DeleteCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\DisplayCommandTest.java
+	 */
+
+public class DisplayCommandTest {
+	
+	private Task taskOne, taskTwo, taskThree, taskFour;
+
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+		AddCommand a; 
+		a = new AddCommand("task one", null, null);
+		taskOne = a.execute().get(0);
+		
+		Calendar startTime = Calendar.getInstance();
+		Calendar endTime = Calendar.getInstance();
+		a = new AddCommand("task two", startTime, endTime);
+		taskTwo =  a.execute().get(0);
+		String[] tags = { "#done" };
+		TagCommand t = new TagCommand("task two", tags);
+		t.execute();
+		
+		
+		Calendar endRecurringTime = Calendar.getInstance();
+		endRecurringTime.add(Calendar.DATE, 1);
+		a = new AddCommand("task three", "daily", startTime, endTime, endRecurringTime);
+		ArrayList<Task> r = a.execute();
+		taskThree = r.get(0);
+		taskFour = r.get(1);
+	}
+	
+	@Test
+	public void displayFloatingTest(){
+		DisplayCommand d = new DisplayCommand("floating");
+		ArrayList<Task> result = d.execute();
+		assertEquals(1, result.size());
+		assertEquals(taskOne, result.get(0));
+	}
+	
+	@Test
+	public void displayAll(){
+		DisplayCommand d = new DisplayCommand("all");
+		ArrayList<Task> result = d.execute();
+		assertEquals(4, result.size());
+	}
+	
+	@Test
+	public void displayDone(){
+		DisplayCommand d = new DisplayCommand("done");
+		ArrayList<Task> result = d.execute();
+		assertEquals(1, result.size());
+		assertEquals(taskTwo, result.get(0));
+	}
+	
+	@Test
+	public void displayDue(){
+		DisplayCommand d = new DisplayCommand("due");
+		ArrayList<Task> result = d.execute();
+		assertEquals(2, result.size());
+		assertTrue(result.contains(taskTwo));
+		assertTrue(result.contains(taskThree));
+	}
+	
+	@Test
+	public void displayKeyword(){
+		String[] keywords = { "one", "two" };
+		DisplayCommand d = new DisplayCommand(keywords);
+		ArrayList<Task> result = d.execute();
+		assertEquals(2, result.size());
+		assertTrue(result.contains(taskTwo));
+		assertTrue(result.contains(taskOne));
+	}
+	
+	@Test
+	public void displayTag(){
+		DisplayCommand d = new DisplayCommand("done", true);
+		ArrayList<Task> result = d.execute();
+		assertEquals(1, result.size());
+		assertTrue(result.contains(taskTwo));
+	}
+	
+	@Test
+	public void displayTimePeriod(){
+		Calendar searchStartTime = Calendar.getInstance();
+		Calendar searchEndTime = Calendar.getInstance();
+		searchStartTime.add(Calendar.DATE, 1);
+		searchEndTime.add(Calendar.DATE, 1);
+		DisplayCommand d = new DisplayCommand(searchStartTime, searchEndTime);
+		ArrayList<Task> result = d.execute();
+		assertEquals(1, result.size());
+		assertTrue(result.contains(taskFour));
+	}
+	
+	@Test
+	public void displayDeadline(){
+		Calendar searchDeadline = Calendar.getInstance();
+		searchDeadline.add(Calendar.DATE, 1);
+		DisplayCommand d = new DisplayCommand(searchDeadline);
+		ArrayList<Task> result = d.execute();
+		assertEquals(3, result.size());
+		assertTrue(result.contains(taskTwo));
+		assertTrue(result.contains(taskThree));
+		assertTrue(result.contains(taskFour));
+	}
+	
+	@Test
+	public void displayRecurring(){
+		DisplayCommand d = new DisplayCommand("recurring");
+		ArrayList<Task> result = d.execute();
+		assertEquals(2, result.size());
+		assertTrue(result.contains(taskThree));
+		assertTrue(result.contains(taskFour));
+	}
+
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\DisplayCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\EditCommandTest.java
+	 */
+
+public class EditCommandTest {
+	/* Edit name: EditCommand(String oldName/int id, String newName) */
+	/* Edit deadline: EditCommand(String name/int id, Calendar newDeadline) */
+	/*
+	 * Edit startTime/endTime: EditCommand(String name/int id, Calendar
+	 * newStartTime, Calendar newEndTime)
+	 */
+	/*
+	 * Edit one tag: EditCommand(String name/int id, String oldTag, String
+	 * newTag)
+	 */
+	
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
+	@Test
+	public void editNameTest() {
+		AddCommand a = new AddCommand("update manual 1", null, null);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+		assertEquals("update manual 1", resultAdd.get(0).getName());
+
+		EditCommand e = new EditCommand(resultAdd.get(0).getName(),
+				"new update manual 1");
+		ArrayList<Task> resultEdit = e.execute();
+		assertEquals(1, resultEdit.size());
+		assertEquals("new update manual 1", resultAdd.get(0).getName());
+	}
+
+	@Test
+	public void editNameDuplicateTest() {
+		AddCommand a = new AddCommand("update manual 1", null, null);
+		a.execute();
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+		assertEquals("update manual 1", resultAdd.get(0).getName());
+
+		EditCommand e = new EditCommand(resultAdd.get(0).getName(),
+				"new update manual 1");
+		ArrayList<Task> resultEdit = e.execute();
+		assertEquals(null, resultEdit);
+	}
+
+	@Test
+	public void editDeadlineIdTest() {
+		Calendar deadline = Calendar.getInstance();
+		AddCommand a = new AddCommand("update manual 3", null, deadline);
+		ArrayList<Task> resultAdd = a.execute();
+
+		Calendar newDeadline = Calendar.getInstance();
+		EditCommand e = new EditCommand(resultAdd.get(0).getId(), newDeadline);
+		ArrayList<Task> resultEdit = e.execute();
+		assertEquals(1, resultEdit.size());
+		assertEquals(newDeadline, resultAdd.get(0).getEndTime());
+		assertTrue(deadline != resultAdd.get(0).getEndTime());
+	}
+
+	@Test
+	public void editStartTimeIdTest() {
+		Calendar startTime = Calendar.getInstance();
+		AddCommand a = new AddCommand("update manual 7", null, startTime);
+		ArrayList<Task> resultAdd = a.execute();
+
+		Calendar newStartTime = Calendar.getInstance();
+		EditCommand e = new EditCommand(resultAdd.get(0).getName(),
+				newStartTime, null);
+		ArrayList<Task> resultEdit = e.execute();
+		assertEquals(1, resultEdit.size());
+		assertEquals(newStartTime, resultAdd.get(0).getStartTime());
+		assertTrue(startTime != resultAdd.get(0).getStartTime());
+	}
+
+	@Test
+	public void editTagIdTest() {
+		Calendar startTime = Calendar.getInstance();
+		AddCommand a = new AddCommand("update manual 10", null, startTime);
+		ArrayList<Task> resultAdd = a.execute();
+
+		String[] tags = { "#done" };
+		TagCommand t = new TagCommand(resultAdd.get(0).getId(), false, tags);
+		ArrayList<Task> resultTag = t.execute();
+		assertEquals(1, resultTag.get(0).getTags().size());
+
+		EditCommand e = new EditCommand(resultAdd.get(0).getName(), "#done",
+				"#urgent");
+		ArrayList<Task> resultEdit = e.execute();
+		assertEquals(1, resultEdit.size());
+		assertTrue(resultAdd.get(0).getTags().contains("#urgent"));
+		assertTrue(!resultAdd.get(0).getTags().contains("#done"));
+	}
+
+	@Test
+	public void editNameIsNumeric() {
+		/*
+		 * The name of some tasks is numeric. If the name is numeric, first try
+		 * to search as Id, then search as name if the preceding search is
+		 * unsuccessfully executed,
+		 */
+		AddCommand a = new AddCommand("one", null, null);
+		a.execute();
+		a.execute();
+		a = new AddCommand("13", null, null);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+
+		EditCommand e = new EditCommand(resultAdd.get(0).getName(), "23");
+		ArrayList<Task> resultEdit = e.execute();
+		assertEquals(1, resultEdit.size());
+		assertEquals("23", resultAdd.get(0).getName());
+		assertEquals("23", resultEdit.get(0).getName());
+	}
+
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\EditCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\OtherTest.java
+	 */
+
+public class OtherTest {
+
+	/*
+	 * InvalidCommand, HelpCommand and ExitCommand unit tests are omitted.
+	 * SaveCommand and SetpathCommand unit tests are included in either database unit tests or systematic testing.
+	 * Parser unit tests are included in systematic testing.
+	 * DoneCommand testing is less important since it reuses codes in TagCommand.
+	 */
+	
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
+	@Test
+	public void doneTest() {
+		AddCommand a = new AddCommand("update manual P", null, null);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals("update manual P", resultAdd.get(0).getName());
+
+		DoneCommand d = new DoneCommand(resultAdd.get(0).getName());
+		ArrayList<Task> resultTag = d.execute();
+		assertEquals(1, resultTag.get(0).getTags().size());
+		assertEquals("#done", resultTag.get(0).getTags().get(0));
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\OtherTest.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\TagCommandTest.java
+	 */
+
+public class TagCommandTest {
+	/*
+	 * Non recurring: TagCommand(String name, String[] tags), TagCommand(int id,
+	 * boolean isTagRecurring, String[] tags)
+	 * 
+	 * Recurring: TagCommand(int id, boolean isTagRecurring, String[] tags)
+	 */
+	
+	@Before
+	public void before() {
+		Database.getInstance().getTaskList().clear();
+	}
+	
+	@Test
+	public void tagRecurringTest() {
+		Calendar startTime = Calendar.getInstance();
+		Calendar endTime = Calendar.getInstance();
+		Calendar endRecurringTime = Calendar.getInstance();
+		endRecurringTime.add(Calendar.DATE, 7);
+		AddCommand a = new AddCommand("update manual recurring", "daily",
+				startTime, endTime, endRecurringTime);
+		ArrayList<Task> resultAdd = a.execute();
+
+		String[] tags = { "done" };
+		TagCommand t = new TagCommand(resultAdd.get(0).getId(), true, tags);
+		ArrayList<Task> resultTag = t.execute();
+		for (Task task : resultTag) {
+			assertEquals(1, task.getTags().size());
+			assertEquals("#done", task.getTags().get(0));
+		}
+	}
+
+	@Test
+	public void tagTest() {
+		AddCommand a = new AddCommand("update manual Q", null, null);
+		ArrayList<Task> resultAdd = a.execute();
+		assertEquals(1, resultAdd.size());
+		assertEquals("update manual Q", resultAdd.get(0).getName());
+
+		String[] tags = { "done" };
+		TagCommand t = new TagCommand(resultAdd.get(0).getName(), tags);
+		ArrayList<Task> resultTag = t.execute();
+		assertEquals(1, resultTag.get(0).getTags().size());
+		assertEquals("#done", resultTag.get(0).getTags().get(0));
+	}
+
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\testing\TagCommandTest.java
+
+
+
+
+

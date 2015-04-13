@@ -1,0 +1,23 @@
+//@author: a0119384y-reused
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Gui.java
+	 */
+
+	private static boolean isNumerical(String str) {
+		try {
+			Integer.parseInt(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+	
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Gui.java
+
+
+
+
+

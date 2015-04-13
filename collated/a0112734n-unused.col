@@ -1,0 +1,136 @@
+//@author: a0112734n-unused
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\AnyTask.java
+	 */
+
+// non GUI main class
+public class AnyTask {
+	private static final String MESSAGE_DISPLAY_NOT_EMPTY = "%-10d %-10s %-20s %-10s\n";
+	private static final String MESSAGE_DISPLAY_EMPTY = "No result\n";
+	private static final String MESSAGE_INVALID = "Invalid command\n";
+	
+	private static Scanner sc = new Scanner(System.in);
+
+
+	public static void main(String[] args) {
+		if (args.length == 0) {
+			Display.displayMsgWelcome();
+		} else if (args.length == 1) {
+			Database db = Database.getInstance();
+			db.setFilePath(args[0]);
+			Display.displayMsgWelcome();
+		} else {
+			System.exit(0);
+		}
+
+		if (!Data.initTaskList()) {
+			Display.displayMsgError();
+			System.exit(0);
+		}
+
+		while (true) {
+			Display.displayMsgPrompt();
+			String command = sc.nextLine();
+			processCommand(command);
+		}
+	}
+	public static void processCommand(String command) {
+		Parser p = Parser.getInstance();
+		try {
+			displayResults(p.parseInput(command));
+		} catch (Exception e) {
+			System.out.println("Invalid command");
+		}
+	}
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\AnyTask.java
+
+
+
+
+
+	/**
+	 * origin: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Display.java
+	 */
+
+// for non GUI usage
+public class Display {
+
+	private static final String MESSAGE_WELCOME = "Welcome to AnyTask.\n";
+	private static final String MESSAGE_ADD = "Added %s \n";
+	private static final String MESSAGE_DELETELINE = "Deleted %s \n";
+	private static final String MESSAGE_DISPLAY_SUCCESS = "%d. %s \n";
+	private static final String MESSAGE_DISPLAY_EMPTY = "There are no tasks to display \n";
+	private static final String MESSAGE_DISPLAY_INVALID = "Command invalid \n";
+	private static final String MESSAGE_PROMPT = "Command:";
+	private static final String MESSAGE_ERROR = "An Error has occured. Check the log file for more details \n";
+
+	
+	private static String output = "";
+
+	private static void print() {
+		System.out.printf(output);
+	}
+
+	public static void displayMsgWelcome() {
+		output = String.format(MESSAGE_WELCOME);
+		print();
+	}
+
+	public static void displayMsgAdd(String userText) {
+		output = String.format(MESSAGE_ADD, userText);
+		print();
+	}
+
+	public static void displayMsgDeleteLine(String line) {
+		output = String.format(MESSAGE_DELETELINE, line);
+		print();
+	}
+
+	public static void displayMsgDisplay(int i, String line) {
+		output = String.format(MESSAGE_DISPLAY_SUCCESS, i, line);
+		print();
+	}
+
+	public static void displayMsgEmpty() {
+		output = String.format(MESSAGE_DISPLAY_EMPTY);
+		print();
+	}
+
+	public static void displayMsgPrompt() {
+		output = String.format(MESSAGE_PROMPT);
+		print();
+	}
+	
+	public static void displayMsgError() {
+		output = String.format(MESSAGE_ERROR);
+		print();
+	}
+	
+	public static void displayAll() {
+		ArrayList<Task> taskList = Data.getTaskList();
+		int i = 1;
+		if (taskList.isEmpty()) {
+			displayMsgEmpty();
+		} else {
+			for (Task task : taskList) {
+				displayMsgDisplay(i, task.getName());
+				i++;
+			}
+		}
+	}
+
+	public static void displayMsgInvalid() {
+		output = String.format(MESSAGE_DISPLAY_INVALID);
+		print();
+	}
+}
+
+	// End of segment: D:\NUS\Yr2Sem2\CS2103\AnyTask\AnyTask\src\ui\Display.java
+
+
+
+
+
